@@ -25,7 +25,7 @@ export default function Download() {
             <a href="#" className="download__store-btn">
               <IoLogoApple size={24} />
               <div>
-                <small>Próximamente n</small>
+                <small>Próximamente en</small>
                 <strong>App Store</strong>
               </div>
             </a>
