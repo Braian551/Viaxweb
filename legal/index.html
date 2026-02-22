@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legal Viax</title>
+  <meta name="description" content="Términos y privacidad por perfil de uso en Viax.">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/legal.css">
+  <script src="/js/theme.js" defer></script>
+  <script src="/js/data/legal-content.js" defer></script>
+  <script src="/js/legal.js" defer></script>
+</head>
+<body>
+  <header class="topbar container">
+    <div class="topbar-inner glass">
+      <a class="brand" href="/">
+        <img src="/assets/logo.png" alt="Logo Viax">
+        <span>Legal Viax</span>
+      </a>
+      <nav class="nav">
+        <a href="/">Inicio</a>
+        <button class="btn btn-ghost theme-toggle" data-theme-toggle onclick="toggleViaxTheme()">🌙 Oscuro</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="legal-header glass">
+      <h1 class="section-title" data-legal-title>Términos y Condiciones</h1>
+      <p class="section-subtitle" data-legal-intro>Documento legal por perfil.</p>
+
+      <div class="doc-switch glass" data-doc-switch>
+        <button data-doc="terms" class="active">Términos</button>
+        <button data-doc="privacy">Privacidad</button>
+      </div>
+
+      <div class="role-tabs" data-role-tabs></div>
+      <p class="section-subtitle" style="margin-top:10px">Última actualización: 2026-02-22</p>
+    </section>
+
+    <section class="legal-content glass" data-legal-body></section>
+
+    <footer class="footer glass">
+      Documento institucional de VIAX TECHNOLOGY S.A.S. Para operación comercial definitiva se recomienda validación jurídica en la jurisdicción aplicable.
+    </footer>
+  </main>
+</body>
+</html>
