@@ -1660,14 +1660,59 @@ button { font-family: inherit; }
 }
 
 @media (max-width: 480px) {
-  .hero__title { font-size: 2.2rem; }
-  .hero__stats { flex-direction: column; gap: 16px; }
-  .hero__phone { width: 286px; height: 570px; border-radius: 34px; }
+  .hero {
+    padding: 102px 16px 44px;
+    gap: 26px;
+  }
+  .hero__title { font-size: 2rem; }
+  .hero__subtitle { font-size: 1rem; }
+  .hero__stats { flex-direction: column; gap: 12px; }
+  .hero__stat { gap: 8px; }
+  .hero__phone {
+    width: min(286px, calc(100vw - 34px));
+    height: 534px;
+    border-radius: 30px;
+  }
   .phone-map {
     --origin-y: 16%;
     --dest-y: 58%;
-    flex: 0 0 235px;
-    height: 235px;
+    flex: 0 0 188px;
+    height: 188px;
+  }
+  .phone-sheet__title { font-size: 0.9rem; }
+  .phone-sheet__route {
+    padding: 7px 8px;
+    margin-bottom: 6px;
+  }
+  .phone-sheet__route-label { font-size: 0.52rem; }
+  .phone-sheet__route-text { font-size: 0.75rem; }
+  .phone-sheet__vehicles { margin-bottom: 6px; }
+  .phone-sheet__vehicle {
+    gap: 2px;
+    padding: 5px 3px;
+  }
+  .phone-sheet__vehicle img {
+    width: 21px;
+    height: 21px;
+  }
+  .phone-sheet__vehicle span { font-size: 0.56rem; }
+  .phone-sheet__price { font-size: 0.95rem; }
+  .phone-sheet__price-sub { font-size: 0.52rem; }
+  .phone-sheet__rating {
+    font-size: 0.64rem;
+    padding: 3px 7px;
+  }
+  .phone-sheet__cta {
+    padding: 8px;
+    font-size: 0.72rem;
+    margin-bottom: 4px;
+  }
+  .phone-nav {
+    padding: 4px 0 6px;
+  }
+  .phone-nav__item {
+    font-size: 0.5rem;
+    gap: 1px;
   }
   .page-shell { padding-top: 78px; }
 
@@ -1675,4 +1720,28 @@ button { font-family: inherit; }
   .vehicles__grid { grid-template-columns: 1fr; }
   .footer__links { grid-template-columns: 1fr 1fr; }
   .footer__bottom { flex-direction: column; text-align: center; }
+}
+
+@media (max-width: 380px) {
+  .header__inner {
+    padding: 0 12px;
+  }
+  .header__brand-name {
+    font-size: 0.98rem;
+  }
+  .hero__actions {
+    width: 100%;
+  }
+  .hero__actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .hero__phone {
+    width: min(272px, calc(100vw - 24px));
+    height: 510px;
+  }
+  .phone-map {
+    flex: 0 0 172px;
+    height: 172px;
+  }
 }
