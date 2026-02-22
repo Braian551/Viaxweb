@@ -42,7 +42,7 @@ export default function Footer() {
           <div className="footer__contact">
             <div className="footer__contact-item">
               <FiMail size={16} />
-              <span>legal@viaxcol.online</span>
+              <span>viaxoficialcol@gmail.com</span>
             </div>
             <div className="footer__contact-item">
               <FiGlobe size={16} />

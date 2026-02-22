@@ -1670,16 +1670,17 @@ button { font-family: inherit; }
   .hero__stat { gap: 8px; }
   .hero__phone {
     width: min(286px, calc(100vw - 34px));
-    height: 534px;
+    height: 560px;
     border-radius: 30px;
   }
   .phone-map {
     --origin-y: 16%;
     --dest-y: 58%;
-    flex: 0 0 188px;
-    height: 188px;
+    flex: 0 0 172px;
+    height: 172px;
   }
   .phone-sheet__title { font-size: 0.9rem; }
+  .phone-sheet { padding-bottom: 8px; }
   .phone-sheet__route {
     padding: 7px 8px;
     margin-bottom: 6px;
@@ -1703,17 +1704,12 @@ button { font-family: inherit; }
     padding: 3px 7px;
   }
   .phone-sheet__cta {
-    padding: 8px;
-    font-size: 0.72rem;
-    margin-bottom: 4px;
+    padding: 10px;
+    min-height: 36px;
+    font-size: 0.76rem;
+    margin-bottom: 6px;
   }
-  .phone-nav {
-    padding: 4px 0 6px;
-  }
-  .phone-nav__item {
-    font-size: 0.5rem;
-    gap: 1px;
-  }
+  .phone-nav { display: none; }
   .page-shell { padding-top: 78px; }
 
   .steps { grid-template-columns: 1fr; }
@@ -1738,10 +1734,10 @@ button { font-family: inherit; }
   }
   .hero__phone {
     width: min(272px, calc(100vw - 24px));
-    height: 510px;
+    height: 530px;
   }
   .phone-map {
-    flex: 0 0 172px;
-    height: 172px;
+    flex: 0 0 160px;
+    height: 160px;
   }
 }
