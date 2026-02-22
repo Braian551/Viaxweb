@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiMapPin, FiNavigation, FiShield, FiClock, FiStar, FiChevronRight } from 'react-icons/fi';
+import { FiMapPin, FiNavigation, FiShield, FiClock, FiStar, FiChevronRight, FiUser } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
 export default function Hero() {
@@ -176,7 +176,7 @@ export default function Hero() {
                   <span>Viajes</span>
                 </div>
                 <div className="phone-nav__item">
-                  <FiStar size={16} />
+                  <FiUser size={16} />
                   <span>Perfil</span>
                 </div>
               </div>

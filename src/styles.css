@@ -1709,7 +1709,10 @@ button { font-family: inherit; }
     font-size: 0.76rem;
     margin-bottom: 6px;
   }
-  .phone-nav { display: none; }
+  .phone-nav {
+    display: flex;
+    padding: 3px 0 5px;
+  }
   .page-shell { padding-top: 78px; }
 
   .steps { grid-template-columns: 1fr; }
@@ -1734,10 +1737,13 @@ button { font-family: inherit; }
   }
   .hero__phone {
     width: min(272px, calc(100vw - 24px));
-    height: 530px;
+    height: 540px;
   }
   .phone-map {
     flex: 0 0 160px;
     height: 160px;
+  }
+  .phone-nav__item {
+    font-size: 0.48rem;
   }
 }

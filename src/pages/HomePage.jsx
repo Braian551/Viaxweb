@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiUsers, FiTruck, FiBriefcase, FiArrowRight } from 'react-icons/fi';
 import Hero from '../components/Hero';
+import Download from '../components/Download';
 
 const audienceCards = [
   {
@@ -56,6 +57,7 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+      <Download />
     </>
   );
 }

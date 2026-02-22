@@ -18,7 +18,7 @@ export default function Download() {
             <a href="#" className="download__store-btn">
               <IoLogoGooglePlaystore size={24} />
               <div>
-                <small>Disponible en</small>
+                <small>Próximamente en</small>
                 <strong>Google Play</strong>
               </div>
             </a>
