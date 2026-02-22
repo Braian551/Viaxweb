@@ -27,7 +27,7 @@ const vehicles = [
     image: '/vehicles/taxi3d.png',
     desc: 'Tradicional y confiable',
     tagline: 'El servicio de siempre con la tecnología de Viax.',
-    features: ['Hasta 4 pasajeros', 'Taxímetro digital', 'Conductores verificados'],
+    features: ['Hasta 5 pasajeros', 'Taxímetro digital', 'Conductores verificados'],
   },
 ];
 
