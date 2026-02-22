@@ -1,0 +1,23 @@
+{
+  "name": "Viax Colombia",
+  "short_name": "Viax",
+  "description": "Plataforma de transporte inteligente para clientes, conductores y empresas en Colombia.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5f7fa",
+  "theme_color": "#2196f3",
+  "lang": "es-CO",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

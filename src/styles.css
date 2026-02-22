@@ -786,6 +786,40 @@ button { font-family: inherit; }
 }
 
 /* ===================================================
+   FAQ
+   =================================================== */
+.faq {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 20px 24px 100px;
+}
+
+.faq__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.faq__item {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.faq__question {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.faq__answer {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* ===================================================
    FEATURES
    =================================================== */
 .features {
@@ -1603,6 +1637,7 @@ button { font-family: inherit; }
   .steps { grid-template-columns: repeat(2, 1fr); gap: 32px; }
   .companies__layout { grid-template-columns: 1fr; }
   .audience-overview__grid { grid-template-columns: 1fr; }
+  .faq__grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://viaxcol.online/sitemap.xml
+Host: viaxcol.online
