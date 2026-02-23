@@ -6,9 +6,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { useSharedLocation } from '../hooks/useSharedLocation';
 import '../styles/locationShare.css';
 
-// Mapbox access token injected by Vite
-mapboxgl.accessToken = __MAPBOX_TOKEN__;
-
 // Deep link scheme
 const DEEP_LINK_SCHEME = 'viax://share/';
 const API_URL = __API_URL__;
@@ -54,6 +51,48 @@ export default function LocationSharePage() {
   const [sheetOffset, setSheetOffset] = useState(0);
   const [maxSheetOffset, setMaxSheetOffset] = useState(0);
   const [isSheetDragging, setIsSheetDragging] = useState(false);
+  const [mapboxToken, setMapboxToken] = useState('');
+  const [mapboxTokenError, setMapboxTokenError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadMapboxToken = async () => {
+      try {
+        const response = await fetch(`${API_URL}/get_api_keys.php`, {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const payload = await response.json();
+        const tokenValue = payload?.data?.mapbox_public_token ?? '';
+
+        if (!tokenValue) {
+          throw new Error('Token de Mapbox no disponible');
+        }
+
+        if (cancelled) return;
+        mapboxgl.accessToken = tokenValue;
+        setMapboxToken(tokenValue);
+        setMapboxTokenError('');
+      } catch (err) {
+        if (cancelled) return;
+        setMapboxToken('');
+        setMapboxTokenError('No se pudo cargar el token de mapas');
+        // eslint-disable-next-line no-console
+        console.warn('[LocationShare] Error loading Mapbox token:', err);
+      }
+    };
+
+    loadMapboxToken();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const getMapPadding = useCallback(() => {
     const isDesktop = window.innerWidth >= 1024;
@@ -178,7 +217,7 @@ export default function LocationSharePage() {
 
   // ─── Initialize Map ─────────────────────────────────
   useEffect(() => {
-    if (mapRef.current || !mapContainer.current) return;
+    if (mapRef.current || !mapContainer.current || !mapboxToken) return;
 
     const map = new mapboxgl.Map({
       container: mapContainer.current,
@@ -199,7 +238,7 @@ export default function LocationSharePage() {
       mapRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isDark, mapboxToken]);
 
   // ─── Update map style on theme change ───────────────
   useEffect(() => {
@@ -221,7 +260,7 @@ export default function LocationSharePage() {
 
     try {
       const coords = `${origin[0]},${origin[1]};${destination[0]},${destination[1]}`;
-      const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords}?geometries=geojson&overview=full&access_token=${mapboxgl.accessToken}`;
+      const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords}?geometries=geojson&overview=full&access_token=${mapboxToken}`;
       const res = await fetch(url);
       const json = await res.json();
       if (!json.routes || json.routes.length === 0) return;
@@ -260,7 +299,7 @@ export default function LocationSharePage() {
     } catch (err) {
       console.warn('[LocationShare] Route fetch error:', err);
     }
-  }, []);
+  }, [mapboxToken]);
 
   // ─── Update markers on data change ──────────────────
   useEffect(() => {
@@ -388,15 +427,15 @@ export default function LocationSharePage() {
         <div className="ls-map" ref={mapContainer} />
 
         {/* Loading overlay */}
-        {loading && (
+        {(loading || !mapboxToken) && (
           <div className="ls-overlay">
             <div className="ls-spinner" />
-            <p className="ls-overlay__text">Cargando ubicación…</p>
+            <p className="ls-overlay__text">{mapboxTokenError || 'Cargando ubicación…'}</p>
           </div>
         )}
 
         {/* Error / Expired overlay */}
-        {!loading && (error || expired) && (
+        {!loading && mapboxToken && (error || expired) && (
           <div className="ls-overlay">
             <div className="ls-error-card">
               <div className="ls-error-card__icon">
@@ -427,7 +466,7 @@ export default function LocationSharePage() {
         )}
 
         {/* Top Bar */}
-        {!loading && !error && !expired && (
+        {!loading && mapboxToken && !error && !expired && (
           <div className="ls-topbar">
             <a href="/" className="ls-topbar__close" title="Cerrar">
               <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
@@ -463,7 +502,7 @@ export default function LocationSharePage() {
         )}
 
         {/* Center button */}
-        {!loading && !error && !expired && (
+        {!loading && mapboxToken && !error && !expired && (
           <button className="ls-center-btn" onClick={centerMap} title="Centrar mapa" style={{ bottom: centerButtonBottom }}>
             <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
               <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
@@ -472,7 +511,7 @@ export default function LocationSharePage() {
         )}
 
         {/* Bottom Panel */}
-        {!loading && !error && !expired && data && (
+        {!loading && mapboxToken && !error && !expired && data && (
           <div
             ref={panelRef}
             className={`ls-panel ${isSheetDragging ? 'ls-panel--dragging' : ''}`}

@@ -7,7 +7,6 @@ export default defineConfig({
     // Expose env vars to the client bundle
     // Set VITE_API_URL in .env.local. For production, default to same-origin HTTPS proxy.
     __API_URL__: JSON.stringify(process.env.VITE_API_URL ?? '/api'),
-    __MAPBOX_TOKEN__: JSON.stringify(process.env.VITE_MAPBOX_TOKEN ?? ''),
   },
   server: {
     port: 5173,
