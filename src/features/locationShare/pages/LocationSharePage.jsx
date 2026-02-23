@@ -13,6 +13,8 @@ mapboxgl.accessToken = __MAPBOX_TOKEN__;
 const DEEP_LINK_SCHEME = 'viax://share/';
 const API_URL = __API_URL__;
 
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
 /**
  * Resolve a photo path returned by the backend.
  * Backend returns either a full URL or a relative r2_proxy path.
@@ -39,12 +41,118 @@ export default function LocationSharePage() {
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   const destMarkerRef = useRef(null);
+  const panelRef = useRef(null);
   const lastRouteKey = useRef('');
+  const hasInitialFocusRef = useRef(false);
+  const dragStateRef = useRef({ startY: 0, startOffset: 0 });
+  const sheetInitializedRef = useRef(false);
   const [isDark, setIsDark] = useState(() => {
     const stored = localStorage.getItem('viax-theme');
     return stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
   const [routeInfo, setRouteInfo] = useState(null);
+  const [sheetOffset, setSheetOffset] = useState(0);
+  const [maxSheetOffset, setMaxSheetOffset] = useState(0);
+  const [isSheetDragging, setIsSheetDragging] = useState(false);
+
+  const getMapPadding = useCallback(() => {
+    const isDesktop = window.innerWidth >= 1024;
+    const panelHeight = panelRef.current?.offsetHeight ?? (isDesktop ? 320 : 280);
+    const visiblePanelHeight = Math.max(0, panelHeight - sheetOffset);
+
+    return {
+      top: isDesktop ? 110 : 140,
+      bottom: Math.round(isDesktop
+        ? Math.min(Math.max(220, visiblePanelHeight + 72), 560)
+        : Math.min(Math.max(120, visiblePanelHeight + 40), 500)),
+      left: isDesktop ? 90 : 60,
+      right: isDesktop ? 90 : 60,
+    };
+  }, [sheetOffset]);
+
+  useEffect(() => {
+    if (!data) return;
+
+    const updateSheetMetrics = () => {
+      const panelEl = panelRef.current;
+      if (!panelEl) return;
+
+      const collapsedVisible = window.innerWidth >= 1024 ? 220 : 190;
+      const nextMax = Math.max(0, panelEl.scrollHeight - collapsedVisible);
+
+      setMaxSheetOffset(nextMax);
+      setSheetOffset((prev) => {
+        if (!sheetInitializedRef.current) {
+          sheetInitializedRef.current = true;
+          return nextMax > 0 ? Math.min(nextMax, Math.round(nextMax * 0.35)) : 0;
+        }
+        return clamp(prev, 0, nextMax);
+      });
+    };
+
+    updateSheetMetrics();
+    window.addEventListener('resize', updateSheetMetrics);
+    return () => window.removeEventListener('resize', updateSheetMetrics);
+  }, [data]);
+
+  const onSheetPointerDown = useCallback((event) => {
+    if (maxSheetOffset <= 0) return;
+
+    event.preventDefault();
+    setIsSheetDragging(true);
+    dragStateRef.current = { startY: event.clientY, startOffset: sheetOffset };
+    if (event.currentTarget?.setPointerCapture) {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+  }, [maxSheetOffset, sheetOffset]);
+
+  const onSheetPointerMove = useCallback((event) => {
+    if (!isSheetDragging) return;
+
+    event.preventDefault();
+    const deltaY = event.clientY - dragStateRef.current.startY;
+    const nextOffset = clamp(dragStateRef.current.startOffset + deltaY, 0, maxSheetOffset);
+    setSheetOffset(nextOffset);
+  }, [isSheetDragging, maxSheetOffset]);
+
+  const onSheetPointerUp = useCallback((event) => {
+    if (!isSheetDragging) return;
+
+    setIsSheetDragging(false);
+    if (event.currentTarget?.releasePointerCapture) {
+      try {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      } catch (_) {
+      }
+    }
+
+    const snapPoints = [0, Math.round(maxSheetOffset * 0.45), maxSheetOffset];
+    setSheetOffset((current) => {
+      let nearest = snapPoints[0];
+      let bestDist = Math.abs(current - nearest);
+      for (let i = 1; i < snapPoints.length; i += 1) {
+        const dist = Math.abs(current - snapPoints[i]);
+        if (dist < bestDist) {
+          bestDist = dist;
+          nearest = snapPoints[i];
+        }
+      }
+      return nearest;
+    });
+  }, [isSheetDragging, maxSheetOffset]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || isSheetDragging || !hasInitialFocusRef.current || !data) return;
+
+    const { latitude, longitude, destination_lat, destination_lng } = data;
+    if (latitude == null || longitude == null || destination_lat == null || destination_lng == null) return;
+
+    const bounds = new mapboxgl.LngLatBounds();
+    bounds.extend([longitude, latitude]);
+    bounds.extend([destination_lng, destination_lat]);
+    map.fitBounds(bounds, { padding: getMapPadding(), duration: 450 });
+  }, [sheetOffset, isSheetDragging, data, getMapPadding]);
 
   // ─── Try to open in app ─────────────────────────────
   useEffect(() => {
@@ -179,9 +287,6 @@ export default function LocationSharePage() {
         markerRef.current = new mapboxgl.Marker({ element: el, anchor: 'center' })
           .setLngLat(lngLat)
           .addTo(map);
-
-        // Fly to position on first marker
-        map.flyTo({ center: lngLat, zoom: 15, duration: 1200 });
       } else {
         markerRef.current.setLngLat(lngLat);
       }
@@ -218,11 +323,17 @@ export default function LocationSharePage() {
         // Fetch route between sharer and destination
         fetchRoute(map, [longitude, latitude], [destination_lng, destination_lat]);
 
-        const bounds = new mapboxgl.LngLatBounds();
-        bounds.extend([longitude, latitude]);
-        bounds.extend(destLngLat);
-        map.fitBounds(bounds, { padding: { top: 140, bottom: 280, left: 60, right: 60 }, duration: 800 });
+        if (!hasInitialFocusRef.current) {
+          const bounds = new mapboxgl.LngLatBounds();
+          bounds.extend([longitude, latitude]);
+          bounds.extend(destLngLat);
+          map.fitBounds(bounds, { padding: getMapPadding(), duration: 900 });
+          hasInitialFocusRef.current = true;
+        }
       }
+    } else if (latitude != null && longitude != null && !hasInitialFocusRef.current) {
+      map.flyTo({ center: [longitude, latitude], zoom: 15, duration: 900 });
+      hasInitialFocusRef.current = true;
     }
   }, [data, fetchRoute]);
 
@@ -237,11 +348,11 @@ export default function LocationSharePage() {
       const bounds = new mapboxgl.LngLatBounds();
       bounds.extend([longitude, latitude]);
       bounds.extend([destination_lng, destination_lat]);
-      map.fitBounds(bounds, { padding: { top: 140, bottom: 280, left: 60, right: 60 }, duration: 600 });
+      map.fitBounds(bounds, { padding: getMapPadding(), duration: 600 });
     } else {
       map.flyTo({ center: [longitude, latitude], zoom: 15, duration: 600 });
     }
-  }, [data]);
+  }, [data, getMapPadding]);
 
   // ─── Format remaining time ──────────────────────────
   const formatRemaining = (seconds) => {
@@ -251,6 +362,17 @@ export default function LocationSharePage() {
     if (h > 0) return `${h}h ${m}min`;
     return `${m} min`;
   };
+
+  const centerButtonBottom = (() => {
+    const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
+    const panelHeight = panelRef.current?.offsetHeight ?? (isDesktop ? 320 : 280);
+    const visiblePanelHeight = Math.max(0, panelHeight - sheetOffset);
+    const value = Math.min(
+      Math.max(90, visiblePanelHeight + (isDesktop ? 24 : 20)),
+      isDesktop ? 220 : 520,
+    );
+    return `${Math.round(value)}px`;
+  })();
 
   // ─── Render ─────────────────────────────────────────
   return (
@@ -342,7 +464,7 @@ export default function LocationSharePage() {
 
         {/* Center button */}
         {!loading && !error && !expired && (
-          <button className="ls-center-btn" onClick={centerMap} title="Centrar mapa">
+          <button className="ls-center-btn" onClick={centerMap} title="Centrar mapa" style={{ bottom: centerButtonBottom }}>
             <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
               <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
             </svg>
@@ -351,8 +473,20 @@ export default function LocationSharePage() {
 
         {/* Bottom Panel */}
         {!loading && !error && !expired && data && (
-          <div className="ls-panel">
-            <div className="ls-panel__handle" />
+          <div
+            ref={panelRef}
+            className={`ls-panel ${isSheetDragging ? 'ls-panel--dragging' : ''}`}
+            style={{ '--ls-sheet-offset': `${sheetOffset}px` }}
+          >
+            <div
+              className="ls-panel__grab"
+              onPointerDown={onSheetPointerDown}
+              onPointerMove={onSheetPointerMove}
+              onPointerUp={onSheetPointerUp}
+              onPointerCancel={onSheetPointerUp}
+            >
+              <div className="ls-panel__handle" />
+            </div>
 
             {/* User info */}
             <div className="ls-panel__user">
