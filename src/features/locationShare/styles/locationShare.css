@@ -1,0 +1,533 @@
+/* =============================================
+   Location Share — Standalone page styles
+   Follows the Viax design system (CSS vars from styles.css)
+   ============================================= */
+
+/* ── Page layout ──────────────────────────── */
+.ls-page {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.ls-map {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* ── Loading / Error overlay ──────────────── */
+.ls-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.ls-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: ls-spin 0.8s linear infinite;
+}
+
+@keyframes ls-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ls-overlay__text {
+  margin-top: 18px;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+/* Error card */
+.ls-error-card {
+  text-align: center;
+  padding: 32px;
+  max-width: 380px;
+}
+
+.ls-error-card__icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-bg);
+  border-radius: 50%;
+  color: var(--primary);
+}
+
+.ls-error-card__title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.ls-error-card__desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.ls-error-card__meta {
+  font-size: 13px;
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.ls-error-card__btn {
+  margin-top: 28px;
+  display: inline-flex;
+  padding: 12px 32px;
+}
+
+/* ── Top bar ──────────────────────────────── */
+.ls-topbar {
+  position: absolute;
+  top: max(env(safe-area-inset-top, 12px), 12px);
+  left: 12px;
+  right: 12px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--glass-strong);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+}
+
+.ls-topbar__close {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--text-secondary);
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+
+.ls-topbar__close:hover {
+  background: var(--primary-bg);
+  color: var(--primary);
+}
+
+.ls-topbar__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4caf50;
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);
+  flex-shrink: 0;
+  animation: ls-pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes ls-pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.8); }
+}
+
+.ls-topbar__title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ls-topbar__badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-bg);
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ls-topbar__theme {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 50%;
+  transition: background var(--transition);
+  flex-shrink: 0;
+}
+
+.ls-topbar__theme:hover {
+  background: var(--border);
+}
+
+/* ── Center button ────────────────────────── */
+.ls-center-btn {
+  position: absolute;
+  bottom: 280px;
+  right: 16px;
+  z-index: 20;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass-strong);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  color: var(--primary);
+  transition: all var(--transition);
+}
+
+.ls-center-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ── Bottom panel ─────────────────────────── */
+.ls-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: var(--bg-alt);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.12);
+  padding: 0 20px 28px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.ls-panel__handle {
+  width: 40px;
+  height: 4px;
+  background: var(--border-strong);
+  border-radius: 2px;
+  margin: 14px auto;
+}
+
+/* User row */
+.ls-panel__user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.ls-panel__avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--primary-bg);
+  border: 2px solid rgba(33, 150, 243, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.ls-panel__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ls-panel__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ls-panel__name {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ls-panel__status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+}
+
+.ls-panel__status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4caf50;
+  flex-shrink: 0;
+}
+
+.ls-panel__plate {
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  background: var(--border);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* Destination */
+.ls-panel__dest {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  background: var(--border);
+  border-radius: 14px;
+}
+
+.ls-panel__dest-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ls-panel__dest-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ls-panel__dest-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  opacity: 0.6;
+  margin-bottom: 3px;
+}
+
+.ls-panel__dest-addr {
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Speed & meta */
+.ls-panel__meta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.ls-panel__meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Route info */
+.ls-panel__route-info {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: var(--primary-bg);
+  border-radius: 12px;
+  border: 1px solid rgba(33, 150, 243, 0.15);
+}
+
+.ls-panel__route-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  flex: 1;
+  justify-content: center;
+}
+
+.ls-panel__route-sep {
+  width: 1px;
+  height: 20px;
+  background: rgba(33, 150, 243, 0.25);
+  margin: 0 8px;
+}
+
+/* Branding */
+.ls-panel__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  opacity: 0.4;
+  margin-bottom: 14px;
+}
+
+/* Open in app button */
+.ls-panel__app-btn {
+  display: block;
+  text-align: center;
+  padding: 14px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 14px;
+  transition: all var(--transition);
+}
+
+.ls-panel__app-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.3);
+}
+
+/* ── Map markers ──────────────────────────── */
+.ls-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Sharer marker */
+.ls-marker--sharer {
+  position: relative;
+  width: 56px;
+  height: 56px;
+}
+
+.ls-marker__pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(33, 150, 243, 0.18);
+  animation: ls-pulse-marker 2s ease-in-out infinite;
+}
+
+@keyframes ls-pulse-marker {
+  0%, 100% { transform: scale(0.85); opacity: 0.6; }
+  50% { transform: scale(1.1); opacity: 0.2; }
+}
+
+.ls-marker__dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 42px;
+  height: 42px;
+  margin: -21px 0 0 -21px;
+  border-radius: 50%;
+  background: #2196f3;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 12px rgba(33, 150, 243, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.ls-marker__arrow {
+  display: block;
+}
+
+/* Destination marker */
+.ls-marker--destination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ls-marker__flag {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f44336;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ls-marker__stem {
+  width: 4px;
+  height: 12px;
+  background: #f44336;
+  border-radius: 2px;
+}
+
+/* ── Responsive ───────────────────────────── */
+@media (max-width: 480px) {
+  .ls-topbar__title {
+    font-size: 13px;
+  }
+
+  .ls-panel {
+    padding: 0 16px 24px;
+  }
+
+  .ls-panel__name {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 768px) {
+  .ls-panel {
+    max-width: 440px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 24px 24px 0 0;
+  }
+
+  .ls-topbar {
+    max-width: 500px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: calc(100% - 24px);
+  }
+}
