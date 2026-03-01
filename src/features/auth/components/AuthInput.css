@@ -1,0 +1,68 @@
+/* src/features/auth/components/AuthInput.css */
+.auth-input-container {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-input-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text, #333);
+  letter-spacing: 0.02em;
+}
+
+.auth-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-input-icon {
+  position: absolute;
+  left: 1rem;
+  color: var(--text-secondary, #888);
+  font-size: 1.25rem;
+  transition: color 0.3s;
+}
+
+.auth-input-field {
+  width: 100%;
+  padding: 0.85rem 1rem 0.85rem 3rem;
+  /* Soft glass look for inputs */
+  background: rgba(255, 255, 255, 0.5);
+  border: 1.5px solid var(--border-strong, rgba(0, 0, 0, 0.1));
+  border-radius: 12px;
+  font-size: 1rem;
+  color: var(--text, #111);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* When focused, glow effect */
+.auth-input-wrapper:focus-within .auth-input-icon {
+  color: var(--primary);
+  /* Ensures visibility using the main accent color */
+  opacity: 1;
+}
+
+.auth-input-field:focus {
+  outline: none;
+  border-color: var(--primary, #007bff);
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.15);
+}
+
+/* Dark mode adjust */
+[data-theme='dark'] .auth-input-field {
+  background: rgba(15, 23, 42, 0.4);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text, #fff);
+}
+
+[data-theme='dark'] .auth-input-field:focus {
+  background: rgba(15, 23, 42, 0.7);
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.25);
+}

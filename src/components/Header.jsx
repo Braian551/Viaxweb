@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { FiSun, FiMoon, FiMenu, FiX } from 'react-icons/fi';
-import { Link, NavLink } from 'react-router-dom';
+import { FiSun, FiMoon, FiMenu, FiX, FiUser } from 'react-icons/fi';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../features/auth/context/AuthContext';
 
 export default function Header({ isDark, onToggleTheme }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -45,6 +48,22 @@ export default function Header({ isDark, onToggleTheme }) {
         </nav>
 
         <div className="header__actions">
+          {user ? (
+            <div className="header__user-menu">
+              <span className="header__user-name">{user.nombre || user.name}</span>
+              <button onClick={() => { logout(); navigate('/'); }} className="header__logout-btn">
+                Salir
+              </button>
+            </div>
+          ) : (
+            <div className="header__auth-buttons" style={{ display: 'flex', gap: '10px' }}>
+              <Link to="/login" className="header__login-btn btn btn--primary" style={{ padding: '6px 14px', fontSize: '0.85rem' }}>
+                <FiUser size={16} style={{ marginRight: '6px' }} />
+                Iniciar Sesión
+              </Link>
+            </div>
+          )}
+
           <button
             className="header__theme-btn"
             onClick={onToggleTheme}
