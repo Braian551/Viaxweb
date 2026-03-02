@@ -108,14 +108,19 @@ const ConductorDashboard = () => {
                 </div>
 
                 {recentTrips.length > 0 ? (
-                    <div>
+                    <div className="v-activity-list">
                         {recentTrips.map((t) => (
-                            <div key={t.id} className="v-activity-item">
+                            <div key={t.id} className="v-activity-item v-activity-item--enhanced">
+                                <div className="v-activity-item__timeline" />
                                 <div className="v-activity-item__content">
                                     <div className="v-activity-item__title">{t.origen_direccion || t.origen || 'Viaje'} &rarr; {t.destino_direccion || t.destino || ''}</div>
-                                    <div className="v-activity-item__meta">{t.fecha_creacion ? new Date(t.fecha_creacion).toLocaleDateString() : '—'}</div>
+                                    <div className="v-activity-item__meta">
+                                        <span className="v-activity-item__time"><FiClock size={12} /> {t.fecha_creacion ? new Date(t.fecha_creacion).toLocaleString() : '—'}</span>
+                                    </div>
                                 </div>
-                                <span style={{ fontWeight: 700, color: '#4caf50' }}>{fmt(t.precio_final || t.precio_estimado)}</span>
+                                <div className="v-activity-item__badge">
+                                    <span style={{ fontWeight: 700, color: '#4caf50' }}>{fmt(t.precio_final || t.precio_estimado)}</span>
+                                </div>
                             </div>
                         ))}
                     </div>

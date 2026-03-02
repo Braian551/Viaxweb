@@ -113,17 +113,19 @@ const ClienteDashboard = () => {
                 </div>
 
                 {trips.length > 0 ? (
-                    <div>
+                    <div className="v-activity-list">
                         {trips.map((trip) => (
-                            <div key={trip.id} className="v-activity-item">
+                            <div key={trip.id} className="v-activity-item v-activity-item--enhanced">
+                                <div className="v-activity-item__timeline" />
                                 <div className="v-activity-item__content">
                                     <div className="v-activity-item__title">{trip.origen_direccion || trip.origen || 'Viaje'}</div>
                                     <div className="v-activity-item__meta">
-                                        <FiClock size={12} style={{ verticalAlign: 'middle', marginRight: 4 }} />
-                                        {trip.fecha_creacion ? new Date(trip.fecha_creacion).toLocaleDateString() : '—'}
+                                        {trip.destino_direccion || trip.destino || 'Destino no disponible'}
+                                        <span className="v-activity-item__dot">•</span>
+                                        <span className="v-activity-item__time"><FiClock size={12} /> {trip.fecha_creacion ? new Date(trip.fecha_creacion).toLocaleString() : '—'}</span>
                                     </div>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div className="v-activity-item__badge" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     {trip.estado && <StatusBadge status={trip.estado} />}
                                     <span style={{ fontWeight: 700, color: 'var(--text)' }}>{fmt(trip.precio_final || trip.precio_estimado)}</span>
                                 </div>

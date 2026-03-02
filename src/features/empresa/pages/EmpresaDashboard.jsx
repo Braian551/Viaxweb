@@ -87,7 +87,9 @@ const EmpresaDashboard = () => {
 
             <div className="glass-card v-section">
                 <div className="v-section__header">
-                    <FiBriefcase className="v-section__icon" />
+                    <div className="v-section__icon" style={{ background: 'rgba(156, 39, 176, 0.12)' }}>
+                        <FiBriefcase size={20} color="#9c27b0" />
+                    </div>
                     <h3 className="v-section__title">Información de la Empresa</h3>
                 </div>
                 <div className="v-info-rows">
@@ -102,17 +104,22 @@ const EmpresaDashboard = () => {
 
             <div className="glass-card v-section">
                 <div className="v-section__header">
-                    <FiActivity className="v-section__icon" />
+                    <div className="v-section__icon" style={{ background: 'rgba(33, 150, 243, 0.12)' }}>
+                        <FiActivity size={20} color="#2196f3" />
+                    </div>
                     <h3 className="v-section__title">Solicitudes de Vinculación Recientes</h3>
                 </div>
                 {solicitudes.length > 0 ? (
                     <div className="v-activity-list">
                         {solicitudes.map((s, i) => (
-                            <div key={s.id || i} className="v-activity-item">
+                            <div key={s.id || i} className="v-activity-item v-activity-item--enhanced">
+                                <div className="v-activity-item__timeline" />
                                 <ProfileAvatar name={`${s.conductor_nombre || s.nombre || '?'} ${s.conductor_apellido || s.apellido || ''}`} size={40} borderRadius={12} bgColor="#ff9800" />
                                 <div className="v-activity-item__body">
                                     <span className="v-activity-item__title">{s.conductor_nombre || s.nombre} {s.conductor_apellido || s.apellido || ''}</span>
-                                    <span className="v-activity-item__meta">{s.fecha_solicitud ? new Date(s.fecha_solicitud).toLocaleDateString() : '—'}</span>
+                                    <span className="v-activity-item__meta">
+                                        <span className="v-activity-item__time">{s.fecha_solicitud ? new Date(s.fecha_solicitud).toLocaleString() : '—'}</span>
+                                    </span>
                                 </div>
                                 <StatusBadge status={s.estado || 'pendiente'} />
                             </div>
