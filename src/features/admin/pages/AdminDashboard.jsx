@@ -34,10 +34,6 @@ const AdminDashboard = () => {
         fetchStats();
     }, [user]);
 
-    if (loading) return <ShimmerDashboard />;
-
-    if (error) return <div className="v-error-box">{error}</div>;
-
     const { usuarios, solicitudes, ingresos, reportes, actividades_recientes } = stats || {};
     const formatCurrency = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
 
@@ -60,6 +56,10 @@ const AdminDashboard = () => {
     const totalUsers = Number(usuarios?.total_usuarios || 0);
     const inactiveUsers = Math.max(totalUsers - activeUsers, 0);
     const activePercent = totalUsers > 0 ? Math.round((activeUsers / totalUsers) * 100) : 0;
+
+    if (loading) return <ShimmerDashboard />;
+
+    if (error) return <div className="v-error-box">{error}</div>;
 
     return (
         <div className="v-dashboard">
