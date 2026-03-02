@@ -1,0 +1,57 @@
+/* src/features/auth/components/OtpInput.css */
+
+.otp-input-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 1.5rem 0;
+}
+
+.otp-input-box {
+    width: 60px;
+    height: 70px;
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    border: 2px solid var(--border, rgba(0, 0, 0, 0.1));
+    border-radius: 12px;
+    background: var(--input-bg, rgba(255, 255, 255, 0.5));
+    color: var(--text, #222);
+    transition: all 0.2s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.otp-input-box:focus {
+    outline: none;
+    border-color: var(--primary, #2196f3);
+    background: var(--bg, #fff);
+    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.15);
+    transform: translateY(-2px);
+}
+
+.otp-input-box.filled {
+    border-color: var(--primary, #2196f3);
+    background: var(--bg, #fff);
+}
+
+/* Dark mode adjust */
+[data-theme='dark'] .otp-input-box {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    color: #fff;
+}
+
+[data-theme='dark'] .otp-input-box:focus,
+[data-theme='dark'] .otp-input-box.filled {
+    border-color: var(--primary, #2196f3);
+    background: rgba(33, 150, 243, 0.05);
+}
+
+@media (max-width: 400px) {
+    .otp-input-box {
+        width: 50px;
+        height: 60px;
+        font-size: 24px;
+        gap: 8px;
+    }
+}

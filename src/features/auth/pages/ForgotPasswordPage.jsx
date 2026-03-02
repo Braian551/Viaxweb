@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { FiMail, FiLock, FiKey } from 'react-icons/fi';
 import { checkUserExists, getProfileByEmail, requestPasswordResetCodeReal, requestPasswordResetCode, verifyPasswordResetCode, changePasswordWithCode } from '../services/authService';
 import AuthInput from '../components/AuthInput';
+import OtpInput from '../components/OtpInput';
 import './AuthPage.css';
 
 const ForgotPasswordPage = () => {
@@ -119,16 +120,12 @@ const ForgotPasswordPage = () => {
                     )}
 
                     {step === 2 && (
-                        <AuthInput
-                            label="Código de Verificación (4 dígitos)"
-                            type="number"
-                            id="code"
-                            value={code}
-                            onChange={(e) => setCode(e.target.value.slice(0, 4))}
-                            placeholder="1234"
-                            icon={<FiKey />}
-                            required
-                        />
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: 'var(--text, #222)' }}>
+                                Código de Verificación (4 dígitos)
+                            </label>
+                            <OtpInput value={code} onChange={setCode} length={4} />
+                        </div>
                     )}
 
                     {step === 3 && (
