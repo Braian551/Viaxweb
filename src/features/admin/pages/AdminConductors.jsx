@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FiCheckCircle, FiXCircle, FiClock, FiFileText, FiAlertCircle, FiEye } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getConductorsDocuments, approveConductor, rejectConductor } from '../services/adminService';
+import { getR2ImageUrl } from '../../../utils/r2Images';
 import '../layout/AdminLayout.css';
 
 const AdminConductors = () => {
@@ -152,7 +153,7 @@ const AdminConductors = () => {
 
                             <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: c.tiene_documentos_vencidos ? '16px' : '0' }}>
                                 <div style={{ width: '60px', height: '60px', borderRadius: '16px', background: 'var(--primary-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '1.2rem', fontWeight: 'bold', overflow: 'hidden' }}>
-                                    {c.foto_perfil ? <img src={c.foto_perfil} alt={c.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : c.nombre?.charAt(0) || '?'}
+                                    {c.foto_perfil ? <img src={getR2ImageUrl(c.foto_perfil)} alt={c.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : c.nombre?.charAt(0) || '?'}
                                 </div>
                                 <div style={{ flex: 1 }}>
                                     <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '700', color: 'var(--text)' }}>

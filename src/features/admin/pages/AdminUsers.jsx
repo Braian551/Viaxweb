@@ -26,7 +26,7 @@ const AdminUsers = () => {
     }, [search]);
 
     const fetchUsersData = async () => {
-        if (!user || user.tipo_usuario !== 'admin') return;
+        if (!user || !['admin', 'administrador'].includes(user.tipo_usuario)) return;
         setLoading(true);
         const res = await getUsers(user.id, { page, perPage: 10, search: debouncedSearch, tipoUsuario: roleFilter });
 

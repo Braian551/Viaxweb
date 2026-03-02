@@ -23,7 +23,21 @@ import AdminFinances from './features/admin/pages/AdminFinances';
 import AdminAudit from './features/admin/pages/AdminAudit';
 import AdminConductors from './features/admin/pages/AdminConductors';
 
-// Stub components for now to prevent errors
+// Cliente Dashboard
+import ClienteLayout from './features/cliente/layout/ClienteLayout';
+import ClienteDashboard from './features/cliente/pages/ClienteDashboard';
+import ClienteProfile from './features/cliente/pages/ClienteProfile';
+// Conductor Dashboard
+import ConductorLayout from './features/conductor/layout/ConductorLayout';
+import ConductorDashboard from './features/conductor/pages/ConductorDashboard';
+import ConductorEarnings from './features/conductor/pages/ConductorEarnings';
+import ConductorProfile from './features/conductor/pages/ConductorProfile';
+// Empresa Dashboard
+import EmpresaLayout from './features/empresa/layout/EmpresaLayout';
+import EmpresaDashboard from './features/empresa/pages/EmpresaDashboard';
+import EmpresaConductors from './features/empresa/pages/EmpresaConductors';
+import EmpresaFinances from './features/empresa/pages/EmpresaFinances';
+import EmpresaSettings from './features/empresa/pages/EmpresaSettings';
 
 // Component to handle root redirection based on role
 const RootRedirect = ({ isDark, onToggleTheme }) => {
@@ -98,6 +112,8 @@ export default function App() {
         } />
 
         {/* ── Protected Dashboards ────────────────────────────── */}
+
+        {/* Admin */}
         <Route element={<RoleRoute allowedRoles={['admin']} />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
@@ -109,16 +125,31 @@ export default function App() {
           </Route>
         </Route>
 
+        {/* Cliente */}
         <Route element={<RoleRoute allowedRoles={['cliente']} />}>
-          <Route path="/cliente/*" element={<ClienteDashboardStub />} />
+          <Route path="/cliente" element={<ClienteLayout />}>
+            <Route index element={<ClienteDashboard />} />
+            <Route path="profile" element={<ClienteProfile />} />
+          </Route>
         </Route>
 
+        {/* Conductor */}
         <Route element={<RoleRoute allowedRoles={['conductor']} />}>
-          <Route path="/conductor/*" element={<ConductorDashboardStub />} />
+          <Route path="/conductor" element={<ConductorLayout />}>
+            <Route index element={<ConductorDashboard />} />
+            <Route path="earnings" element={<ConductorEarnings />} />
+            <Route path="profile" element={<ConductorProfile />} />
+          </Route>
         </Route>
 
+        {/* Empresa */}
         <Route element={<RoleRoute allowedRoles={['empresa']} />}>
-          <Route path="/empresa/*" element={<EmpresaDashboardStub />} />
+          <Route path="/empresa" element={<EmpresaLayout />}>
+            <Route index element={<EmpresaDashboard />} />
+            <Route path="conductors" element={<EmpresaConductors />} />
+            <Route path="finances" element={<EmpresaFinances />} />
+            <Route path="settings" element={<EmpresaSettings />} />
+          </Route>
         </Route>
 
         {/* ── Main public site ────────────────────────────────────── */}

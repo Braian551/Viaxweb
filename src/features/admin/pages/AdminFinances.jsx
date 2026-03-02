@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FiDollarSign, FiTrendingUp, FiCreditCard, FiAlertTriangle, FiArrowDownRight, FiBriefcase } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getPlatformEarnings } from '../services/adminService';
+import { getR2ImageUrl } from '../../../utils/r2Images';
 import '../layout/AdminLayout.css';
 
 const StatCard = ({ title, value, subtitle, icon, colorClass }) => (
@@ -27,7 +28,7 @@ const AdminFinances = () => {
     const [periodo, setPeriodo] = useState('mes'); // 'hoy', 'semana', 'mes', 'anio', 'todo'
 
     const fetchFinances = async () => {
-        if (!user || user.tipo_usuario !== 'admin') return;
+        if (!user || !['admin', 'administrador'].includes(user.tipo_usuario)) return;
         setLoading(true);
         const res = await getPlatformEarnings(user.id, periodo);
 
@@ -129,7 +130,7 @@ const AdminFinances = () => {
                                         <div key={empresa.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'var(--bg)', borderRadius: '16px', border: '1px solid var(--border, rgba(0,0,0,0.05))' }}>
                                             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                                                 <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--primary-alpha)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                    {empresa.logo_url ? <img src={empresa.logo_url} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} /> : <FiBriefcase color="var(--primary)" />}
+                                                    {empresa.logo_url ? <img src={getR2ImageUrl(empresa.logo_url)} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} /> : <FiBriefcase color="var(--primary)" />}
                                                 </div>
                                                 <div>
                                                     <div style={{ fontWeight: '600', color: 'var(--text)', fontSize: '0.95rem' }}>{empresa.nombre}</div>

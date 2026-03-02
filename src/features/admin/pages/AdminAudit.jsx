@@ -19,7 +19,7 @@ const AdminAudit = () => {
     const [fechaHasta, setFechaHasta] = useState('');
 
     const fetchLogs = async () => {
-        if (!user || user.tipo_usuario !== 'admin') return;
+        if (!user || !['admin', 'administrador'].includes(user.tipo_usuario)) return;
         setLoading(true);
         const res = await getAuditLogs(user.id, { page, perPage: 15, accion: accionFilter, fechaDesde, fechaHasta });
 

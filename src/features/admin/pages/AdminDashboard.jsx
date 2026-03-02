@@ -27,7 +27,7 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         const fetchStats = async () => {
-            if (!user || user.tipo_usuario !== 'admin') {
+            if (!user || !['admin', 'administrador'].includes(user.tipo_usuario)) {
                 setError('No autorizado');
                 setLoading(false);
                 return;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FiSearch, FiMoreVertical, FiCheck, FiX, FiBriefcase, FiAlertCircle } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getCompanies } from '../services/adminService';
+import { getR2ImageUrl } from '../../../utils/r2Images';
 import '../layout/AdminLayout.css';
 
 const AdminCompanies = () => {
@@ -26,7 +27,7 @@ const AdminCompanies = () => {
     }, [search]);
 
     const fetchCompaniesData = async () => {
-        if (!user || user.tipo_usuario !== 'admin') return;
+        if (!user || !['admin', 'administrador'].includes(user.tipo_usuario)) return;
         setLoading(true);
         const res = await getCompanies(user.id, { page, limit: 10, search: debouncedSearch, estado: statusFilter });
 
@@ -106,7 +107,7 @@ const AdminCompanies = () => {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                                     <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)' }}>
-                                        {c.logo_url ? <img src={c.logo_url} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} /> : <FiBriefcase color="var(--primary)" />}
+                                        {c.logo_url ? <img src={getR2ImageUrl(c.logo_url)} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} /> : <FiBriefcase color="var(--primary)" />}
                                     </div>
                                     <div>
                                         <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '700', color: 'var(--text)' }}>{c.nombre}</h3>

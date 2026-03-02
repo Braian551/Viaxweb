@@ -1,0 +1,396 @@
+/* =======================================
+   Shared Dashboard Glass Layout Styles
+   Reusable across all role dashboards
+   ======================================= */
+
+.dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg, #f0f4f8);
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-layout::before {
+    content: '';
+    position: fixed;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.08), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.dashboard-layout::after {
+    content: '';
+    position: fixed;
+    bottom: -200px;
+    left: -200px;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 188, 212, 0.06), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Sidebar */
+.dash-sidebar {
+    width: 260px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.dash-sidebar.collapsed {
+    width: 72px;
+}
+
+.dash-sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dash-sidebar-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    object-fit: contain;
+}
+
+.dash-sidebar-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--primary, #2196f3);
+    margin: 0;
+    white-space: nowrap;
+}
+
+.dash-sidebar-nav {
+    flex: 1;
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dash-sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    color: var(--text-secondary, #64748b);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.dash-sidebar-link:hover {
+    background: rgba(33, 150, 243, 0.08);
+    color: var(--primary, #2196f3);
+}
+
+.dash-sidebar-link.active {
+    background: var(--primary, #2196f3);
+    color: white;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.dash-sidebar-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    min-width: 24px;
+}
+
+.dash-sidebar-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dash-sidebar-footer {
+    padding: 12px 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dash-logout-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: none;
+    background: transparent;
+    color: #f44336;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.dash-logout-btn:hover {
+    background: rgba(244, 67, 54, 0.08);
+}
+
+/* Main Content Area */
+.dash-main {
+    flex: 1;
+    margin-left: 260px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    z-index: 1;
+    transition: margin-left 0.3s;
+}
+
+.dash-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.dash-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.dash-header-greeting {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text, #1e293b);
+}
+
+.dash-header-greeting span {
+    font-weight: 800;
+}
+
+.dash-role-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+}
+
+.dash-role-badge.admin {
+    background: rgba(33, 150, 243, 0.15);
+    color: #2196f3;
+}
+
+.dash-role-badge.cliente {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+}
+
+.dash-role-badge.conductor {
+    background: rgba(255, 152, 0, 0.15);
+    color: #ff9800;
+}
+
+.dash-role-badge.empresa {
+    background: rgba(156, 39, 176, 0.15);
+    color: #9c27b0;
+}
+
+.dash-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dash-header-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+    background: rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary, #64748b);
+    transition: all 0.2s;
+    font-size: 1.1rem;
+}
+
+.dash-header-btn:hover {
+    border-color: var(--primary, #2196f3);
+    color: var(--primary, #2196f3);
+}
+
+.dash-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--primary, #2196f3);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    overflow: hidden;
+}
+
+.dash-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dash-content {
+    flex: 1;
+    padding: 32px;
+}
+
+/* Glass Card */
+.glass-card {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+}
+
+/* Mobile overlay */
+.dash-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9;
+}
+
+.dash-sidebar-overlay.active {
+    display: block;
+}
+
+.dash-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: var(--text, #1e293b);
+    cursor: pointer;
+}
+
+/* ===== DARK THEME ===== */
+[data-theme='dark'] .dashboard-layout {
+    background: #0f172a;
+}
+
+[data-theme='dark'] .dashboard-layout::before {
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.05), transparent 70%);
+}
+
+[data-theme='dark'] .dashboard-layout::after {
+    background: radial-gradient(circle, rgba(0, 188, 212, 0.04), transparent 70%);
+}
+
+[data-theme='dark'] .dash-sidebar {
+    background: rgba(15, 23, 42, 0.85);
+    border-right-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='dark'] .dash-sidebar-header {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='dark'] .dash-sidebar-footer {
+    border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='dark'] .dash-sidebar-link {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme='dark'] .dash-sidebar-link:hover {
+    background: rgba(33, 150, 243, 0.12);
+    color: #90caf9;
+}
+
+[data-theme='dark'] .dash-sidebar-link.active {
+    background: var(--primary, #2196f3);
+    color: white;
+}
+
+[data-theme='dark'] .dash-header {
+    background: rgba(15, 23, 42, 0.7);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='dark'] .glass-card {
+    background: rgba(30, 41, 59, 0.6);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='dark'] .dash-header-btn {
+    background: rgba(30, 41, 59, 0.5);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .dash-sidebar {
+        transform: translateX(-100%);
+        width: 260px !important;
+    }
+
+    .dash-sidebar.open {
+        transform: translateX(0);
+    }
+
+    .dash-main {
+        margin-left: 0 !important;
+    }
+
+    .dash-sidebar-overlay.active {
+        display: block;
+    }
+
+    .dash-menu-btn {
+        display: flex;
+    }
+
+    .dash-content {
+        padding: 16px;
+    }
+
+    .dash-header {
+        padding: 12px 16px;
+    }
+}
