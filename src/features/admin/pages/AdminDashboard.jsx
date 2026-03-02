@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { FiUsers, FiActivity, FiDollarSign, FiAlertCircle, FiMonitor, FiTrendingUp } from 'react-icons/fi';
+import React, { useEffect, useMemo, useState } from 'react';
+import { FiUsers, FiActivity, FiDollarSign, FiAlertCircle, FiMonitor, FiTrendingUp, FiClock } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getDashboardStats } from '../services/adminService';
 import GlassStatCard from '../../shared/components/GlassStatCard';
@@ -41,6 +41,26 @@ const AdminDashboard = () => {
     const { usuarios, solicitudes, ingresos, reportes, actividades_recientes } = stats || {};
     const formatCurrency = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
 
+    const kpiBars = useMemo(() => {
+        const items = [
+            { key: 'usuarios', label: 'Usuarios', value: Number(usuarios?.total_usuarios || 0), color: '#2196f3' },
+            { key: 'solicitudes', label: 'Viajes', value: Number(solicitudes?.total_solicitudes || 0), color: '#00bcd4' },
+            { key: 'reportes', label: 'Reportes', value: Number(reportes?.reportes_pendientes || 0), color: '#ff9800' },
+            { key: 'ingresos', label: 'Ingresos Hoy', value: Number(ingresos?.ingresos_hoy || 0), color: '#4caf50', formatter: formatCurrency },
+        ];
+
+        const maxValue = Math.max(...items.map(item => item.value), 1);
+        return items.map(item => ({
+            ...item,
+            percentage: Math.max((item.value / maxValue) * 100, item.value > 0 ? 8 : 0),
+        }));
+    }, [usuarios, solicitudes, reportes, ingresos]);
+
+    const activeUsers = Number(usuarios?.usuarios_activos || 0);
+    const totalUsers = Number(usuarios?.total_usuarios || 0);
+    const inactiveUsers = Math.max(totalUsers - activeUsers, 0);
+    const activePercent = totalUsers > 0 ? Math.round((activeUsers / totalUsers) * 100) : 0;
+
     return (
         <div className="v-dashboard">
             <PageHeader
@@ -79,6 +99,77 @@ const AdminDashboard = () => {
                 />
             </div>
 
+            <div className="v-admin-live-grid">
+                <div className="glass-card v-section">
+                    <div className="v-section__header">
+                        <div className="v-section__icon" style={{ background: 'rgba(0, 188, 212, 0.12)' }}>
+                            <FiTrendingUp size={20} color="#00bcd4" />
+                        </div>
+                        <h2 className="v-section__title">Gráfico en vivo (KPIs)</h2>
+                    </div>
+
+                    <div className="v-kpi-chart">
+                        {kpiBars.map((bar) => (
+                            <div key={bar.key} className="v-kpi-chart__row">
+                                <div className="v-kpi-chart__meta">
+                                    <span className="v-kpi-chart__label">{bar.label}</span>
+                                    <span className="v-kpi-chart__value">{bar.formatter ? bar.formatter(bar.value) : bar.value}</span>
+                                </div>
+                                <div className="v-kpi-chart__track">
+                                    <div className="v-kpi-chart__fill" style={{ width: `${bar.percentage}%`, background: bar.color }} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="glass-card v-section">
+                    <div className="v-section__header">
+                        <div className="v-section__icon" style={{ background: 'rgba(33, 150, 243, 0.12)' }}>
+                            <FiUsers size={20} color="#2196f3" />
+                        </div>
+                        <h2 className="v-section__title">Usuarios activos</h2>
+                    </div>
+
+                    <div className="v-user-ring-wrap">
+                        <div className="v-user-ring">
+                            <svg viewBox="0 0 120 120" className="v-user-ring__svg" role="img" aria-label="Distribución de usuarios activos">
+                                <circle cx="60" cy="60" r="46" className="v-user-ring__bg" />
+                                <circle
+                                    cx="60"
+                                    cy="60"
+                                    r="46"
+                                    className="v-user-ring__fg"
+                                    style={{
+                                        strokeDasharray: `${2 * Math.PI * 46}`,
+                                        strokeDashoffset: `${2 * Math.PI * 46 * (1 - activePercent / 100)}`,
+                                    }}
+                                />
+                            </svg>
+                            <div className="v-user-ring__center">
+                                <strong>{activePercent}%</strong>
+                                <span>activos</span>
+                            </div>
+                        </div>
+
+                        <div className="v-user-ring__legend">
+                            <div className="v-user-ring__legend-item">
+                                <span className="v-dot v-dot--green" />
+                                <span>Activos: {activeUsers}</span>
+                            </div>
+                            <div className="v-user-ring__legend-item">
+                                <span className="v-dot v-dot--gray" />
+                                <span>Inactivos: {inactiveUsers}</span>
+                            </div>
+                            <div className="v-user-ring__legend-item">
+                                <span className="v-dot v-dot--blue" />
+                                <span>Total: {totalUsers}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Recent Activity */}
             <div className="glass-card v-section">
                 <div className="v-section__header">
@@ -89,20 +180,34 @@ const AdminDashboard = () => {
                 </div>
 
                 {actividades_recientes && actividades_recientes.length > 0 ? (
-                    <div>
-                        {actividades_recientes.slice(0, 6).map((act) => (
-                            <div key={act.id} className="v-activity-item">
-                                <div className="v-activity-item__content">
-                                    <div className="v-activity-item__title">{act.descripcion}</div>
-                                    <div className="v-activity-item__meta">
-                                        {act.nombre} {act.apellido} &bull; {new Date(act.fecha_creacion).toLocaleString()}
+                    <div className="v-activity-list">
+                        {actividades_recientes.slice(0, 8).map((act) => {
+                            const action = (act.accion || '').toLowerCase();
+                            const status = action.includes('login')
+                                ? 'activo'
+                                : action.includes('crear') || action.includes('aprob')
+                                    ? 'aprobado'
+                                    : action.includes('rechaz') || action.includes('error')
+                                        ? 'rechazado'
+                                        : 'pendiente';
+
+                            return (
+                                <div key={act.id} className="v-activity-item v-activity-item--enhanced">
+                                    <div className="v-activity-item__timeline" />
+                                    <div className="v-activity-item__content">
+                                        <div className="v-activity-item__title">{act.descripcion}</div>
+                                        <div className="v-activity-item__meta">
+                                            <span>{act.nombre} {act.apellido}</span>
+                                            <span className="v-activity-item__dot">•</span>
+                                            <span className="v-activity-item__time"><FiClock size={12} /> {new Date(act.fecha_creacion).toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                    <div className="v-activity-item__badge">
+                                        <StatusBadge status={status} label={(act.accion || 'evento').replace(/_/g, ' ')} />
                                     </div>
                                 </div>
-                                <div className="v-activity-item__badge">
-                                    <StatusBadge status={act.accion?.includes('login') ? 'activo' : act.accion?.includes('crear') ? 'aprobado' : 'pendiente'} label={act.accion} />
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 ) : (
                     <EmptyState
