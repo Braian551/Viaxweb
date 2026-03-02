@@ -7,6 +7,7 @@ import GlassStatCard from '../../shared/components/GlassStatCard';
 import ProfileAvatar from '../../shared/components/ProfileAvatar';
 import EmptyState from '../../shared/components/EmptyState';
 import { ShimmerStatGrid } from '../../shared/components/ShimmerLoader';
+import { ViaxAreaChart, ViaxDonutChart } from '../../shared/components/ViaxCharts';
 
 const PERIODS = ['hoy', 'semana', 'mes', 'anio', 'todo'];
 
@@ -38,6 +39,17 @@ const AdminFinances = () => {
     const formatCurrency = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
 
     const { resumen, empresas_deudoras, ultimos_movimientos } = finances || {};
+    const movimientosChartData = (ultimos_movimientos || []).slice(0, 8).map((mov, index) => ({
+        fecha: mov.fecha ? new Date(mov.fecha).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }) : `M${index + 1}`,
+        monto: Number(mov.monto || 0),
+    }));
+    const deudasChartData = (empresas_deudoras || [])
+        .filter(empresa => Number(empresa.saldo_pendiente || 0) > 0)
+        .slice(0, 5)
+        .map(empresa => ({
+            name: empresa.nombre,
+            value: Number(empresa.saldo_pendiente || 0),
+        }));
 
     return (
         <div className="v-dashboard">
@@ -87,6 +99,31 @@ const AdminFinances = () => {
                             icon={<FiCreditCard size={22} color="#9c27b0" />}
                             accentColor="#9c27b0"
                         />
+                    </div>
+
+                    <div className="v-chart-grid">
+                        <div className="glass-card v-chart-card">
+                            <h3 className="v-chart-title">Tendencia de pagos recibidos</h3>
+                            {movimientosChartData.length > 0 ? (
+                                <ViaxAreaChart
+                                    data={movimientosChartData}
+                                    xKey="fecha"
+                                    areas={[{ dataKey: 'monto', name: 'Pago', color: '#4caf50' }]}
+                                    valueFormatter={(value) => formatCurrency(value)}
+                                />
+                            ) : (
+                                <EmptyState icon={<FiDollarSign size={36} />} title="Sin pagos" description="No hay pagos para graficar." />
+                            )}
+                        </div>
+
+                        <div className="glass-card v-chart-card">
+                            <h3 className="v-chart-title">Distribución de cartera</h3>
+                            {deudasChartData.length > 0 ? (
+                                <ViaxDonutChart data={deudasChartData} valueFormatter={(value) => formatCurrency(value)} />
+                            ) : (
+                                <EmptyState icon={<FiBriefcase size={36} />} title="Sin cartera pendiente" description="No hay deudas activas de empresas." />
+                            )}
+                        </div>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '24px' }}>

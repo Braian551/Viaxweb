@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiUsers, FiActivity, FiDollarSign, FiAlertCircle, FiMonitor, FiTrendingUp, FiClock } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getDashboardStats } from '../services/adminService';
@@ -7,6 +7,7 @@ import PageHeader from '../../shared/components/PageHeader';
 import StatusBadge from '../../shared/components/StatusBadge';
 import EmptyState from '../../shared/components/EmptyState';
 import { ShimmerDashboard } from '../../shared/components/ShimmerLoader';
+import { ViaxBarChart, ViaxDonutChart } from '../../shared/components/ViaxCharts';
 
 const AdminDashboard = () => {
     const { user } = useAuth();
@@ -37,25 +38,19 @@ const AdminDashboard = () => {
     const { usuarios, solicitudes, ingresos, reportes, actividades_recientes } = stats || {};
     const formatCurrency = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
 
-    const kpiBars = useMemo(() => {
-        const items = [
-            { key: 'usuarios', label: 'Usuarios', value: Number(usuarios?.total_usuarios || 0), color: '#2196f3' },
-            { key: 'solicitudes', label: 'Viajes', value: Number(solicitudes?.total_solicitudes || 0), color: '#00bcd4' },
-            { key: 'reportes', label: 'Reportes', value: Number(reportes?.reportes_pendientes || 0), color: '#ff9800' },
-            { key: 'ingresos', label: 'Ingresos Hoy', value: Number(ingresos?.ingresos_hoy || 0), color: '#4caf50', formatter: formatCurrency },
-        ];
-
-        const maxValue = Math.max(...items.map(item => item.value), 1);
-        return items.map(item => ({
-            ...item,
-            percentage: Math.max((item.value / maxValue) * 100, item.value > 0 ? 8 : 0),
-        }));
-    }, [usuarios, solicitudes, reportes, ingresos]);
-
     const activeUsers = Number(usuarios?.usuarios_activos || 0);
     const totalUsers = Number(usuarios?.total_usuarios || 0);
     const inactiveUsers = Math.max(totalUsers - activeUsers, 0);
-    const activePercent = totalUsers > 0 ? Math.round((activeUsers / totalUsers) * 100) : 0;
+    const kpiChartData = [
+        { metric: 'Usuarios', valor: Number(usuarios?.total_usuarios || 0) },
+        { metric: 'Viajes', valor: Number(solicitudes?.total_solicitudes || 0) },
+        { metric: 'Reportes', valor: Number(reportes?.reportes_pendientes || 0) },
+        { metric: 'Ingresos Hoy', valor: Number(ingresos?.ingresos_hoy || 0) },
+    ];
+    const usersDonutData = [
+        { name: 'Activos', value: activeUsers, color: '#4caf50' },
+        { name: 'Inactivos', value: inactiveUsers, color: '#94a3b8' },
+    ];
 
     if (loading) return <ShimmerDashboard />;
 
@@ -99,74 +94,19 @@ const AdminDashboard = () => {
                 />
             </div>
 
-            <div className="v-admin-live-grid">
-                <div className="glass-card v-section">
-                    <div className="v-section__header">
-                        <div className="v-section__icon" style={{ background: 'rgba(0, 188, 212, 0.12)' }}>
-                            <FiTrendingUp size={20} color="#00bcd4" />
-                        </div>
-                        <h2 className="v-section__title">Gráfico en vivo (KPIs)</h2>
-                    </div>
-
-                    <div className="v-kpi-chart">
-                        {kpiBars.map((bar) => (
-                            <div key={bar.key} className="v-kpi-chart__row">
-                                <div className="v-kpi-chart__meta">
-                                    <span className="v-kpi-chart__label">{bar.label}</span>
-                                    <span className="v-kpi-chart__value">{bar.formatter ? bar.formatter(bar.value) : bar.value}</span>
-                                </div>
-                                <div className="v-kpi-chart__track">
-                                    <div className="v-kpi-chart__fill" style={{ width: `${bar.percentage}%`, background: bar.color }} />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+            <div className="v-chart-grid">
+                <div className="glass-card v-chart-card">
+                    <h3 className="v-chart-title">KPIs en vivo</h3>
+                    <ViaxBarChart
+                        data={kpiChartData}
+                        xKey="metric"
+                        bars={[{ dataKey: 'valor', name: 'Valor', color: '#00bcd4' }]}
+                    />
                 </div>
 
-                <div className="glass-card v-section">
-                    <div className="v-section__header">
-                        <div className="v-section__icon" style={{ background: 'rgba(33, 150, 243, 0.12)' }}>
-                            <FiUsers size={20} color="#2196f3" />
-                        </div>
-                        <h2 className="v-section__title">Usuarios activos</h2>
-                    </div>
-
-                    <div className="v-user-ring-wrap">
-                        <div className="v-user-ring">
-                            <svg viewBox="0 0 120 120" className="v-user-ring__svg" role="img" aria-label="Distribución de usuarios activos">
-                                <circle cx="60" cy="60" r="46" className="v-user-ring__bg" />
-                                <circle
-                                    cx="60"
-                                    cy="60"
-                                    r="46"
-                                    className="v-user-ring__fg"
-                                    style={{
-                                        strokeDasharray: `${2 * Math.PI * 46}`,
-                                        strokeDashoffset: `${2 * Math.PI * 46 * (1 - activePercent / 100)}`,
-                                    }}
-                                />
-                            </svg>
-                            <div className="v-user-ring__center">
-                                <strong>{activePercent}%</strong>
-                                <span>activos</span>
-                            </div>
-                        </div>
-
-                        <div className="v-user-ring__legend">
-                            <div className="v-user-ring__legend-item">
-                                <span className="v-dot v-dot--green" />
-                                <span>Activos: {activeUsers}</span>
-                            </div>
-                            <div className="v-user-ring__legend-item">
-                                <span className="v-dot v-dot--gray" />
-                                <span>Inactivos: {inactiveUsers}</span>
-                            </div>
-                            <div className="v-user-ring__legend-item">
-                                <span className="v-dot v-dot--blue" />
-                                <span>Total: {totalUsers}</span>
-                            </div>
-                        </div>
-                    </div>
+                <div className="glass-card v-chart-card">
+                    <h3 className="v-chart-title">Distribución de usuarios</h3>
+                    <ViaxDonutChart data={usersDonutData} valueFormatter={(value) => `${value} usuarios`} />
                 </div>
             </div>
 

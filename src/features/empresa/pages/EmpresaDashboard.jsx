@@ -8,6 +8,7 @@ import StatusBadge from '../../shared/components/StatusBadge';
 import ProfileAvatar from '../../shared/components/ProfileAvatar';
 import EmptyState from '../../shared/components/EmptyState';
 import { ShimmerDashboard } from '../../shared/components/ShimmerLoader';
+import { ViaxBarChart, ViaxDonutChart } from '../../shared/components/ViaxCharts';
 
 const EmpresaDashboard = () => {
     const { user } = useAuth();
@@ -36,6 +37,22 @@ const EmpresaDashboard = () => {
     const empresa = profile?.empresa || profile || {};
     const stats = profile?.estadisticas || {};
     const fmt = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
+    const operationChartData = [
+        { metric: 'Conductores', valor: Number(stats.conductores_vinculados ?? empresa.total_conductores ?? 0) },
+        { metric: 'Viajes', valor: Number(stats.viajes_totales ?? 0) },
+        { metric: 'Ingresos', valor: Number(stats.ingresos_totales ?? 0) },
+    ];
+
+    const solicitudStatusMap = solicitudes.reduce((acc, item) => {
+        const key = (item.estado || 'pendiente').toLowerCase();
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+    }, {});
+
+    const solicitudStatusData = Object.entries(solicitudStatusMap).map(([estado, value]) => ({
+        name: estado.replace(/_/g, ' '),
+        value,
+    }));
 
     return (
         <div className="v-dashboard">
@@ -46,6 +63,26 @@ const EmpresaDashboard = () => {
                 <GlassStatCard icon={<FiTruck />} title="Viajes Totales" value={stats.viajes_totales ?? 0} accentColor="#2196f3" />
                 <GlassStatCard icon={<FiDollarSign />} title="Ingresos Generados" value={fmt(stats.ingresos_totales)} accentColor="#4caf50" />
                 <GlassStatCard icon={<FiBriefcase />} title="Estado" value={empresa.es_activa || empresa.estado === 'activa' ? 'Activa' : 'Inactiva'} accentColor="#ff9800" />
+            </div>
+
+            <div className="v-chart-grid">
+                <div className="glass-card v-chart-card">
+                    <h3 className="v-chart-title">Operación de la empresa</h3>
+                    <ViaxBarChart
+                        data={operationChartData}
+                        xKey="metric"
+                        bars={[{ dataKey: 'valor', name: 'Valor', color: '#9c27b0' }]}
+                    />
+                </div>
+
+                <div className="glass-card v-chart-card">
+                    <h3 className="v-chart-title">Estado de solicitudes</h3>
+                    {solicitudStatusData.length > 0 ? (
+                        <ViaxDonutChart data={solicitudStatusData} valueFormatter={(value) => `${value} solicitud(es)`} />
+                    ) : (
+                        <EmptyState icon={<FiActivity size={36} />} title="Sin solicitudes" description="No hay solicitudes para graficar." />
+                    )}
+                </div>
             </div>
 
             <div className="glass-card v-section">

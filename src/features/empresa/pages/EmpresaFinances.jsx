@@ -6,6 +6,7 @@ import GlassStatCard from '../../shared/components/GlassStatCard';
 import PageHeader from '../../shared/components/PageHeader';
 import EmptyState from '../../shared/components/EmptyState';
 import { ShimmerStatGrid } from '../../shared/components/ShimmerLoader';
+import { ViaxBarChart, ViaxDonutChart } from '../../shared/components/ViaxCharts';
 
 const EmpresaFinances = () => {
     const { user } = useAuth();
@@ -30,6 +31,15 @@ const EmpresaFinances = () => {
 
     const stats = data?.estadisticas || data?.finanzas || {};
     const empresa = data?.empresa || data || {};
+    const financeBars = [
+        { metric: 'Ingresos', valor: Number(stats.ingresos_totales || stats.total_ingresos || 0) },
+        { metric: 'Comisión Pagada', valor: Number(stats.comision_pagada || stats.total_pagado || 0) },
+        { metric: 'Pendiente', valor: Number(stats.saldo_pendiente || stats.deuda || 0) },
+    ];
+    const balanceDonut = [
+        { name: 'Pagado', value: Number(stats.comision_pagada || stats.total_pagado || 0), color: '#2196f3' },
+        { name: 'Pendiente', value: Number(stats.saldo_pendiente || stats.deuda || 0), color: '#f44336' },
+    ].filter(item => item.value > 0);
 
     return (
         <div className="v-dashboard">
@@ -40,6 +50,27 @@ const EmpresaFinances = () => {
                 <GlassStatCard icon={<FiDollarSign />} title="Comisión Pagada" value={fmt(stats.comision_pagada || stats.total_pagado || 0)} accentColor="#2196f3" />
                 <GlassStatCard icon={<FiAlertTriangle />} title="Saldo Pendiente" value={fmt(stats.saldo_pendiente || stats.deuda || 0)} accentColor={(stats.saldo_pendiente > 0 || stats.deuda > 0) ? '#f44336' : '#4caf50'} />
                 <GlassStatCard icon={<FiCreditCard />} title="Comisión %" value={`${empresa.comision_plataforma ?? stats.comision_plataforma ?? '—'}%`} accentColor="#9c27b0" />
+            </div>
+
+            <div className="v-chart-grid">
+                <div className="glass-card v-chart-card">
+                    <h3 className="v-chart-title">Comparativo financiero</h3>
+                    <ViaxBarChart
+                        data={financeBars}
+                        xKey="metric"
+                        bars={[{ dataKey: 'valor', name: 'Monto', color: '#9c27b0' }]}
+                        valueFormatter={(value) => fmt(value)}
+                    />
+                </div>
+
+                <div className="glass-card v-chart-card">
+                    <h3 className="v-chart-title">Balance de comisión</h3>
+                    {balanceDonut.length > 0 ? (
+                        <ViaxDonutChart data={balanceDonut} valueFormatter={(value) => fmt(value)} />
+                    ) : (
+                        <EmptyState icon={<FiInfo size={36} />} title="Sin balance" description="Aún no hay datos de pago y deuda para graficar." />
+                    )}
+                </div>
             </div>
 
             <div className="glass-card v-section" style={{ textAlign: 'center', padding: '40px 24px' }}>

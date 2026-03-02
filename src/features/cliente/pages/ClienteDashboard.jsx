@@ -8,6 +8,7 @@ import StatusBadge from '../../shared/components/StatusBadge';
 import ProfileAvatar from '../../shared/components/ProfileAvatar';
 import EmptyState from '../../shared/components/EmptyState';
 import { ShimmerDashboard } from '../../shared/components/ShimmerLoader';
+import { ViaxAreaChart, ViaxDonutChart } from '../../shared/components/ViaxCharts';
 
 const ClienteDashboard = () => {
     const { user } = useAuth();
@@ -34,6 +35,21 @@ const ClienteDashboard = () => {
     }, [user]);
 
     const fmt = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
+    const tripCostTrend = trips.slice(0, 6).map((trip, index) => ({
+        nombre: `V${index + 1}`,
+        monto: Number(trip.precio_final || trip.precio_estimado || 0),
+    }));
+
+    const tripStatusMap = trips.reduce((acc, trip) => {
+        const key = (trip.estado || 'pendiente').toLowerCase();
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+    }, {});
+
+    const tripStatusData = Object.entries(tripStatusMap).map(([estado, value]) => ({
+        name: estado.replace(/_/g, ' '),
+        value,
+    }));
 
     if (loading) return <ShimmerDashboard />;
 
@@ -60,6 +76,31 @@ const ClienteDashboard = () => {
                     icon={<FiStar size={22} color="#ff9800" />}
                     accentColor="#ff9800"
                 />
+            </div>
+
+            <div className="v-chart-grid">
+                <div className="glass-card v-chart-card">
+                    <h3 className="v-chart-title">Costo de tus últimos viajes</h3>
+                    {tripCostTrend.length > 0 ? (
+                        <ViaxAreaChart
+                            data={tripCostTrend}
+                            xKey="nombre"
+                            areas={[{ dataKey: 'monto', name: 'Monto', color: '#2196f3' }]}
+                            valueFormatter={(value) => fmt(value)}
+                        />
+                    ) : (
+                        <EmptyState icon={<FiTruck size={36} />} title="Sin datos" description="Cuando tengas viajes, verás aquí la tendencia." />
+                    )}
+                </div>
+
+                <div className="glass-card v-chart-card">
+                    <h3 className="v-chart-title">Estado de viajes recientes</h3>
+                    {tripStatusData.length > 0 ? (
+                        <ViaxDonutChart data={tripStatusData} valueFormatter={(value) => `${value} viaje(s)`} />
+                    ) : (
+                        <EmptyState icon={<FiMapPin size={36} />} title="Sin estado" description="Aún no hay viajes para clasificar." />
+                    )}
+                </div>
             </div>
 
             {/* Recent Trips */}

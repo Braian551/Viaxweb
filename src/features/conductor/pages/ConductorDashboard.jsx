@@ -6,6 +6,7 @@ import GlassStatCard from '../../shared/components/GlassStatCard';
 import PageHeader from '../../shared/components/PageHeader';
 import EmptyState from '../../shared/components/EmptyState';
 import { ShimmerDashboard } from '../../shared/components/ShimmerLoader';
+import { ViaxAreaChart, ViaxDonutChart } from '../../shared/components/ViaxCharts';
 
 const ConductorDashboard = () => {
     const { user } = useAuth();
@@ -29,6 +30,18 @@ const ConductorDashboard = () => {
     }, [user]);
 
     const fmt = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
+    const earningsTrend = recentTrips.slice(0, 6).map((trip, index) => ({
+        viaje: `V${index + 1}`,
+        ingreso: Number(trip.precio_final || trip.precio_estimado || 0),
+    }));
+
+    const tripsToday = Number(stats?.viajes_hoy || 0);
+    const tripsTotal = Number(stats?.viajes_totales || 0);
+    const tripsHistoric = Math.max(tripsTotal - tripsToday, 0);
+    const tripDistributionData = [
+        { name: 'Hoy', value: tripsToday, color: '#2196f3' },
+        { name: 'Histórico', value: tripsHistoric, color: '#9c27b0' },
+    ].filter(item => item.value > 0);
 
     if (loading) return <ShimmerDashboard />;
 
@@ -42,6 +55,31 @@ const ConductorDashboard = () => {
                 <GlassStatCard title="Ganancias Hoy" value={fmt(stats?.ganancias_hoy)} icon={<FiDollarSign size={22} color="#4caf50" />} accentColor="#4caf50" />
                 <GlassStatCard title="Horas Hoy" value={`${stats?.horas_hoy ?? 0}h`} icon={<FiClock size={22} color="#ff9800" />} accentColor="#ff9800" />
                 <GlassStatCard title="Calificación" value={stats?.calificacion_promedio ?? '—'} subtitle={`${stats?.total_calificaciones ?? 0} reseñas`} icon={<FiStar size={22} color="#9c27b0" />} accentColor="#9c27b0" />
+            </div>
+
+            <div className="v-chart-grid">
+                <div className="glass-card v-chart-card">
+                    <h3 className="v-chart-title">Tendencia de ingresos recientes</h3>
+                    {earningsTrend.length > 0 ? (
+                        <ViaxAreaChart
+                            data={earningsTrend}
+                            xKey="viaje"
+                            areas={[{ dataKey: 'ingreso', name: 'Ingreso', color: '#4caf50' }]}
+                            valueFormatter={(value) => fmt(value)}
+                        />
+                    ) : (
+                        <EmptyState icon={<FiDollarSign size={36} />} title="Sin ingresos recientes" description="Completa viajes para ver tu tendencia." />
+                    )}
+                </div>
+
+                <div className="glass-card v-chart-card">
+                    <h3 className="v-chart-title">Distribución de viajes</h3>
+                    {tripDistributionData.length > 0 ? (
+                        <ViaxDonutChart data={tripDistributionData} valueFormatter={(value) => `${value} viaje(s)`} />
+                    ) : (
+                        <EmptyState icon={<FiTruck size={36} />} title="Sin viajes" description="Aún no hay viajes para graficar." />
+                    )}
+                </div>
             </div>
 
             {/* Lifetime Stats */}

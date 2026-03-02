@@ -6,6 +6,7 @@ import GlassStatCard from '../../shared/components/GlassStatCard';
 import PageHeader from '../../shared/components/PageHeader';
 import EmptyState from '../../shared/components/EmptyState';
 import { ShimmerStatGrid, ShimmerTable } from '../../shared/components/ShimmerLoader';
+import { ViaxAreaChart, ViaxDonutChart } from '../../shared/components/ViaxCharts';
 
 const PERIODS = ['semana', 'mes', 'anio'];
 
@@ -39,6 +40,15 @@ const ConductorEarnings = () => {
     const fmt = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
 
     const desglose = data?.desglose_diario || [];
+    const earningsTrendData = desglose.map((d) => ({
+        fecha: d.fecha ? new Date(d.fecha).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }) : '—',
+        ganancias: Number(d.ganancias || 0),
+        comision: Number(d.comision || 0),
+    }));
+    const portfolioData = [
+        { name: 'Cobrado', value: Number(data?.total_cobrado || 0), color: '#2196f3' },
+        { name: 'Pendiente', value: Number(data?.deuda_comision || 0), color: '#f44336' },
+    ].filter(item => item.value > 0);
 
     return (
         <div className="v-dashboard">
@@ -80,6 +90,34 @@ const ConductorEarnings = () => {
                             icon={<FiAlertTriangle size={22} color="#f44336" />}
                             accentColor={(data?.deuda_comision || 0) > 0 ? '#f44336' : '#9e9e9e'}
                         />
+                    </div>
+
+                    <div className="v-chart-grid">
+                        <div className="glass-card v-chart-card">
+                            <h3 className="v-chart-title">Ganancia vs comisión por día</h3>
+                            {earningsTrendData.length > 0 ? (
+                                <ViaxAreaChart
+                                    data={earningsTrendData}
+                                    xKey="fecha"
+                                    areas={[
+                                        { dataKey: 'ganancias', name: 'Ganancia', color: '#4caf50' },
+                                        { dataKey: 'comision', name: 'Comisión', color: '#ff9800' },
+                                    ]}
+                                    valueFormatter={(value) => fmt(value)}
+                                />
+                            ) : (
+                                <EmptyState icon={<FiCalendar size={36} />} title="Sin tendencia" description="No hay datos para graficar en este período." />
+                            )}
+                        </div>
+
+                        <div className="glass-card v-chart-card">
+                            <h3 className="v-chart-title">Cobrado vs pendiente</h3>
+                            {portfolioData.length > 0 ? (
+                                <ViaxDonutChart data={portfolioData} valueFormatter={(value) => fmt(value)} />
+                            ) : (
+                                <EmptyState icon={<FiAlertTriangle size={36} />} title="Sin cartera" description="No hay valores para distribuir." />
+                            )}
+                        </div>
                     </div>
 
                     {/* Daily Breakdown */}
