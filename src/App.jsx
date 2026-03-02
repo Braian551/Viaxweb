@@ -13,6 +13,46 @@ import LoginPage from './features/auth/pages/LoginPage';
 import RegisterPage from './features/auth/pages/RegisterPage';
 import ForgotPasswordPage from './features/auth/pages/ForgotPasswordPage';
 import CompanyRegisterPage from './features/auth/pages/CompanyRegisterPage';
+import RoleRoute from './components/routing/RoleRoute';
+import { useAuth } from './features/auth/context/AuthContext';
+import AdminLayout from './features/admin/layout/AdminLayout';
+import AdminDashboard from './features/admin/pages/AdminDashboard';
+import AdminUsers from './features/admin/pages/AdminUsers';
+import AdminCompanies from './features/admin/pages/AdminCompanies';
+import AdminFinances from './features/admin/pages/AdminFinances';
+import AdminAudit from './features/admin/pages/AdminAudit';
+import AdminConductors from './features/admin/pages/AdminConductors';
+
+// Stub components for now to prevent errors
+
+// Component to handle root redirection based on role
+const RootRedirect = ({ isDark, onToggleTheme }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (user) {
+    switch (user.tipo_usuario) {
+      case 'admin':
+      case 'administrador': return <Navigate to="/admin" replace />;
+      case 'cliente': return <Navigate to="/cliente" replace />;
+      case 'conductor': return <Navigate to="/conductor" replace />;
+      case 'empresa': return <Navigate to="/empresa" replace />;
+      default: return <Navigate to="/login" replace />;
+    }
+  }
+
+  // Si no hay usuario, mostrar el home page público
+  return (
+    <>
+      <Header isDark={isDark} onToggleTheme={onToggleTheme} />
+      <main>
+        <HomePage />
+      </main>
+      <Footer />
+    </>
+  );
+};
 
 export default function App() {
   const [isDark, setIsDark] = useState(() => {
@@ -31,7 +71,7 @@ export default function App() {
         {/* ── Share location — standalone, no header/footer ── */}
         <Route path="/share/:token" element={<LocationSharePage />} />
 
-        {/* ── Auth routes — standalone, but can include header if desired ── */}
+        {/* ── Auth routes — standalone ── */}
         <Route path="/login" element={
           <>
             <Header isDark={isDark} onToggleTheme={() => setIsDark((prev) => !prev)} />
@@ -57,7 +97,33 @@ export default function App() {
           </>
         } />
 
-        {/* ── Main site ────────────────────────────────────── */}
+        {/* ── Protected Dashboards ────────────────────────────── */}
+        <Route element={<RoleRoute allowedRoles={['admin']} />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="conductors" element={<AdminConductors />} />
+            <Route path="companies" element={<AdminCompanies />} />
+            <Route path="finances" element={<AdminFinances />} />
+            <Route path="audit" element={<AdminAudit />} />
+          </Route>
+        </Route>
+
+        <Route element={<RoleRoute allowedRoles={['cliente']} />}>
+          <Route path="/cliente/*" element={<ClienteDashboardStub />} />
+        </Route>
+
+        <Route element={<RoleRoute allowedRoles={['conductor']} />}>
+          <Route path="/conductor/*" element={<ConductorDashboardStub />} />
+        </Route>
+
+        <Route element={<RoleRoute allowedRoles={['empresa']} />}>
+          <Route path="/empresa/*" element={<EmpresaDashboardStub />} />
+        </Route>
+
+        {/* ── Main public site ────────────────────────────────────── */}
+        <Route path="/" element={<RootRedirect isDark={isDark} onToggleTheme={() => setIsDark((prev) => !prev)} />} />
+
         <Route
           path="*"
           element={
@@ -65,7 +131,6 @@ export default function App() {
               <Header isDark={isDark} onToggleTheme={() => setIsDark((prev) => !prev)} />
               <main>
                 <Routes>
-                  <Route path="/" element={<HomePage />} />
                   <Route path="/clientes" element={<ClientesPage />} />
                   <Route path="/conductores" element={<ConductoresPage />} />
                   <Route path="/empresas" element={<EmpresasPage />} />

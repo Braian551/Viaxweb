@@ -26,7 +26,13 @@ const LoginPage = () => {
         const res = await login(email, password);
 
         if (res.success) {
-            navigate('/'); // Redirect to home on success
+            // Determine role to route
+            const role = res.data?.user?.tipo_usuario || res.data?.admin?.tipo_usuario;
+            if (role === 'admin' || role === 'administrador') navigate('/admin');
+            else if (role === 'cliente') navigate('/cliente');
+            else if (role === 'conductor') navigate('/conductor');
+            else if (role === 'empresa') navigate('/empresa');
+            else navigate('/');
         } else {
             setError(res.message || 'Error al iniciar sesión.');
         }
