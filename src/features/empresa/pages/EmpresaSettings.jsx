@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { FiSave, FiSettings, FiPercent, FiDollarSign, FiRefreshCw } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getEmpresaSettings, updateEmpresaSettings } from '../services/empresaService';
-import '../../shared/DashboardLayout.css';
+import PageHeader from '../../shared/components/PageHeader';
+import { ShimmerDashboard } from '../../shared/components/ShimmerLoader';
 
 const EmpresaSettings = () => {
     const { user } = useAuth();
@@ -37,66 +38,52 @@ const EmpresaSettings = () => {
         setTimeout(() => setMessage(''), 4000);
     };
 
-    if (loading) return <div style={{ padding: '60px', textAlign: 'center', color: 'var(--primary)', fontWeight: '600' }}>Cargando configuración...</div>;
+    if (loading) return <div className="v-dashboard" style={{ maxWidth: 700 }}><PageHeader title="Configuración" subtitle="Cargando..." /><ShimmerDashboard /></div>;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '700px' }}>
-            <div>
-                <h1 style={{ fontSize: '2rem', fontWeight: '800', margin: '0 0 8px 0', color: 'var(--text)' }}>Configuración</h1>
-                <p style={{ margin: 0, color: 'var(--text-secondary)' }}>Ajustes de precios y comisiones de tu empresa</p>
-            </div>
+        <div className="v-dashboard" style={{ maxWidth: 700 }}>
+            <PageHeader title="Configuración" subtitle="Ajustes de precios y comisiones de tu empresa" />
 
             {message && (
-                <div style={{ padding: '12px 16px', borderRadius: '12px', background: message.includes('Error') ? 'rgba(244,67,54,0.1)' : 'rgba(76,175,80,0.1)', color: message.includes('Error') ? '#f44336' : '#4caf50', fontWeight: '600', fontSize: '0.9rem' }}>{message}</div>
+                <div className={message.includes('Error') ? 'v-error-box' : 'v-success-box'}>{message}</div>
             )}
 
-            <div className="glass-card" style={{ padding: '28px', borderRadius: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '700', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '8px' }}><FiSettings color="var(--primary)" /> Configuración de Precios</h3>
+            <div className="glass-card v-section">
+                <div className="v-section__header">
+                    <FiSettings className="v-section__icon" />
+                    <h3 className="v-section__title">Configuración de Precios</h3>
+                </div>
 
-                <SettingField icon={<FiDollarSign />} label="Tarifa Base (COP)" value={settings?.tarifa_base ?? ''} onChange={v => handleChange('tarifa_base', v)} type="number" />
-                <SettingField icon={<FiDollarSign />} label="Precio por KM (COP)" value={settings?.precio_km ?? ''} onChange={v => handleChange('precio_km', v)} type="number" />
-                <SettingField icon={<FiDollarSign />} label="Precio por Minuto (COP)" value={settings?.precio_minuto ?? ''} onChange={v => handleChange('precio_minuto', v)} type="number" />
-                <SettingField icon={<FiPercent />} label="Comisión Plataforma (%)" value={settings?.comision_plataforma ?? ''} onChange={v => handleChange('comision_plataforma', v)} type="number" disabled={true} hint="Este valor es definido por VIAX" />
-                <SettingField icon={<FiDollarSign />} label="Tarifa Mínima (COP)" value={settings?.tarifa_minima ?? ''} onChange={v => handleChange('tarifa_minima', v)} type="number" />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 18, marginTop: 8 }}>
+                    <div>
+                        <label className="v-form-label"><FiDollarSign style={{ marginRight: 6 }} /> Tarifa Base (COP)</label>
+                        <input className="v-form-input" type="number" value={settings?.tarifa_base ?? ''} onChange={e => handleChange('tarifa_base', e.target.value)} />
+                    </div>
+                    <div>
+                        <label className="v-form-label"><FiDollarSign style={{ marginRight: 6 }} /> Precio por KM (COP)</label>
+                        <input className="v-form-input" type="number" value={settings?.precio_km ?? ''} onChange={e => handleChange('precio_km', e.target.value)} />
+                    </div>
+                    <div>
+                        <label className="v-form-label"><FiDollarSign style={{ marginRight: 6 }} /> Precio por Minuto (COP)</label>
+                        <input className="v-form-input" type="number" value={settings?.precio_minuto ?? ''} onChange={e => handleChange('precio_minuto', e.target.value)} />
+                    </div>
+                    <div>
+                        <label className="v-form-label"><FiPercent style={{ marginRight: 6 }} /> Comisión Plataforma (%)</label>
+                        <input className="v-form-input" type="number" value={settings?.comision_plataforma ?? ''} disabled style={{ opacity: 0.6 }} />
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic', marginTop: 4, display: 'block' }}>Este valor es definido por VIAX</span>
+                    </div>
+                    <div>
+                        <label className="v-form-label"><FiDollarSign style={{ marginRight: 6 }} /> Tarifa Mínima (COP)</label>
+                        <input className="v-form-input" type="number" value={settings?.tarifa_minima ?? ''} onChange={e => handleChange('tarifa_minima', e.target.value)} />
+                    </div>
 
-                <button onClick={handleSave} disabled={saving} style={{
-                    marginTop: '8px', padding: '14px 24px', borderRadius: '14px', border: 'none',
-                    background: 'var(--primary)', color: 'white', fontWeight: '700', fontSize: '1rem',
-                    cursor: saving ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                    transition: 'opacity 0.2s', opacity: saving ? 0.7 : 1
-                }}>
-                    {saving ? <><FiRefreshCw className="spin" /> Guardando...</> : <><FiSave /> Guardar Cambios</>}
-                </button>
+                    <button className="v-btn v-btn--primary" onClick={handleSave} disabled={saving} style={{ marginTop: 8, justifyContent: 'center' }}>
+                        {saving ? <><FiRefreshCw className="v-spin" /> Guardando...</> : <><FiSave /> Guardar Cambios</>}
+                    </button>
+                </div>
             </div>
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-                .spin { animation: spin 1s linear infinite; }
-            `}} />
         </div>
     );
 };
-
-const SettingField = ({ icon, label, value, onChange, type = 'text', disabled = false, hint }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <label style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>{icon} {label}</label>
-        <input
-            type={type}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            disabled={disabled}
-            style={{
-                padding: '12px 16px', borderRadius: '12px',
-                border: '1px solid var(--border, rgba(0,0,0,0.1))',
-                background: disabled ? 'var(--bg, #f0f4f8)' : 'transparent',
-                color: 'var(--text)', fontSize: '1rem', fontWeight: '600',
-                outline: 'none', transition: 'border-color 0.2s',
-                opacity: disabled ? 0.6 : 1
-            }}
-        />
-        {hint && <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>{hint}</span>}
-    </div>
-);
 
 export default EmpresaSettings;

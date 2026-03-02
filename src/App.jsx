@@ -21,7 +21,6 @@ import AdminUsers from './features/admin/pages/AdminUsers';
 import AdminCompanies from './features/admin/pages/AdminCompanies';
 import AdminFinances from './features/admin/pages/AdminFinances';
 import AdminAudit from './features/admin/pages/AdminAudit';
-import AdminConductors from './features/admin/pages/AdminConductors';
 
 // Cliente Dashboard
 import ClienteLayout from './features/cliente/layout/ClienteLayout';
@@ -118,7 +117,6 @@ export default function App() {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsers />} />
-            <Route path="conductors" element={<AdminConductors />} />
             <Route path="companies" element={<AdminCompanies />} />
             <Route path="finances" element={<AdminFinances />} />
             <Route path="audit" element={<AdminAudit />} />

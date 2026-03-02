@@ -2,13 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { FiDollarSign, FiTrendingUp, FiAlertTriangle, FiCalendar } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getGanancias } from '../services/conductorService';
-import '../../shared/DashboardLayout.css';
+import GlassStatCard from '../../shared/components/GlassStatCard';
+import PageHeader from '../../shared/components/PageHeader';
+import EmptyState from '../../shared/components/EmptyState';
+import { ShimmerStatGrid, ShimmerTable } from '../../shared/components/ShimmerLoader';
+
+const PERIODS = ['semana', 'mes', 'anio'];
 
 const ConductorEarnings = () => {
     const { user } = useAuth();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [periodo, setPeriodo] = useState('semana'); // semana, mes, anio
+    const [periodo, setPeriodo] = useState('semana');
 
     const getPeriodDates = (p) => {
         const now = new Date();
@@ -33,85 +38,88 @@ const ConductorEarnings = () => {
 
     const fmt = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
 
-    if (loading) return <div style={{ padding: '60px', textAlign: 'center', color: 'var(--primary)', fontWeight: '600' }}>Cargando ganancias...</div>;
-
     const desglose = data?.desglose_diario || [];
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div className="v-dashboard">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
-                <div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: '800', margin: '0 0 8px 0', color: 'var(--text)' }}>Mis Ganancias</h1>
-                    <p style={{ margin: 0, color: 'var(--text-secondary)' }}>Desglose de ingresos y comisiones</p>
-                </div>
-                <div style={{ background: 'var(--bg)', padding: '4px', borderRadius: '12px', display: 'flex', gap: '4px', border: '1px solid var(--border)' }}>
-                    {['semana', 'mes', 'anio'].map(p => (
-                        <button key={p} onClick={() => setPeriodo(p)} style={{
-                            padding: '8px 16px', borderRadius: '8px', border: 'none',
-                            background: periodo === p ? 'var(--primary)' : 'transparent',
-                            color: periodo === p ? '#fff' : 'var(--text-secondary)',
-                            fontWeight: '600', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s', textTransform: 'capitalize'
-                        }}>{p === 'anio' ? 'Año' : p.charAt(0).toUpperCase() + p.slice(1)}</button>
+                <PageHeader title="Mis Ganancias" subtitle="Desglose de ingresos y comisiones" />
+                <div className="v-period-selector">
+                    {PERIODS.map(p => (
+                        <button key={p} className={`v-period-selector__btn ${periodo === p ? 'active' : ''}`} onClick={() => setPeriodo(p)}>
+                            {p === 'anio' ? 'Año' : p.charAt(0).toUpperCase() + p.slice(1)}
+                        </button>
                     ))}
                 </div>
             </div>
 
-            {/* Summary Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                <div className="glass-card" style={{ padding: '24px', borderRadius: '20px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                        <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(76,175,80,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FiTrendingUp size={22} color="#4caf50" /></div>
-                        <span style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-secondary)' }}>Ganancias Netas</span>
+            {loading ? (
+                <>
+                    <ShimmerStatGrid count={3} />
+                    <div className="glass-card v-section"><ShimmerTable rows={5} cols={4} /></div>
+                </>
+            ) : (
+                <>
+                    <div className="v-stat-grid">
+                        <GlassStatCard
+                            title="Ganancias Netas"
+                            value={fmt(data?.total)}
+                            icon={<FiTrendingUp size={22} color="#4caf50" />}
+                            accentColor="#4caf50"
+                        />
+                        <GlassStatCard
+                            title="Total Cobrado"
+                            value={fmt(data?.total_cobrado)}
+                            icon={<FiDollarSign size={22} color="#2196f3" />}
+                            accentColor="#2196f3"
+                        />
+                        <GlassStatCard
+                            title="Deuda Comisión"
+                            value={fmt(data?.deuda_comision)}
+                            subtitle={`Comisión: ${data?.comision_porcentaje_promedio ?? 10}%`}
+                            icon={<FiAlertTriangle size={22} color="#f44336" />}
+                            accentColor={(data?.deuda_comision || 0) > 0 ? '#f44336' : '#9e9e9e'}
+                        />
                     </div>
-                    <div style={{ fontSize: '2rem', fontWeight: '800', color: '#4caf50' }}>{fmt(data?.total)}</div>
-                </div>
-                <div className="glass-card" style={{ padding: '24px', borderRadius: '20px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                        <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(33,150,243,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FiDollarSign size={22} color="#2196f3" /></div>
-                        <span style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-secondary)' }}>Total Cobrado</span>
-                    </div>
-                    <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text)' }}>{fmt(data?.total_cobrado)}</div>
-                </div>
-                <div className="glass-card" style={{ padding: '24px', borderRadius: '20px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                        <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(244,67,54,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FiAlertTriangle size={22} color="#f44336" /></div>
-                        <span style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-secondary)' }}>Deuda Comisión</span>
-                    </div>
-                    <div style={{ fontSize: '2rem', fontWeight: '800', color: (data?.deuda_comision || 0) > 0 ? '#f44336' : 'var(--text)' }}>{fmt(data?.deuda_comision)}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>Comisión: {data?.comision_porcentaje_promedio ?? 10}%</div>
-                </div>
-            </div>
 
-            {/* Daily Breakdown */}
-            <div className="glass-card" style={{ padding: '24px', borderRadius: '20px' }}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '700', margin: '0 0 16px 0', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '8px' }}><FiCalendar color="var(--primary)" /> Desglose Diario</h2>
-                {desglose.length > 0 ? (
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                            <thead>
-                                <tr style={{ borderBottom: '2px solid var(--border, rgba(0,0,0,0.08))' }}>
-                                    <th style={{ textAlign: 'left', padding: '10px 8px', color: 'var(--text-secondary)', fontWeight: '600' }}>Fecha</th>
-                                    <th style={{ textAlign: 'right', padding: '10px 8px', color: 'var(--text-secondary)', fontWeight: '600' }}>Viajes</th>
-                                    <th style={{ textAlign: 'right', padding: '10px 8px', color: 'var(--text-secondary)', fontWeight: '600' }}>Ganancia</th>
-                                    <th style={{ textAlign: 'right', padding: '10px 8px', color: 'var(--text-secondary)', fontWeight: '600' }}>Comisión</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {desglose.map((d, i) => (
-                                    <tr key={i} style={{ borderBottom: '1px solid var(--border, rgba(0,0,0,0.04))' }}>
-                                        <td style={{ padding: '10px 8px', fontWeight: '600', color: 'var(--text)' }}>{new Date(d.fecha).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })}</td>
-                                        <td style={{ padding: '10px 8px', textAlign: 'right', color: 'var(--text)' }}>{d.viajes}</td>
-                                        <td style={{ padding: '10px 8px', textAlign: 'right', color: '#4caf50', fontWeight: '700' }}>{fmt(d.ganancias)}</td>
-                                        <td style={{ padding: '10px 8px', textAlign: 'right', color: '#ff9800', fontWeight: '600' }}>{fmt(d.comision)}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    {/* Daily Breakdown */}
+                    <div className="glass-card v-section">
+                        <div className="v-section__header">
+                            <div className="v-section__icon" style={{ background: 'rgba(33, 150, 243, 0.1)' }}>
+                                <FiCalendar size={20} color="#2196f3" />
+                            </div>
+                            <h2 className="v-section__title">Desglose Diario</h2>
+                        </div>
+
+                        {desglose.length > 0 ? (
+                            <div style={{ overflowX: 'auto' }}>
+                                <table className="v-data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th style={{ textAlign: 'right' }}>Viajes</th>
+                                            <th style={{ textAlign: 'right' }}>Ganancia</th>
+                                            <th style={{ textAlign: 'right' }}>Comisión</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {desglose.map((d, i) => (
+                                            <tr key={i}>
+                                                <td style={{ fontWeight: 600 }}>{new Date(d.fecha).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })}</td>
+                                                <td style={{ textAlign: 'right' }}>{d.viajes}</td>
+                                                <td style={{ textAlign: 'right', color: '#4caf50', fontWeight: 700 }}>{fmt(d.ganancias)}</td>
+                                                <td style={{ textAlign: 'right', color: '#ff9800', fontWeight: 600 }}>{fmt(d.comision)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <EmptyState icon={<FiCalendar size={48} />} title="Sin datos" description="No hay datos para este período." />
+                        )}
                     </div>
-                ) : (
-                    <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>No hay datos para este período.</div>
-                )}
-            </div>
+                </>
+            )}
         </div>
     );
 };

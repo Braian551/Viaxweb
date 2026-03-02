@@ -4,6 +4,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
 import './styles.css';
+import './features/shared/components/DesignSystem.css';
+import './features/shared/components/ShimmerLoader.css';
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>

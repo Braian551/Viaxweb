@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { FiHome, FiUsers, FiDollarSign, FiSettings, FiLogOut, FiMenu, FiX, FiMoon, FiSun } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
+import ProfileAvatar from '../../shared/components/ProfileAvatar';
 import '../../shared/DashboardLayout.css';
 
 const EmpresaLayout = () => {
@@ -65,7 +66,7 @@ const EmpresaLayout = () => {
                     </div>
                     <div className="dash-header-right">
                         <button className="dash-header-btn" onClick={toggleTheme}>{isDark ? <FiSun /> : <FiMoon />}</button>
-                        <div className="dash-avatar" style={{ background: '#9c27b0' }}>{user?.nombre?.charAt(0)?.toUpperCase() || 'E'}</div>
+                        <ProfileAvatar src={user?.foto_perfil} name={user?.nombre || 'Empresa'} size={44} borderRadius={14} bgColor="#9c27b0" />
                     </div>
                 </header>
                 <main className="dash-content"><Outlet /></main>

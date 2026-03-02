@@ -1,6 +1,7 @@
 import React from 'react';
 import { FiMenu, FiBell, FiMoon, FiSun } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
+import ProfileAvatar from '../../shared/components/ProfileAvatar';
 import './AdminLayout.css';
 
 const AdminHeader = ({ toggleSidebar }) => {
@@ -12,7 +13,6 @@ const AdminHeader = ({ toggleSidebar }) => {
         const newTheme = isDark ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('viax-theme', newTheme);
-        // Force re-render simple hack or let react contexts handle it if needed
         window.dispatchEvent(new Event('storage'));
     };
 
@@ -37,9 +37,13 @@ const AdminHeader = ({ toggleSidebar }) => {
                     <span className="notification-dot"></span>
                 </button>
 
-                <div className="user-profile-pic">
-                    {user?.nombre ? user.nombre.charAt(0).toUpperCase() : 'A'}
-                </div>
+                <ProfileAvatar
+                    src={user?.foto_perfil}
+                    name={user?.nombre || 'Admin'}
+                    size={44}
+                    borderRadius={14}
+                    bgColor="#2196f3"
+                />
             </div>
         </header>
     );

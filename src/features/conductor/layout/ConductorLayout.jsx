@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { FiHome, FiDollarSign, FiUser, FiLogOut, FiMenu, FiX, FiMoon, FiSun } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
+import ProfileAvatar from '../../shared/components/ProfileAvatar';
 import '../../shared/DashboardLayout.css';
 
 const ConductorLayout = () => {
@@ -64,7 +65,7 @@ const ConductorLayout = () => {
                     </div>
                     <div className="dash-header-right">
                         <button className="dash-header-btn" onClick={toggleTheme}>{isDark ? <FiSun /> : <FiMoon />}</button>
-                        <div className="dash-avatar">{user?.nombre?.charAt(0)?.toUpperCase() || 'D'}</div>
+                        <ProfileAvatar src={user?.foto_perfil} name={user?.nombre || 'Conductor'} size={44} borderRadius={14} bgColor="#ff9800" />
                     </div>
                 </header>
                 <main className="dash-content"><Outlet /></main>

@@ -1,23 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { FiUsers, FiActivity, FiDollarSign, FiAlertCircle, FiMonitor } from 'react-icons/fi';
+import { FiUsers, FiActivity, FiDollarSign, FiAlertCircle, FiMonitor, FiTrendingUp } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getDashboardStats } from '../services/adminService';
-import '../layout/AdminLayout.css'; // Reusing glass styles
-
-const StatCard = ({ title, value, subtitle, icon, colorClass }) => (
-    <div className={`glass-card stat-card ${colorClass}`} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', borderRadius: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: 'var(--text)' }}>{title}</h3>
-            <div className="stat-icon-wrapper" style={{ padding: '10px', borderRadius: '12px', display: 'flex' }}>
-                {icon}
-            </div>
-        </div>
-        <div>
-            <div style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--text)', lineHeight: '1' }}>{value}</div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '8px', fontWeight: '500' }}>{subtitle}</div>
-        </div>
-    </div>
-);
+import GlassStatCard from '../../shared/components/GlassStatCard';
+import PageHeader from '../../shared/components/PageHeader';
+import StatusBadge from '../../shared/components/StatusBadge';
+import EmptyState from '../../shared/components/EmptyState';
+import { ShimmerDashboard } from '../../shared/components/ShimmerLoader';
 
 const AdminDashboard = () => {
     const { user } = useAuth();
@@ -45,108 +34,84 @@ const AdminDashboard = () => {
         fetchStats();
     }, [user]);
 
-    if (loading) {
-        return <div style={{ display: 'flex', justifyContent: 'center', padding: '40px', color: 'var(--primary)' }}>Cargando dashboard in vivo...</div>;
-    }
+    if (loading) return <ShimmerDashboard />;
 
-    if (error) {
-        return <div style={{ color: '#f44336', padding: '20px', background: 'rgba(244, 67, 54, 0.1)', borderRadius: '12px', border: '1px solid rgba(244,67,54,0.2)' }}>{error}</div>;
-    }
+    if (error) return <div className="v-error-box">{error}</div>;
 
     const { usuarios, solicitudes, ingresos, reportes, actividades_recientes } = stats || {};
-
-    // Formatter
     const formatCurrency = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
 
     return (
-        <div className="admin-dashboard-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        <div className="v-dashboard">
+            <PageHeader
+                title="Dashboard en vivo"
+                subtitle="Resumen general de la plataforma Viax"
+            />
 
-            {/* Header Greeting inside content */}
-            <div>
-                <h1 style={{ fontSize: '2rem', fontWeight: '800', margin: '0 0 8px 0', color: 'var(--text)' }}>Dashboard en vivo</h1>
-                <p style={{ margin: 0, color: 'var(--text-secondary)' }}>Resumen general de la plataforma Viax</p>
-            </div>
-
-            {/* Stats Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
-                <StatCard
+            <div className="v-stat-grid">
+                <GlassStatCard
                     title="Usuarios Totales"
                     value={usuarios?.total_usuarios || 0}
                     subtitle={`Activos: ${usuarios?.usuarios_activos || 0}`}
-                    icon={<FiUsers size={24} color="#2196f3" />}
-                    colorClass="stat-blue"
+                    icon={<FiUsers size={22} color="#2196f3" />}
+                    accentColor="#2196f3"
                 />
-                <StatCard
+                <GlassStatCard
                     title="Solicitudes (Viajes)"
                     value={solicitudes?.total_solicitudes || 0}
                     subtitle={`Hoy: ${solicitudes?.solicitudes_hoy || 0}`}
-                    icon={<FiActivity size={24} color="#00bcd4" />}
-                    colorClass="stat-cyan"
+                    icon={<FiTrendingUp size={22} color="#00bcd4" />}
+                    accentColor="#00bcd4"
                 />
-                <StatCard
+                <GlassStatCard
                     title="Ingresos Totales"
                     value={formatCurrency(ingresos?.ingresos_totales)}
                     subtitle={`Hoy: ${formatCurrency(ingresos?.ingresos_hoy)}`}
-                    icon={<FiDollarSign size={24} color="#4caf50" />}
-                    colorClass="stat-green"
+                    icon={<FiDollarSign size={22} color="#4caf50" />}
+                    accentColor="#4caf50"
                 />
-                <StatCard
+                <GlassStatCard
                     title="Reportes"
                     value={reportes?.reportes_pendientes || 0}
                     subtitle="Pendientes de revisión"
-                    icon={<FiAlertCircle size={24} color="#ff9800" />}
-                    colorClass="stat-orange"
+                    icon={<FiAlertCircle size={22} color="#ff9800" />}
+                    accentColor="#ff9800"
                 />
             </div>
 
-            {/* Recent Activity Table using Glass Card */}
-            <div className="glass-card" style={{ padding: '24px', borderRadius: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                    <div style={{ background: 'rgba(33, 150, 243, 0.1)', padding: '12px', borderRadius: '12px' }}>
-                        <FiMonitor size={24} color="#2196f3" />
+            {/* Recent Activity */}
+            <div className="glass-card v-section">
+                <div className="v-section__header">
+                    <div className="v-section__icon" style={{ background: 'rgba(33, 150, 243, 0.1)' }}>
+                        <FiMonitor size={20} color="#2196f3" />
                     </div>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: '700', margin: 0, color: 'var(--text)' }}>Actividad Reciente</h2>
+                    <h2 className="v-section__title">Actividad Reciente</h2>
                 </div>
 
                 {actividades_recientes && actividades_recientes.length > 0 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        {actividades_recientes.slice(0, 5).map((act, index) => (
-                            <div key={act.id} style={{
-                                padding: '16px 0',
-                                borderBottom: index < 4 ? '1px solid var(--border, rgba(0,0,0,0.05))' : 'none',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center'
-                            }}>
-                                <div>
-                                    <div style={{ fontWeight: '600', color: 'var(--text)', marginBottom: '4px' }}>{act.descripcion}</div>
-                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                                        {act.nombre} {act.apellido} • {new Date(act.fecha_creacion).toLocaleString()}
+                    <div>
+                        {actividades_recientes.slice(0, 6).map((act) => (
+                            <div key={act.id} className="v-activity-item">
+                                <div className="v-activity-item__content">
+                                    <div className="v-activity-item__title">{act.descripcion}</div>
+                                    <div className="v-activity-item__meta">
+                                        {act.nombre} {act.apellido} &bull; {new Date(act.fecha_creacion).toLocaleString()}
                                     </div>
                                 </div>
-                                <span style={{ fontSize: '0.75rem', padding: '4px 8px', background: 'var(--bg)', borderRadius: '6px', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase' }}>
-                                    {act.accion}
-                                </span>
+                                <div className="v-activity-item__badge">
+                                    <StatusBadge status={act.accion?.includes('login') ? 'activo' : act.accion?.includes('crear') ? 'aprobado' : 'pendiente'} label={act.accion} />
+                                </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>No hay actividad reciente.</div>
+                    <EmptyState
+                        icon={<FiActivity size={48} />}
+                        title="Sin actividad"
+                        description="No hay actividad reciente registrada."
+                    />
                 )}
             </div>
-
-            {/* Custom inject CSS for stat cards hover effects within the component */}
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                .stat-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-                .stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
-                .stat-blue .stat-icon-wrapper { background: rgba(33, 150, 243, 0.15); }
-                .stat-cyan .stat-icon-wrapper { background: rgba(0, 188, 212, 0.15); }
-                .stat-green .stat-icon-wrapper { background: rgba(76, 175, 80, 0.15); }
-                .stat-orange .stat-icon-wrapper { background: rgba(255, 152, 0, 0.15); }
-                [data-theme='dark'] .stat-card { box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
-                [data-theme='dark'] .stat-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
-            `}} />
         </div>
     );
 };

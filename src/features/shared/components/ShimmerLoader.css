@@ -1,0 +1,144 @@
+/* =======================================
+   Shimmer Loading Effect
+   Modern skeleton loading animation
+   ======================================= */
+
+@keyframes shimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+}
+
+.shimmer-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.shimmer-line {
+    height: 16px;
+    border-radius: 8px;
+    background: linear-gradient(90deg,
+        rgba(0, 0, 0, 0.04) 0%,
+        rgba(0, 0, 0, 0.08) 50%,
+        rgba(0, 0, 0, 0.04) 100%
+    );
+    background-size: 800px 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+[data-theme='dark'] .shimmer-line {
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0.04) 0%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.04) 100%
+    );
+    background-size: 800px 100%;
+}
+
+.shimmer-card {
+    border-radius: 20px;
+    overflow: hidden;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+[data-theme='dark'] .shimmer-card {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.shimmer-circle {
+    border-radius: 50%;
+    background: linear-gradient(90deg,
+        rgba(0, 0, 0, 0.04) 0%,
+        rgba(0, 0, 0, 0.08) 50%,
+        rgba(0, 0, 0, 0.04) 100%
+    );
+    background-size: 800px 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+[data-theme='dark'] .shimmer-circle {
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0.04) 0%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.04) 100%
+    );
+    background-size: 800px 100%;
+}
+
+.shimmer-rect {
+    border-radius: 12px;
+    background: linear-gradient(90deg,
+        rgba(0, 0, 0, 0.04) 0%,
+        rgba(0, 0, 0, 0.08) 50%,
+        rgba(0, 0, 0, 0.04) 100%
+    );
+    background-size: 800px 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+[data-theme='dark'] .shimmer-rect {
+    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0.04) 0%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.04) 100%
+    );
+    background-size: 800px 100%;
+}
+
+/* Stat Card Shimmer */
+.shimmer-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.shimmer-stat-card {
+    padding: 24px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Table Shimmer */
+.shimmer-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.shimmer-table-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+[data-theme='dark'] .shimmer-table-row {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Card Grid Shimmer */
+.shimmer-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 640px) {
+    .shimmer-stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .shimmer-card-grid {
+        grid-template-columns: 1fr;
+    }
+}

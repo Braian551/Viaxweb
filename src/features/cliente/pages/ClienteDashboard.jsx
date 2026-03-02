@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { FiMapPin, FiClock, FiStar, FiDollarSign, FiTruck } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getTripHistory, getPaymentSummary, getFavoriteDrivers } from '../services/clienteService';
-import '../../shared/DashboardLayout.css';
+import GlassStatCard from '../../shared/components/GlassStatCard';
+import PageHeader from '../../shared/components/PageHeader';
+import StatusBadge from '../../shared/components/StatusBadge';
+import ProfileAvatar from '../../shared/components/ProfileAvatar';
+import EmptyState from '../../shared/components/EmptyState';
+import { ShimmerDashboard } from '../../shared/components/ShimmerLoader';
 
 const ClienteDashboard = () => {
     const { user } = useAuth();
@@ -30,72 +35,85 @@ const ClienteDashboard = () => {
 
     const fmt = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
 
-    if (loading) return <div style={{ padding: '60px', textAlign: 'center', color: 'var(--primary)', fontWeight: '600' }}>Cargando tu panel...</div>;
+    if (loading) return <ShimmerDashboard />;
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div>
-                <h1 style={{ fontSize: '2rem', fontWeight: '800', margin: '0 0 8px 0', color: 'var(--text)' }}>Mi Panel</h1>
-                <p style={{ margin: 0, color: 'var(--text-secondary)' }}>Resumen de tu actividad en VIAX</p>
-            </div>
+        <div className="v-dashboard">
+            <PageHeader title="Mi Panel" subtitle="Resumen de tu actividad en VIAX" />
 
-            {/* Stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-                <div className="glass-card" style={{ padding: '24px', borderRadius: '20px', textAlign: 'center' }}>
-                    <FiTruck size={28} color="#2196f3" style={{ marginBottom: '8px' }} />
-                    <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text)' }}>{payments?.total_viajes || trips.length || 0}</div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Viajes Realizados</div>
-                </div>
-                <div className="glass-card" style={{ padding: '24px', borderRadius: '20px', textAlign: 'center' }}>
-                    <FiDollarSign size={28} color="#4caf50" style={{ marginBottom: '8px' }} />
-                    <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text)' }}>{fmt(payments?.total_pagado || 0)}</div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Total Gastado</div>
-                </div>
-                <div className="glass-card" style={{ padding: '24px', borderRadius: '20px', textAlign: 'center' }}>
-                    <FiStar size={28} color="#ff9800" style={{ marginBottom: '8px' }} />
-                    <div style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text)' }}>{favorites.length}</div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Conductores Favoritos</div>
-                </div>
+            <div className="v-stat-grid">
+                <GlassStatCard
+                    title="Viajes Realizados"
+                    value={payments?.total_viajes || trips.length || 0}
+                    icon={<FiTruck size={22} color="#2196f3" />}
+                    accentColor="#2196f3"
+                />
+                <GlassStatCard
+                    title="Total Gastado"
+                    value={fmt(payments?.total_pagado || 0)}
+                    icon={<FiDollarSign size={22} color="#4caf50" />}
+                    accentColor="#4caf50"
+                />
+                <GlassStatCard
+                    title="Conductores Favoritos"
+                    value={favorites.length}
+                    icon={<FiStar size={22} color="#ff9800" />}
+                    accentColor="#ff9800"
+                />
             </div>
 
             {/* Recent Trips */}
-            <div className="glass-card" style={{ padding: '24px', borderRadius: '20px' }}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '700', margin: '0 0 16px 0', color: 'var(--text)' }}>Últimos Viajes</h2>
+            <div className="glass-card v-section">
+                <div className="v-section__header">
+                    <div className="v-section__icon" style={{ background: 'rgba(33, 150, 243, 0.1)' }}>
+                        <FiMapPin size={20} color="#2196f3" />
+                    </div>
+                    <h2 className="v-section__title">Últimos Viajes</h2>
+                </div>
+
                 {trips.length > 0 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-                        {trips.map((trip, i) => (
-                            <div key={trip.id || i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: i < trips.length - 1 ? '1px solid var(--border, rgba(0,0,0,0.05))' : 'none' }}>
-                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                    <FiMapPin color="var(--primary)" />
-                                    <div>
-                                        <div style={{ fontWeight: '600', color: 'var(--text)', fontSize: '0.95rem' }}>{trip.origen_direccion || trip.origen || 'Viaje'}</div>
-                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                                            <FiClock size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
-                                            {trip.fecha_creacion ? new Date(trip.fecha_creacion).toLocaleDateString() : '—'}
-                                            {trip.estado && <span style={{ marginLeft: '8px', padding: '2px 8px', borderRadius: '4px', background: trip.estado === 'completada' ? 'rgba(76,175,80,0.12)' : 'rgba(255,152,0,0.12)', color: trip.estado === 'completada' ? '#4caf50' : '#ff9800', fontSize: '0.75rem', fontWeight: '600' }}>{trip.estado}</span>}
-                                        </div>
+                    <div>
+                        {trips.map((trip) => (
+                            <div key={trip.id} className="v-activity-item">
+                                <div className="v-activity-item__content">
+                                    <div className="v-activity-item__title">{trip.origen_direccion || trip.origen || 'Viaje'}</div>
+                                    <div className="v-activity-item__meta">
+                                        <FiClock size={12} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                                        {trip.fecha_creacion ? new Date(trip.fecha_creacion).toLocaleDateString() : '—'}
                                     </div>
                                 </div>
-                                <div style={{ fontWeight: '700', color: 'var(--text)' }}>{fmt(trip.precio_final || trip.precio_estimado)}</div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    {trip.estado && <StatusBadge status={trip.estado} />}
+                                    <span style={{ fontWeight: 700, color: 'var(--text)' }}>{fmt(trip.precio_final || trip.precio_estimado)}</span>
+                                </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>No tienes viajes aún. ¡Descarga la app para solicitar tu primer viaje!</div>
+                    <EmptyState
+                        icon={<FiTruck size={48} />}
+                        title="Sin viajes aún"
+                        description="¡Descarga la app para solicitar tu primer viaje!"
+                    />
                 )}
             </div>
 
             {/* Favorite Drivers */}
             {favorites.length > 0 && (
-                <div className="glass-card" style={{ padding: '24px', borderRadius: '20px' }}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: '700', margin: '0 0 16px 0', color: 'var(--text)' }}>Conductores Favoritos</h2>
+                <div className="glass-card v-section">
+                    <div className="v-section__header">
+                        <div className="v-section__icon" style={{ background: 'rgba(255, 152, 0, 0.1)' }}>
+                            <FiStar size={20} color="#ff9800" />
+                        </div>
+                        <h2 className="v-section__title">Conductores Favoritos</h2>
+                    </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px' }}>
                         {favorites.map(d => (
-                            <div key={d.id} style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px', background: 'var(--bg, #f8f9fa)', borderRadius: '12px' }}>
-                                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700' }}>{d.nombre?.charAt(0) || '?'}</div>
+                            <div key={d.id} style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px', background: 'var(--bg)', borderRadius: '14px' }}>
+                                <ProfileAvatar name={`${d.nombre} ${d.apellido}`} src={d.foto_perfil} size={44} borderRadius={12} bgColor="#ff9800" />
                                 <div>
-                                    <div style={{ fontWeight: '600', color: 'var(--text)' }}>{d.nombre} {d.apellido}</div>
-                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>⭐ {d.calificacion_promedio || '—'} • {d.total_viajes || 0} viajes</div>
+                                    <div style={{ fontWeight: 600, color: 'var(--text)' }}>{d.nombre} {d.apellido}</div>
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>&#11088; {d.calificacion_promedio || '—'} &bull; {d.total_viajes || 0} viajes</div>
                                 </div>
                             </div>
                         ))}
