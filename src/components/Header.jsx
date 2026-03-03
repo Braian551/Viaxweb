@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { FiSun, FiMoon, FiMenu, FiX, FiUser } from 'react-icons/fi';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../features/auth/context/AuthContext';
+import { useTheme } from '../features/shared/context/ThemeContext';
 
-export default function Header({ isDark, onToggleTheme }) {
+export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,7 +68,7 @@ export default function Header({ isDark, onToggleTheme }) {
 
           <button
             className="header__theme-btn"
-            onClick={onToggleTheme}
+            onClick={toggleTheme}
             type="button"
             aria-label="Cambiar tema"
           >

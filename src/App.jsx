@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -37,9 +37,10 @@ import EmpresaDashboard from './features/empresa/pages/EmpresaDashboard';
 import EmpresaConductors from './features/empresa/pages/EmpresaConductors';
 import EmpresaFinances from './features/empresa/pages/EmpresaFinances';
 import EmpresaSettings from './features/empresa/pages/EmpresaSettings';
+import { ThemeProvider } from './features/shared/context/ThemeContext';
 
 // Component to handle root redirection based on role
-const RootRedirect = ({ isDark, onToggleTheme }) => {
+const RootRedirect = () => {
   const { user, loading } = useAuth();
 
   if (loading) return null;
@@ -58,7 +59,7 @@ const RootRedirect = ({ isDark, onToggleTheme }) => {
   // Si no hay usuario, mostrar el home page público
   return (
     <>
-      <Header isDark={isDark} onToggleTheme={onToggleTheme} />
+      <Header />
       <main>
         <HomePage />
       </main>
@@ -68,44 +69,35 @@ const RootRedirect = ({ isDark, onToggleTheme }) => {
 };
 
 export default function App() {
-  const [isDark, setIsDark] = useState(() => {
-    const stored = localStorage.getItem('viax-theme');
-    return stored ? stored === 'dark' : false;
-  });
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    localStorage.setItem('viax-theme', isDark ? 'dark' : 'light');
-  }, [isDark]);
-
   return (
-    <AuthProvider>
-      <Routes>
+    <ThemeProvider>
+      <AuthProvider>
+        <Routes>
         {/* ── Share location — standalone, no header/footer ── */}
         <Route path="/share/:token" element={<LocationSharePage />} />
 
         {/* ── Auth routes — standalone ── */}
         <Route path="/login" element={
           <>
-            <Header isDark={isDark} onToggleTheme={() => setIsDark((prev) => !prev)} />
+            <Header />
             <LoginPage />
           </>
         } />
         <Route path="/register" element={
           <>
-            <Header isDark={isDark} onToggleTheme={() => setIsDark((prev) => !prev)} />
+            <Header />
             <RegisterPage />
           </>
         } />
         <Route path="/forgot-password" element={
           <>
-            <Header isDark={isDark} onToggleTheme={() => setIsDark((prev) => !prev)} />
+            <Header />
             <ForgotPasswordPage />
           </>
         } />
         <Route path="/register-company" element={
           <>
-            <Header isDark={isDark} onToggleTheme={() => setIsDark((prev) => !prev)} />
+            <Header />
             <CompanyRegisterPage />
           </>
         } />
@@ -151,13 +143,13 @@ export default function App() {
         </Route>
 
         {/* ── Main public site ────────────────────────────────────── */}
-        <Route path="/" element={<RootRedirect isDark={isDark} onToggleTheme={() => setIsDark((prev) => !prev)} />} />
+        <Route path="/" element={<RootRedirect />} />
 
         <Route
           path="*"
           element={
             <>
-              <Header isDark={isDark} onToggleTheme={() => setIsDark((prev) => !prev)} />
+              <Header />
               <main>
                 <Routes>
                   <Route path="/clientes" element={<ClientesPage />} />
@@ -170,7 +162,8 @@ export default function App() {
             </>
           }
         />
-      </Routes>
-    </AuthProvider>
+        </Routes>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

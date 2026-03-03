@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
-import { FiHome, FiUser, FiLogOut, FiMenu, FiX, FiMoon, FiSun } from 'react-icons/fi';
+import { FiHome, FiUser, FiLogOut, FiX } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
-import ProfileAvatar from '../../shared/components/ProfileAvatar';
+import DashboardHeader from '../../shared/components/DashboardHeader';
 import '../../../features/shared/DashboardLayout.css';
 
 const ClienteLayout = () => {
@@ -16,15 +16,6 @@ const ClienteLayout = () => {
         { path: '/cliente', label: 'Mi Panel', icon: <FiHome />, end: true },
         { path: '/cliente/profile', label: 'Mi Perfil', icon: <FiUser /> },
     ];
-
-    const toggleTheme = () => {
-        const current = document.documentElement.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('viax-theme', next);
-    };
-
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
     return (
         <div className="dashboard-layout">
@@ -55,19 +46,15 @@ const ClienteLayout = () => {
             </aside>
 
             <div className="dash-main">
-                <header className="dash-header">
-                    <div className="dash-header-left">
-                        <button className="dash-menu-btn" onClick={() => setSidebarOpen(true)}><FiMenu /></button>
-                        <div>
-                            <div className="dash-header-greeting">Hola, <span>{user?.nombre || 'Cliente'}</span></div>
-                            <span className="dash-role-badge cliente">CLIENTE</span>
-                        </div>
-                    </div>
-                    <div className="dash-header-right">
-                        <button className="dash-header-btn" onClick={toggleTheme}>{isDark ? <FiSun /> : <FiMoon />}</button>
-                        <ProfileAvatar src={user?.foto_perfil} name={user?.nombre || 'Cliente'} size={44} borderRadius={14} bgColor="#4caf50" />
-                    </div>
-                </header>
+                <DashboardHeader
+                    userName={user?.nombre || 'Cliente'}
+                    roleLabel="CLIENTE"
+                    roleClass="cliente"
+                    onMenuClick={() => setSidebarOpen(true)}
+                    avatarSrc={user?.foto_perfil}
+                    avatarName={user?.nombre || 'Cliente'}
+                    avatarColor="#4caf50"
+                />
                 <main className="dash-content">
                     <Outlet />
                 </main>
