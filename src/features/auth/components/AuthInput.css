@@ -22,9 +22,23 @@
 .auth-input-icon {
   position: absolute;
   left: 1rem;
-  color: var(--text-secondary, #888);
-  font-size: 1.25rem;
-  transition: color 0.3s;
+  color: var(--text-secondary, #7a8596);
+  font-size: 1.15rem;
+  transition: color 0.22s ease, opacity 0.22s ease, transform 0.22s ease;
+  opacity: 0.9;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.auth-input-icon-node {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-input-icon-node svg {
+  width: 1.05rem;
+  height: 1.05rem;
 }
 
 .auth-input-field {
@@ -36,23 +50,32 @@
   border-radius: 12px;
   font-size: 1rem;
   color: var(--text, #111);
-  transition: all 0.3s ease;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
 /* When focused, glow effect */
 .auth-input-wrapper:focus-within .auth-input-icon {
-  color: var(--primary);
-  /* Ensures visibility using the main accent color */
+  color: var(--primary, #2196f3);
   opacity: 1;
+  transform: translateY(-1px);
 }
 
 .auth-input-field:focus {
   outline: none;
   border-color: var(--primary, #007bff);
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.15);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.16);
+}
+
+.auth-input-field::placeholder {
+  color: var(--text-secondary, #8a94a6);
+}
+
+.auth-input-field:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 /* Dark mode adjust */
@@ -65,4 +88,8 @@
 [data-theme='dark'] .auth-input-field:focus {
   background: rgba(15, 23, 42, 0.7);
   box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.25);
+}
+
+[data-theme='dark'] .auth-input-icon {
+  color: rgba(255, 255, 255, 0.72);
 }

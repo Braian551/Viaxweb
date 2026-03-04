@@ -178,11 +178,11 @@ const CompanyRegisterPage = () => {
         return (
             <div className="auth-page-container">
                 <div className="auth-card" style={{ textAlign: 'center' }}>
-                    <h2 className="auth-title" style={{ color: '#2e7d32' }}>¡Registro Exitoso!</h2>
+                    <h2 className="auth-title auth-success-title">¡Registro Exitoso!</h2>
                     <p className="auth-subtitle" style={{ marginTop: '1rem' }}>
                         Hemos recibido la información de <strong>{formData.nombre}</strong>.
                     </p>
-                    <p style={{ marginBottom: '2rem', color: '#555' }}>
+                    <p className="auth-success-text">
                         Un administrador revisará tus datos. Recibirás un correo de confirmación de PHPMailer en cuanto la empresa sea validada.
                     </p>
                     <button onClick={() => navigate('/login')} className="auth-button" style={{ width: '100%' }}>
@@ -197,6 +197,14 @@ const CompanyRegisterPage = () => {
         <div className="auth-page-container">
             <div className="auth-card register-card">
                 <h2 className="auth-title">Registrar Empresa</h2>
+                <div className="auth-progress" aria-hidden="true">
+                    {[1, 2, 3].map((index) => (
+                        <span
+                            key={index}
+                            className={`auth-progress-step ${index <= step ? 'active' : ''}`}
+                        />
+                    ))}
+                </div>
                 <p className="auth-subtitle">Paso {step} de 3 - Únete a la red Viax</p>
 
                 {error && <div className="auth-error">{error}</div>}
@@ -205,21 +213,18 @@ const CompanyRegisterPage = () => {
 
                     {step === 1 && (
                         <div className="step-content">
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <div className="company-logo-upload">
                                 <div
                                     onClick={() => fileInputRef.current.click()}
-                                    style={{
-                                        width: '100px', height: '100px', borderRadius: '50%', backgroundColor: 'rgba(0,0,0,0.03)',
-                                        border: '2px dashed var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        cursor: 'pointer', overflow: 'hidden', position: 'relative'
-                                    }}>
+                                    className="company-logo-circle"
+                                >
                                     {logoPreview ? (
                                         <img src={logoPreview} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     ) : (
                                         <FiCamera size={32} color="var(--primary)" />
                                     )}
                                 </div>
-                                <span style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.5rem' }}>Subir logo (Opcional)</span>
+                                <span className="company-logo-caption">Subir logo (Opcional)</span>
                                 <input type="file" ref={fileInputRef} onChange={handleLogoSelect} accept="image/*" style={{ display: 'none' }} />
                             </div>
 
@@ -236,17 +241,17 @@ const CompanyRegisterPage = () => {
                                 <AuthInput id="telefono" type="tel" label="Teléfono (Principal) *" value={formData.telefono} onChange={handleChange} icon={<FiPhone />} placeholder="300 000 0000" required />
                                 <AuthInput id="telefonoSecundario" type="tel" label="Teléfono Sec." value={formData.telefonoSecundario} onChange={handleChange} icon={<FiPhone />} placeholder="Opcional" />
                             </div>
-                            <div className="auth-form-row" style={{ marginTop: '0.5rem' }}>
-                                <div className="auth-input-wrapper" style={{ flex: 1, marginBottom: '1rem' }}>
-                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#333', marginBottom: '0.5rem' }}>Departamento *</label>
-                                    <select id="departamento" className="auth-input-field" value={formData.departamento} onChange={handleDepartmentChange} required style={{ width: '100%', padding: '0.9rem', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.1)', background: 'rgba(0,0,0,0.03)', outline: 'none' }}>
+                            <div className="auth-select-grid">
+                                <div className="auth-select-wrapper">
+                                    <label className="auth-select-label">Departamento *</label>
+                                    <select id="departamento" className="auth-select" value={formData.departamento} onChange={handleDepartmentChange} required>
                                         <option value="">Seleccionar</option>
                                         {departments.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
                                     </select>
                                 </div>
-                                <div className="auth-input-wrapper" style={{ flex: 1, marginBottom: '1rem' }}>
-                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#333', marginBottom: '0.5rem' }}>Municipio *</label>
-                                    <select id="municipio" className="auth-input-field" value={formData.municipio} onChange={handleChange} required disabled={!formData.departamento} style={{ width: '100%', padding: '0.9rem', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.1)', background: 'rgba(0,0,0,0.03)', outline: 'none' }}>
+                                <div className="auth-select-wrapper">
+                                    <label className="auth-select-label">Municipio *</label>
+                                    <select id="municipio" className="auth-select" value={formData.municipio} onChange={handleChange} required disabled={!formData.departamento}>
                                         <option value="">Seleccionar</option>
                                         {municipalities.map(m => <option key={m.id} value={m.name}>{m.name}</option>)}
                                     </select>
@@ -259,8 +264,8 @@ const CompanyRegisterPage = () => {
                     {step === 3 && (
                         <div className="step-content">
                             <div className="auth-input-wrapper" style={{ marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#333', marginBottom: '0.5rem' }}>Descripción (Opcional)</label>
-                                <textarea id="descripcion" className="auth-input-field" value={formData.descripcion} onChange={handleChange} placeholder="Cuéntanos sobre los servicios que ofreces, sedes o historia de la empresa..." style={{ width: '100%', padding: '1rem', minHeight: '80px', resize: 'vertical', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.1)', background: 'rgba(0,0,0,0.03)' }}></textarea>
+                                <label className="auth-section-label">Descripción (Opcional)</label>
+                                <textarea id="descripcion" className="auth-textarea" value={formData.descripcion} onChange={handleChange} placeholder="Cuéntanos sobre los servicios que ofreces, sedes o historia de la empresa..." />
                             </div>
                             <div className="auth-form-row">
                                 <AuthInput id="representanteNombre" label="Nombre Representante *" value={formData.representanteNombre} onChange={handleChange} icon={<FiUser />} required />
@@ -273,27 +278,15 @@ const CompanyRegisterPage = () => {
                             </div>
 
                             <div style={{ marginTop: '1rem', marginBottom: '1.5rem' }}>
-                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', color: '#333' }}>
+                                <label className="auth-section-label">
                                     Tipos de Vehículo Soportados *
                                 </label>
-                                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                                <div className="auth-chip-list">
                                     {vehicleOptions.map(tipo => (
                                         <div
                                             key={tipo}
                                             onClick={() => handleVehicleToggle(tipo)}
-                                            style={{
-                                                padding: '8px 16px',
-                                                borderRadius: '20px',
-                                                border: `2px solid ${formData.tiposVehiculo.includes(tipo) ? 'var(--primary)' : 'rgba(0,0,0,0.1)'}`,
-                                                background: formData.tiposVehiculo.includes(tipo) ? 'rgba(33, 150, 243, 0.1)' : 'transparent',
-                                                cursor: 'pointer',
-                                                fontWeight: 600,
-                                                fontSize: '0.9rem',
-                                                color: formData.tiposVehiculo.includes(tipo) ? 'var(--primary)' : '#555',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '6px'
-                                            }}
+                                            className={`auth-chip ${formData.tiposVehiculo.includes(tipo) ? 'active' : ''}`}
                                         >
                                             <FiTruck />
                                             {tipo.charAt(0).toUpperCase() + tipo.slice(1)}
@@ -304,9 +297,9 @@ const CompanyRegisterPage = () => {
                         </div>
                     )}
 
-                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                    <div className="auth-step-actions">
                         {step > 1 && (
-                            <button type="button" onClick={prevStep} className="auth-button" style={{ flex: 1, backgroundColor: 'transparent', color: 'var(--primary)', border: '2px solid var(--primary)' }}>
+                            <button type="button" onClick={prevStep} className="auth-button auth-button--secondary" style={{ flex: 1 }}>
                                 Atrás
                             </button>
                         )}

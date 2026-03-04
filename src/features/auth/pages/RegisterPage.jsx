@@ -145,7 +145,7 @@ const RegisterPage = () => {
                             Inicia Sesión
                         </Link>
                     </p>
-                    <p style={{ marginTop: '1rem', borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: '1rem' }}>
+                    <p className="auth-footer-divider">
                         ¿Deseas trabajar con nosotros?{' '}
                         <Link to="/register-company" className="auth-link">
                             Registrar Empresa
