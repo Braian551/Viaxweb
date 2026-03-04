@@ -105,7 +105,7 @@
     border-radius: 14px;
     width: 100%;
     text-align: left;
-    padding: 12px 44px 12px 12px;
+    padding: 12px 70px 12px 12px;
     display: flex;
     align-items: flex-start;
     gap: 12px;
@@ -142,7 +142,7 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    padding-right: 22px;
+    padding-right: 36px;
 }
 
 .dash-notif-item__content strong {
@@ -162,8 +162,9 @@
 
 .dash-notif-item__dot {
     position: absolute;
-    right: 36px;
-    top: 16px;
+    right: 50px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 8px;
     height: 8px;
     border-radius: 999px;
@@ -172,7 +173,7 @@
 
 .dash-notif-item__delete {
     position: absolute;
-    right: 8px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     color: #f44336;
