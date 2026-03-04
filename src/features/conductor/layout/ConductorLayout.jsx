@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
-import { FiHome, FiDollarSign, FiUser, FiLogOut, FiX } from 'react-icons/fi';
+import { FiHome, FiDollarSign, FiUser, FiBell, FiLogOut, FiX } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import DashboardHeader from '../../shared/components/DashboardHeader';
 import '../../shared/DashboardLayout.css';
@@ -15,6 +15,7 @@ const ConductorLayout = () => {
     const navItems = [
         { path: '/conductor', label: 'Dashboard', icon: <FiHome />, end: true },
         { path: '/conductor/earnings', label: 'Mis Ganancias', icon: <FiDollarSign /> },
+        { path: '/conductor/notifications', label: 'Notificaciones', icon: <FiBell /> },
         { path: '/conductor/profile', label: 'Mi Perfil', icon: <FiUser /> },
     ];
 

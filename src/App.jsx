@@ -38,6 +38,8 @@ import EmpresaConductors from './features/empresa/pages/EmpresaConductors';
 import EmpresaFinances from './features/empresa/pages/EmpresaFinances';
 import EmpresaSettings from './features/empresa/pages/EmpresaSettings';
 import { ThemeProvider } from './features/shared/context/ThemeContext';
+import GlobalScrollbar from './features/shared/components/GlobalScrollbar';
+import DashboardNotificationsPage from './features/shared/pages/DashboardNotificationsPage';
 
 // Component to handle root redirection based on role
 const RootRedirect = () => {
@@ -71,6 +73,7 @@ const RootRedirect = () => {
 export default function App() {
   return (
     <ThemeProvider>
+      <GlobalScrollbar />
       <AuthProvider>
         <Routes>
         {/* ── Share location — standalone, no header/footer ── */}
@@ -112,6 +115,7 @@ export default function App() {
             <Route path="companies" element={<AdminCompanies />} />
             <Route path="finances" element={<AdminFinances />} />
             <Route path="audit" element={<AdminAudit />} />
+            <Route path="notifications" element={<DashboardNotificationsPage roleType="admin" />} />
           </Route>
         </Route>
 
@@ -120,6 +124,7 @@ export default function App() {
           <Route path="/cliente" element={<ClienteLayout />}>
             <Route index element={<ClienteDashboard />} />
             <Route path="profile" element={<ClienteProfile />} />
+            <Route path="notifications" element={<DashboardNotificationsPage roleType="cliente" />} />
           </Route>
         </Route>
 
@@ -129,6 +134,7 @@ export default function App() {
             <Route index element={<ConductorDashboard />} />
             <Route path="earnings" element={<ConductorEarnings />} />
             <Route path="profile" element={<ConductorProfile />} />
+            <Route path="notifications" element={<DashboardNotificationsPage roleType="conductor" />} />
           </Route>
         </Route>
 
@@ -139,6 +145,7 @@ export default function App() {
             <Route path="conductors" element={<EmpresaConductors />} />
             <Route path="finances" element={<EmpresaFinances />} />
             <Route path="settings" element={<EmpresaSettings />} />
+            <Route path="notifications" element={<DashboardNotificationsPage roleType="empresa" />} />
           </Route>
         </Route>
 

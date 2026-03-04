@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
-import { FiHome, FiUsers, FiDollarSign, FiSettings, FiLogOut, FiX } from 'react-icons/fi';
+import { FiHome, FiUsers, FiDollarSign, FiSettings, FiBell, FiLogOut, FiX } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import DashboardHeader from '../../shared/components/DashboardHeader';
 import '../../shared/DashboardLayout.css';
@@ -16,6 +16,7 @@ const EmpresaLayout = () => {
         { path: '/empresa', label: 'Dashboard', icon: <FiHome />, end: true },
         { path: '/empresa/conductors', label: 'Conductores', icon: <FiUsers /> },
         { path: '/empresa/finances', label: 'Finanzas', icon: <FiDollarSign /> },
+        { path: '/empresa/notifications', label: 'Notificaciones', icon: <FiBell /> },
         { path: '/empresa/settings', label: 'Configuración', icon: <FiSettings /> },
     ];
 
