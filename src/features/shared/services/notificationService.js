@@ -117,3 +117,45 @@ export async function markAsRead({
         return { success: false, error: 'Error de conexión al actualizar notificaciones' };
     }
 }
+
+export async function deleteNotification({
+    userId,
+    notificationId,
+    notificationIds,
+    deleteAll = false,
+}) {
+    try {
+        const body = {
+            usuario_id: userId,
+            ...(notificationId ? { notification_id: notificationId } : {}),
+            ...(Array.isArray(notificationIds) && notificationIds.length
+                ? { notification_ids: notificationIds }
+                : {}),
+            ...(deleteAll ? { delete_all: true } : {}),
+        };
+
+        const response = await fetch(`${NOTIFICATIONS_API_URL}/delete_notification.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(body),
+        });
+
+        if (!response.ok) {
+            return { success: false, error: `HTTP ${response.status}` };
+        }
+
+        const data = await response.json();
+        return {
+            success: !!data?.success,
+            no_leidas: data?.no_leidas ?? 0,
+            affected: data?.affected ?? 0,
+            error: data?.error,
+        };
+    } catch (error) {
+        console.error('Error deleteNotification:', error);
+        return { success: false, error: 'Error de conexión al eliminar notificaciones' };
+    }
+}

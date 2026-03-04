@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
     FiBell,
     FiCheck,
     FiCheckCircle,
     FiClock,
+    FiTrash2,
     FiDollarSign,
     FiInfo,
     FiMapPin,
@@ -14,15 +15,22 @@ import {
 } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import PageHeader from '../components/PageHeader';
-import { getNotifications, getUnreadCount, markAsRead } from '../services/notificationService';
+import { deleteNotification, getNotifications, getUnreadCount, markAsRead } from '../services/notificationService';
 import './DashboardNotificationsPage.css';
 
 const POLLING_MS = 30000;
+const UNDO_MS = 4000;
 
 const TRIP_TYPES = new Set(['trip_accepted', 'trip_cancelled', 'trip_completed', 'driver_arrived', 'driver_waiting']);
-const PAYMENT_TYPES = new Set(['payment_received', 'payment_pending']);
-const DOCUMENT_TYPES = new Set(['document_approved', 'document_rejected', 'driver_document_update']);
+const PAYMENT_TYPES = new Set(['payment_received', 'payment_pending', 'admin_company_payment_info_updated']);
+const DOCUMENT_TYPES = new Set([
+    'document_approved',
+    'document_rejected',
+    'driver_document_update',
+    'admin_company_documents_submitted',
+]);
 const CHAT_TYPES = new Set(['chat_message']);
+const SYSTEM_TYPES = new Set(['system', 'admin_company_registration_pending']);
 
 const FILTER_LABELS = {
     all: 'Todas',
@@ -30,6 +38,7 @@ const FILTER_LABELS = {
     trips: 'Viajes',
     payments: 'Pagos',
     documents: 'Documentos',
+    system: 'Sistema',
     chat: 'Chat',
     promo: 'Promos',
 };
@@ -48,6 +57,7 @@ const ICON_BY_TYPE = {
 };
 
 const getVisibleFilters = (roleType) => {
+    if (roleType === 'admin') return ['all', 'unread', 'documents', 'payments', 'system'];
     if (roleType === 'empresa') return ['all', 'unread', 'payments', 'documents'];
     if (roleType === 'conductor') return ['all', 'unread', 'trips', 'payments', 'documents'];
     return ['all', 'unread', 'trips', 'payments', 'documents', 'chat', 'promo'];
@@ -84,8 +94,12 @@ const DashboardNotificationsPage = ({ roleType = 'admin' }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [isMarkingAll, setIsMarkingAll] = useState(false);
+    const [undoState, setUndoState] = useState(null);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
+
+    const pendingSingleDeletesRef = useRef(new Map());
+    const pendingDeleteAllRef = useRef(null);
 
     const filteredNotifications = useMemo(() => {
         if (selectedFilter === 'all') return notifications;
@@ -93,6 +107,7 @@ const DashboardNotificationsPage = ({ roleType = 'admin' }) => {
         if (selectedFilter === 'trips') return notifications.filter((item) => TRIP_TYPES.has(item.tipo));
         if (selectedFilter === 'payments') return notifications.filter((item) => PAYMENT_TYPES.has(item.tipo));
         if (selectedFilter === 'documents') return notifications.filter((item) => DOCUMENT_TYPES.has(item.tipo));
+        if (selectedFilter === 'system') return notifications.filter((item) => SYSTEM_TYPES.has(item.tipo));
         if (selectedFilter === 'chat') return notifications.filter((item) => CHAT_TYPES.has(item.tipo));
         if (selectedFilter === 'promo') return notifications.filter((item) => item.tipo === 'promo');
         return notifications;
@@ -155,12 +170,170 @@ const DashboardNotificationsPage = ({ roleType = 'admin' }) => {
         setIsMarkingAll(false);
     };
 
+    const restorePendingSingles = () => {
+        const pendingEntries = Array.from(pendingSingleDeletesRef.current.values())
+            .sort((a, b) => a.originalIndex - b.originalIndex);
+
+        if (pendingEntries.length === 0) return;
+
+        setNotifications((prev) => {
+            const restored = [...prev];
+            pendingEntries.forEach((entry) => {
+                const index = Math.max(0, Math.min(entry.originalIndex, restored.length));
+                restored.splice(index, 0, entry.notification);
+            });
+            return restored;
+        });
+
+        const unreadToRestore = pendingEntries.reduce((acc, entry) => acc + (!entry.notification.leida ? 1 : 0), 0);
+        if (unreadToRestore > 0) {
+            setUnreadCount((prev) => prev + unreadToRestore);
+        }
+
+        pendingEntries.forEach((entry) => clearTimeout(entry.timer));
+        pendingSingleDeletesRef.current.clear();
+    };
+
+    const commitSingleDelete = async (notificationId) => {
+        const pending = pendingSingleDeletesRef.current.get(notificationId);
+        if (!pending || !userId) return;
+
+        pendingSingleDeletesRef.current.delete(notificationId);
+        const result = await deleteNotification({ userId, notificationId });
+
+        if (!result.success) {
+            setNotifications((prev) => {
+                const restored = [...prev];
+                const index = Math.max(0, Math.min(pending.originalIndex, restored.length));
+                restored.splice(index, 0, pending.notification);
+                return restored;
+            });
+
+            if (!pending.notification.leida) {
+                setUnreadCount((prev) => prev + 1);
+            }
+            return;
+        }
+
+        setUnreadCount(result.no_leidas ?? 0);
+    };
+
+    const handleStageDeleteOne = (notification) => {
+        if (!notification || pendingDeleteAllRef.current) return;
+        if (pendingSingleDeletesRef.current.has(notification.id)) return;
+
+        const index = notifications.findIndex((item) => item.id === notification.id);
+        if (index === -1) return;
+
+        const timer = setTimeout(() => {
+            commitSingleDelete(notification.id);
+        }, UNDO_MS);
+
+        pendingSingleDeletesRef.current.set(notification.id, {
+            notification,
+            originalIndex: index,
+            timer,
+        });
+
+        setNotifications((prev) => prev.filter((item) => item.id !== notification.id));
+        if (!notification.leida) {
+            setUnreadCount((prev) => Math.max(0, prev - 1));
+        }
+
+        setUndoState({ type: 'single', notificationId: notification.id, label: 'Notificación eliminada' });
+    };
+
+    const commitDeleteAll = async () => {
+        const pending = pendingDeleteAllRef.current;
+        if (!pending || !userId) return;
+
+        pendingDeleteAllRef.current = null;
+        const result = await deleteNotification({ userId, deleteAll: true });
+        if (!result.success) {
+            setNotifications(pending.notificationsSnapshot);
+            setUnreadCount(pending.unreadCountSnapshot);
+            return;
+        }
+
+        setUnreadCount(0);
+    };
+
+    const handleStageDeleteAll = () => {
+        if (!notifications.length || pendingDeleteAllRef.current) return;
+
+        restorePendingSingles();
+
+        const snapshot = {
+            notificationsSnapshot: notifications,
+            unreadCountSnapshot: unreadCount,
+            timer: null,
+        };
+
+        snapshot.timer = setTimeout(() => {
+            commitDeleteAll();
+        }, UNDO_MS);
+
+        pendingDeleteAllRef.current = snapshot;
+        setNotifications([]);
+        setUnreadCount(0);
+        setUndoState({ type: 'all', label: 'Se eliminaron todas las notificaciones' });
+    };
+
+    const handleUndoDelete = () => {
+        if (!undoState) return;
+
+        if (undoState.type === 'single') {
+            const pending = pendingSingleDeletesRef.current.get(undoState.notificationId);
+            if (!pending) {
+                setUndoState(null);
+                return;
+            }
+
+            clearTimeout(pending.timer);
+            pendingSingleDeletesRef.current.delete(undoState.notificationId);
+
+            setNotifications((prev) => {
+                const restored = [...prev];
+                const index = Math.max(0, Math.min(pending.originalIndex, restored.length));
+                restored.splice(index, 0, pending.notification);
+                return restored;
+            });
+
+            if (!pending.notification.leida) {
+                setUnreadCount((prev) => prev + 1);
+            }
+        }
+
+        if (undoState.type === 'all') {
+            const pendingAll = pendingDeleteAllRef.current;
+            if (!pendingAll) {
+                setUndoState(null);
+                return;
+            }
+
+            clearTimeout(pendingAll.timer);
+            pendingDeleteAllRef.current = null;
+            setNotifications(pendingAll.notificationsSnapshot);
+            setUnreadCount(pendingAll.unreadCountSnapshot);
+        }
+
+        setUndoState(null);
+    };
+
     useEffect(() => {
         if (!userId) return undefined;
         loadNotificationsPage({ nextPage: 1, append: false });
         refreshUnreadCount();
         const timer = setInterval(refreshUnreadCount, POLLING_MS);
-        return () => clearInterval(timer);
+        return () => {
+            clearInterval(timer);
+            pendingSingleDeletesRef.current.forEach((entry) => clearTimeout(entry.timer));
+            pendingSingleDeletesRef.current.clear();
+            if (pendingDeleteAllRef.current) {
+                clearTimeout(pendingDeleteAllRef.current.timer);
+                pendingDeleteAllRef.current = null;
+            }
+        };
     }, [userId, selectedFilter]);
 
     return (
@@ -169,14 +342,24 @@ const DashboardNotificationsPage = ({ roleType = 'admin' }) => {
                 title="Notificaciones"
                 subtitle="Mantente al día con la actividad de tu cuenta"
                 actions={(
-                    <button
-                        type="button"
-                        className="dash-notif-mark-all"
-                        onClick={handleMarkAllAsRead}
-                        disabled={isMarkingAll || unreadCount === 0}
-                    >
-                        <FiCheck /> Marcar todas como leídas
-                    </button>
+                    <div className="dash-notif-header-actions">
+                        <button
+                            type="button"
+                            className="dash-notif-mark-all"
+                            onClick={handleMarkAllAsRead}
+                            disabled={isMarkingAll || unreadCount === 0}
+                        >
+                            <FiCheck /> Marcar todas como leídas
+                        </button>
+                        <button
+                            type="button"
+                            className="dash-notif-delete-all"
+                            onClick={handleStageDeleteAll}
+                            disabled={notifications.length === 0}
+                        >
+                            <FiTrash2 /> Eliminar todas
+                        </button>
+                    </div>
                 )}
             />
 
@@ -218,6 +401,24 @@ const DashboardNotificationsPage = ({ roleType = 'admin' }) => {
                                 <span>{notification.mensaje}</span>
                                 <small>{getRelativeTime(notification.created_at)}</small>
                             </span>
+                            <span
+                                role="button"
+                                tabIndex={0}
+                                className="dash-notif-item__delete"
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleStageDeleteOne(notification);
+                                }}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter' || event.key === ' ') {
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        handleStageDeleteOne(notification);
+                                    }
+                                }}
+                            >
+                                <FiTrash2 />
+                            </span>
                             {!notification.leida && <span className="dash-notif-item__dot" />}
                         </button>
                     );
@@ -236,6 +437,13 @@ const DashboardNotificationsPage = ({ roleType = 'admin' }) => {
                     </div>
                 )}
             </div>
+
+            {undoState && (
+                <div className="dash-notif-undo-bar">
+                    <span>{undoState.label}</span>
+                    <button type="button" onClick={handleUndoDelete}>Deshacer</button>
+                </div>
+            )}
         </div>
     );
 };
