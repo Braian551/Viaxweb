@@ -5,6 +5,7 @@ import { legalContent, roleLabels } from '../data/legalContent';
 export default function LegalView({ role, doc, onRoleChange, onDocChange }) {
   const roleData = legalContent[role] ?? legalContent.cliente;
   const selectedDoc = roleData[doc] ?? roleData.terms;
+  const roleLabel = roleLabels[role] ?? roleLabels.cliente;
 
   return (
     <section className="legal" id="legal">
@@ -50,12 +51,23 @@ export default function LegalView({ role, doc, onRoleChange, onDocChange }) {
       <div className="legal__header-card">
         <h3>{selectedDoc.title}</h3>
         <p>{selectedDoc.intro}</p>
+        <div className="legal__meta-row">
+          <span className="legal__meta-pill">Rol: {roleLabel}</span>
+          {selectedDoc.meta && <span className="legal__meta-pill">{selectedDoc.meta}</span>}
+        </div>
+      </div>
+
+      <div className="legal__notice">
+        Este contenido tiene alcance informativo y contractual dentro de la plataforma. Para implementación formal de cumplimiento,
+        se recomienda validación final con asesoría jurídica especializada en derecho digital y protección de datos en Colombia.
       </div>
 
       <div className="legal__grid">
         {selectedDoc.sections.map((section, idx) => (
           <article key={`${section.heading}-${idx}`} className="legal__card">
-            <h4>{section.heading}</h4>
+            <h4>
+              <span className="legal__section-index">{idx + 1}.</span> {section.heading}
+            </h4>
             {section.bullets && (
               <ul>
                 {section.bullets.map((item, itemIdx) => (
