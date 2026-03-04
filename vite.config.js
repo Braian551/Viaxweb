@@ -5,6 +5,13 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    proxy: {
+      '/api': {
+        target: 'https://viaxcol.online',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
   },
   css: {
     preprocessorOptions: {},
