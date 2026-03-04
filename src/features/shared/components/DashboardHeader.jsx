@@ -1,7 +1,8 @@
 import React from 'react';
-import { FiBell, FiMenu, FiMoon, FiSun } from 'react-icons/fi';
+import { FiMenu, FiMoon, FiSun } from 'react-icons/fi';
 import ProfileAvatar from './ProfileAvatar';
 import { useTheme } from '../context/ThemeContext';
+import NotificationBell from './NotificationBell';
 
 const DashboardHeader = ({
     variant = 'default',
@@ -12,7 +13,6 @@ const DashboardHeader = ({
     avatarSrc,
     avatarName,
     avatarColor,
-    showNotifications = false,
 }) => {
     const { isDark, toggleTheme } = useTheme();
 
@@ -33,13 +33,7 @@ const DashboardHeader = ({
                     <button className="icon-btn theme-toggle" onClick={toggleTheme} aria-label="Toggle Theme">
                         {isDark ? <FiSun /> : <FiMoon />}
                     </button>
-
-                    {showNotifications && (
-                        <button className="icon-btn notification-btn" aria-label="Notifications">
-                            <FiBell />
-                            <span className="notification-dot"></span>
-                        </button>
-                    )}
+                    <NotificationBell buttonClassName="icon-btn notification-btn" />
 
                     <ProfileAvatar
                         src={avatarSrc}
@@ -68,6 +62,7 @@ const DashboardHeader = ({
                 <button className="dash-header-btn" onClick={toggleTheme} aria-label="Toggle theme">
                     {isDark ? <FiSun /> : <FiMoon />}
                 </button>
+                <NotificationBell buttonClassName="dash-header-btn" />
                 <ProfileAvatar
                     src={avatarSrc}
                     name={avatarName}
