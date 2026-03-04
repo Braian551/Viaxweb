@@ -14,6 +14,31 @@ export const getEmpresaSettings = async (empresaId) => {
     } catch (e) { return { success: false, message: 'Error de conexión' }; }
 };
 
+export const getEmpresaBalance = async (empresaId) => {
+    try {
+        const res = await fetch(`${API_BASE_URL}/company/get_balance.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } });
+        return await res.json();
+    } catch (e) { return { success: false, message: 'Error de conexión' }; }
+};
+
+export const getEmpresaPricing = async (empresaId) => {
+    try {
+        const res = await fetch(`${API_BASE_URL}/company/pricing.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } });
+        return await res.json();
+    } catch (e) { return { success: false, message: 'Error de conexión' }; }
+};
+
+export const updateEmpresaPricing = async (empresaId, precios) => {
+    try {
+        const res = await fetch(`${API_BASE_URL}/company/pricing.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ empresa_id: empresaId, precios }),
+        });
+        return await res.json();
+    } catch (e) { return { success: false, message: 'Error de conexión' }; }
+};
+
 export const updateEmpresaSettings = async (data) => {
     try {
         const res = await fetch(`${API_BASE_URL}/empresa/settings.php`, {
