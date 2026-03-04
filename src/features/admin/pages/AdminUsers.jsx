@@ -9,6 +9,7 @@ import ProfileAvatar from '../../shared/components/ProfileAvatar';
 import StatusBadge from '../../shared/components/StatusBadge';
 import EmptyState from '../../shared/components/EmptyState';
 import { ShimmerTable } from '../../shared/components/ShimmerLoader';
+import './AdminUsers.css';
 
 const ROLE_FILTERS = [
     { value: '', label: 'Todos' },
@@ -63,6 +64,19 @@ const AdminUsers = () => {
         setPage(1);
     };
 
+    const toRoleLabel = (role) => {
+        switch (role) {
+            case 'administrador': return 'Admin';
+            case 'conductor': return 'Conductor';
+            case 'empresa': return 'Empresa';
+            case 'cliente':
+            default:
+                return 'Cliente';
+        }
+    };
+
+    const isUserActive = (value) => value === true || value === 1 || value === '1' || value === 't';
+
     return (
         <div className="v-dashboard">
             <PageHeader
@@ -99,8 +113,8 @@ const AdminUsers = () => {
                         description="No se encontraron usuarios con los filtros aplicados."
                     />
                 ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                        <table className="v-data-table">
+                    <div className="v-table-wrapper">
+                        <table className="v-table admin-users-table">
                             <thead>
                                 <tr>
                                     <th>Usuario</th>
@@ -129,12 +143,12 @@ const AdminUsers = () => {
                                             </div>
                                         </td>
                                         <td>
-                                            <span className="v-role-badge" style={{ '--role-color': ROLE_COLORS[u.tipo_usuario] || '#2196f3' }}>
-                                                {u.tipo_usuario}
+                                            <span className="admin-users-role" style={{ '--role-color': ROLE_COLORS[u.tipo_usuario] || '#2196f3' }}>
+                                                {toRoleLabel(u.tipo_usuario)}
                                             </span>
                                         </td>
                                         <td>
-                                            <StatusBadge status={u.es_activo === 1 ? 'activo' : 'inactivo'} />
+                                            <StatusBadge status={isUserActive(u.es_activo) ? 'activo' : 'inactivo'} />
                                         </td>
                                         <td>{u.telefono || 'N/A'}</td>
                                         <td>{new Date(u.fecha_registro).toLocaleDateString()}</td>

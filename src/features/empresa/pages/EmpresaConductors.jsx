@@ -34,11 +34,11 @@ const EmpresaConductors = () => {
 
     useEffect(() => { if (user) fetchData(); }, [user]);
 
-    const handleAction = async (solId, accion) => {
+    const handleAction = async (conductorId, accion) => {
         const confirmMsg = accion === 'aprobar' ? '¿Aprobar esta solicitud?' : '¿Rechazar esta solicitud?';
         if (!window.confirm(confirmMsg)) return;
-        setActionLoading(solId);
-        const res = await gestionarSolicitud(empresaId, solId, accion);
+        setActionLoading(conductorId);
+        const res = await gestionarSolicitud(empresaId, conductorId, accion, '', user?.id);
         alert(res.message || (res.success ? 'Acción realizada' : 'Error'));
         if (res.success) fetchData();
         setActionLoading(null);
@@ -99,23 +99,23 @@ const EmpresaConductors = () => {
                                 Solicitado: {s.fecha_solicitud ? new Date(s.fecha_solicitud).toLocaleDateString() : '—'}
                             </div>
 
-                            {s.estado === 'pendiente' && (
+                            {s.estado === 'pendiente' && s.es_solicitud_pendiente && (
                                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: 4 }}>
                                     <button
                                         className="v-btn v-btn--outline v-btn--danger"
-                                        onClick={() => handleAction(s.id, 'rechazar')}
-                                        disabled={actionLoading === s.id}
+                                        onClick={() => handleAction(s.conductor_id, 'rechazar')}
+                                        disabled={actionLoading === s.conductor_id}
                                         style={{ fontSize: '0.8rem', padding: '6px 14px' }}
                                     >
                                         <FiX size={14} /> Rechazar
                                     </button>
                                     <button
                                         className="v-btn v-btn--success"
-                                        onClick={() => handleAction(s.id, 'aprobar')}
-                                        disabled={actionLoading === s.id}
+                                        onClick={() => handleAction(s.conductor_id, 'aprobar')}
+                                        disabled={actionLoading === s.conductor_id}
                                         style={{ fontSize: '0.8rem', padding: '6px 14px' }}
                                     >
-                                        {actionLoading === s.id ? <><FiRefreshCw size={14} className="v-spin" /> Procesando...</> : <><FiCheck size={14} /> Aprobar</>}
+                                        {actionLoading === s.conductor_id ? <><FiRefreshCw size={14} className="v-spin" /> Procesando...</> : <><FiCheck size={14} /> Aprobar</>}
                                     </button>
                                 </div>
                             )}

@@ -1,0 +1,28 @@
+.admin-users-table {
+    min-width: 760px;
+}
+
+.admin-users-table tbody td {
+    vertical-align: middle;
+}
+
+.admin-users-role {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    color: var(--role-color);
+    background: color-mix(in srgb, var(--role-color) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--role-color) 35%, transparent);
+    text-transform: uppercase;
+}
+
+@supports not (color: color-mix(in srgb, red 50%, white)) {
+    .admin-users-role {
+        background: rgba(33, 150, 243, 0.12);
+        border-color: rgba(33, 150, 243, 0.24);
+    }
+}

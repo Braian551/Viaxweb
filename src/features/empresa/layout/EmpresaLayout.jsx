@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { FiHome, FiUsers, FiDollarSign, FiSettings, FiBell, FiLogOut, FiX } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
+import { getEmpresaProfile } from '../services/empresaService';
 import DashboardHeader from '../../shared/components/DashboardHeader';
 import '../../shared/DashboardLayout.css';
 
@@ -9,8 +10,34 @@ const EmpresaLayout = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [companyBrand, setCompanyBrand] = useState({ name: 'Empresa', logo: '/logo.png' });
 
     const handleLogout = () => { logout(); navigate('/login'); };
+
+    useEffect(() => {
+        let mounted = true;
+
+        const loadCompanyProfile = async () => {
+            const empresaId = user?.empresa_id || user?.id;
+            if (!empresaId) return;
+
+            const res = await getEmpresaProfile(empresaId);
+            const profile = res?.data?.empresa || res?.data || res?.empresa || res || {};
+
+            if (!mounted) return;
+
+            setCompanyBrand({
+                name: profile?.nombre_empresa || profile?.nombre || 'Empresa',
+                logo: profile?.logo_url || '/logo.png',
+            });
+        };
+
+        loadCompanyProfile();
+
+        return () => {
+            mounted = false;
+        };
+    }, [user]);
 
     const navItems = [
         { path: '/empresa', label: 'Dashboard', icon: <FiHome />, end: true },
@@ -25,8 +52,13 @@ const EmpresaLayout = () => {
             <div className={`dash-sidebar-overlay ${sidebarOpen ? 'active' : ''}`} onClick={() => setSidebarOpen(false)} />
             <aside className={`dash-sidebar ${sidebarOpen ? 'open' : ''}`}>
                 <div className="dash-sidebar-header">
-                    <img src="/logo.png" alt="Viax" className="dash-sidebar-logo" />
-                    <h2 className="dash-sidebar-title">Empresa</h2>
+                    <img
+                        src={companyBrand.logo}
+                        alt={companyBrand.name}
+                        className="dash-sidebar-logo"
+                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/logo.png'; }}
+                    />
+                    <h2 className="dash-sidebar-title" title={companyBrand.name}>{companyBrand.name}</h2>
                     <button className="dash-menu-btn" onClick={() => setSidebarOpen(false)} style={{ marginLeft: 'auto' }}><FiX /></button>
                 </div>
                 <nav className="dash-sidebar-nav">
