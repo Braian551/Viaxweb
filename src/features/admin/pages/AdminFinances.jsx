@@ -57,7 +57,7 @@ const AdminFinances = () => {
                 <PageHeader title="Finanzas" subtitle="Ganancias de plataforma y movimientos" />
                 <div className="v-period-selector">
                     {PERIODS.map(p => (
-                        <button key={p} className={`v-period-selector__btn ${periodo === p ? 'active' : ''}`} onClick={() => setPeriodo(p)}>
+                        <button key={p} className={`v-period-btn ${periodo === p ? 'active' : ''}`} onClick={() => setPeriodo(p)}>
                             {p}
                         </button>
                     ))}

@@ -56,7 +56,7 @@ const AdminAudit = () => {
         <div className="v-dashboard">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
                 <PageHeader title="Auditoría del Sistema" subtitle={`Registro de actividades y trazabilidad. Total: ${totalLogs}`} />
-                <button className="v-btn v-btn--outline" onClick={fetchLogs}>
+                <button className="v-btn-outline" onClick={fetchLogs}>
                     <FiRefreshCw size={16} /> Refrescar
                 </button>
             </div>
@@ -91,7 +91,7 @@ const AdminAudit = () => {
                                 <label className="v-form-label"><FiCalendar size={13} /> Hasta</label>
                                 <input type="date" className="v-form-input" value={fechaHasta} onChange={(e) => { setFechaHasta(e.target.value); setPage(1); }} />
                             </div>
-                            <button className="v-btn v-btn--outline" onClick={handleClearFilters} style={{ width: '100%' }}>Limpiar Filtros</button>
+                            <button className="v-btn-outline" onClick={handleClearFilters} style={{ width: '100%' }}>Limpiar Filtros</button>
                         </div>
                     </div>
 
@@ -128,8 +128,8 @@ const AdminAudit = () => {
                     ) : logs.length === 0 ? (
                         <EmptyState icon={<FiActivity size={48} />} title="Sin registros" description="No se encontraron registros de auditoría." />
                     ) : (
-                        <div style={{ overflowX: 'auto' }}>
-                            <table className="v-data-table">
+                        <div className="v-table-wrapper">
+                            <table className="v-table">
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>

@@ -3,6 +3,7 @@ import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { FiHome, FiUsers, FiDollarSign, FiSettings, FiBell, FiLogOut, FiX } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getEmpresaProfile } from '../services/empresaService';
+import { getR2ImageUrl } from '../../../utils/r2Images';
 import DashboardHeader from '../../shared/components/DashboardHeader';
 import '../../shared/DashboardLayout.css';
 
@@ -26,9 +27,24 @@ const EmpresaLayout = () => {
 
             if (!mounted) return;
 
+            const resolvedName =
+                profile?.nombre_empresa ||
+                profile?.nombre ||
+                user?.empresa_nombre ||
+                user?.nombre_empresa ||
+                user?.nombre ||
+                'Empresa';
+
+            const rawLogo =
+                profile?.logo_url ||
+                user?.empresa_logo ||
+                user?.logo_url ||
+                user?.foto_perfil ||
+                '';
+
             setCompanyBrand({
-                name: profile?.nombre_empresa || profile?.nombre || 'Empresa',
-                logo: profile?.logo_url || '/logo.png',
+                name: resolvedName,
+                logo: rawLogo ? getR2ImageUrl(rawLogo) : '/logo.png',
             });
         };
 
@@ -85,8 +101,8 @@ const EmpresaLayout = () => {
                     roleLabel="EMPRESA"
                     roleClass="empresa"
                     onMenuClick={() => setSidebarOpen(true)}
-                    avatarSrc={user?.foto_perfil}
-                    avatarName={user?.nombre || 'Empresa'}
+                    avatarSrc={companyBrand.logo}
+                    avatarName={companyBrand.name || user?.nombre || 'Empresa'}
                     avatarColor="#9c27b0"
                 />
                 <main className="dash-content"><Outlet /></main>

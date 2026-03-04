@@ -167,9 +167,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 0;
+    padding: 12px 14px;
     gap: 16px;
     flex-wrap: wrap;
+    border-radius: 12px;
+    background: var(--v-glass-bg);
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.06));
 }
 
 .v-pagination__info {
@@ -181,6 +184,7 @@
 .v-pagination__actions {
     display: flex;
     gap: 8px;
+    margin-left: auto;
 }
 
 .v-pagination__btn {
