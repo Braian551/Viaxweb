@@ -112,7 +112,7 @@
     align-items: flex-start;
     gap: 10px;
     border-radius: 12px;
-    padding: 10px 68px 10px 10px;
+    padding: 10px 86px 10px 10px;
     text-align: left;
     cursor: pointer;
     position: relative;
@@ -172,17 +172,22 @@
     height: 8px;
     border-radius: 999px;
     background: var(--primary, #2196f3);
-    position: absolute;
-    right: 48px;
-    top: 50%;
-    transform: translateY(-50%);
+    position: static;
+    flex-shrink: 0;
 }
 
-.notif-item__delete {
+.notif-item__meta-actions {
     position: absolute;
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notif-item__delete {
+    position: static;
     width: 28px;
     height: 28px;
     border-radius: 8px;

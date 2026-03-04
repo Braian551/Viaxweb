@@ -105,7 +105,7 @@
     border-radius: 14px;
     width: 100%;
     text-align: left;
-    padding: 12px 70px 12px 12px;
+    padding: 12px 88px 12px 12px;
     display: flex;
     align-items: flex-start;
     gap: 12px;
@@ -161,21 +161,26 @@
 }
 
 .dash-notif-item__dot {
-    position: absolute;
-    right: 50px;
-    top: 50%;
-    transform: translateY(-50%);
+    position: static;
     width: 8px;
     height: 8px;
     border-radius: 999px;
     background: var(--primary, #2196f3);
+    flex-shrink: 0;
 }
 
-.dash-notif-item__delete {
+.dash-notif-item__meta-actions {
     position: absolute;
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dash-notif-item__delete {
+    position: static;
     color: #f44336;
     width: 30px;
     height: 30px;

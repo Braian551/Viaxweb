@@ -401,25 +401,27 @@ const DashboardNotificationsPage = ({ roleType = 'admin' }) => {
                                 <span>{notification.mensaje}</span>
                                 <small>{getRelativeTime(notification.created_at)}</small>
                             </span>
-                            <span
-                                role="button"
-                                tabIndex={0}
-                                className="dash-notif-item__delete"
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                    handleStageDeleteOne(notification);
-                                }}
-                                onKeyDown={(event) => {
-                                    if (event.key === 'Enter' || event.key === ' ') {
-                                        event.preventDefault();
+                            <span className="dash-notif-item__meta-actions">
+                                {!notification.leida && <span className="dash-notif-item__dot" />}
+                                <span
+                                    role="button"
+                                    tabIndex={0}
+                                    className="dash-notif-item__delete"
+                                    onClick={(event) => {
                                         event.stopPropagation();
                                         handleStageDeleteOne(notification);
-                                    }
-                                }}
-                            >
-                                <FiTrash2 />
+                                    }}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter' || event.key === ' ') {
+                                            event.preventDefault();
+                                            event.stopPropagation();
+                                            handleStageDeleteOne(notification);
+                                        }
+                                    }}
+                                >
+                                    <FiTrash2 />
+                                </span>
                             </span>
-                            {!notification.leida && <span className="dash-notif-item__dot" />}
                         </button>
                     );
                 })}

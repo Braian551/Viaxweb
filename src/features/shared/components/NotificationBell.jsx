@@ -324,25 +324,27 @@ const NotificationBell = ({ buttonClassName }) => {
                                         <span className="notif-item__message">{notification.mensaje}</span>
                                         <span className="notif-item__time">{formatRelativeTime(notification.created_at)}</span>
                                     </span>
-                                    <span
-                                        role="button"
-                                        tabIndex={0}
-                                        className="notif-item__delete"
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-                                            handleStageDeleteOne(notification);
-                                        }}
-                                        onKeyDown={(event) => {
-                                            if (event.key === 'Enter' || event.key === ' ') {
-                                                event.preventDefault();
+                                    <span className="notif-item__meta-actions">
+                                        {!notification.leida && <span className="notif-item__dot" />}
+                                        <span
+                                            role="button"
+                                            tabIndex={0}
+                                            className="notif-item__delete"
+                                            onClick={(event) => {
                                                 event.stopPropagation();
                                                 handleStageDeleteOne(notification);
-                                            }
-                                        }}
-                                    >
-                                        <FiTrash2 />
+                                            }}
+                                            onKeyDown={(event) => {
+                                                if (event.key === 'Enter' || event.key === ' ') {
+                                                    event.preventDefault();
+                                                    event.stopPropagation();
+                                                    handleStageDeleteOne(notification);
+                                                }
+                                            }}
+                                        >
+                                            <FiTrash2 />
+                                        </span>
                                     </span>
-                                    {!notification.leida && <span className="notif-item__dot" />}
                                 </button>
                             );
                         })}
