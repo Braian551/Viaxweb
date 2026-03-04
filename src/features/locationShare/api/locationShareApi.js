@@ -5,7 +5,7 @@
  * Uses polling to fetch the sharer's position.
  */
 
-const API_URL = __API_URL__;
+import { API_BASE_URL } from '../../../config/env';
 
 /**
  * Fetches the current shared location for a given token.
@@ -13,12 +13,19 @@ const API_URL = __API_URL__;
  * @returns {Promise<{success: boolean, data?: object, message?: string, expired?: boolean}>}
  */
 export async function fetchSharedLocation(token) {
-  const url = `${API_URL}/location_sharing/get_location.php?token=${encodeURIComponent(token)}`;
+  const url = `${API_BASE_URL}/location_sharing/get_location.php?token=${encodeURIComponent(token)}`;
 
   const response = await fetch(url, {
     method: 'GET',
     headers: { Accept: 'application/json' },
   });
+
+  if (response.status !== 200 && response.status !== 410) {
+    return {
+      success: false,
+      message: `Error HTTP ${response.status}`,
+    };
+  }
 
   const json = await response.json();
 

@@ -1,5 +1,5 @@
 .admin-users-table {
-    min-width: 760px;
+    min-width: 940px;
 }
 
 .admin-users-table tbody td {
@@ -25,4 +25,109 @@
         background: rgba(33, 150, 243, 0.12);
         border-color: rgba(33, 150, 243, 0.24);
     }
+}
+
+.admin-users-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.admin-users-action-btn {
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 10px;
+    padding: 6px 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-users-action-btn:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.admin-users-action-btn.success:hover:not(:disabled) {
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.admin-users-action-btn.warning:hover:not(:disabled) {
+    border-color: var(--text-secondary);
+    color: var(--text-secondary);
+}
+
+.admin-users-action-btn.primary {
+    background: var(--primary);
+    color: var(--bg-alt);
+    border-color: var(--primary);
+}
+
+.admin-users-action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.admin-users-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: var(--glass, rgba(0, 0, 0, 0.35));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 16px;
+}
+
+.admin-users-modal {
+    width: min(520px, 100%);
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.admin-users-modal h3 {
+    margin: 0 0 14px;
+    color: var(--text);
+}
+
+.admin-users-form {
+    display: grid;
+    gap: 12px;
+}
+
+.admin-users-form label {
+    display: grid;
+    gap: 6px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.admin-users-form input,
+.admin-users-form select {
+    width: 100%;
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.12));
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: transparent;
+    color: var(--text);
+    outline: none;
+}
+
+.admin-users-form input:focus,
+.admin-users-form select:focus {
+    border-color: var(--primary);
+}
+
+.admin-users-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 4px;
 }

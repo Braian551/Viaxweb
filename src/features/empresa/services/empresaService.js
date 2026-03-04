@@ -1,67 +1,54 @@
 import { API_BASE_URL } from '../../../config/env';
+import { requestJson } from '../../../config/httpClient';
 
 export const getEmpresaProfile = async (empresaId) => {
-    try {
-        const res = await fetch(`${API_BASE_URL}/empresa/profile.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } });
-        return await res.json();
-    } catch (e) { return { success: false, message: 'Error de conexión' }; }
+    return await requestJson(`${API_BASE_URL}/empresa/profile.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } }, 'Error de conexión');
 };
 
 export const getEmpresaSettings = async (empresaId) => {
-    try {
-        const res = await fetch(`${API_BASE_URL}/empresa/settings.php?empresa_id=${empresaId}&action=get_settings`, { headers: { Accept: 'application/json' } });
-        return await res.json();
-    } catch (e) { return { success: false, message: 'Error de conexión' }; }
+    return await requestJson(`${API_BASE_URL}/empresa/settings.php?empresa_id=${empresaId}&action=get_settings`, { headers: { Accept: 'application/json' } }, 'Error de conexión');
 };
 
 export const getEmpresaBalance = async (empresaId) => {
-    try {
-        const res = await fetch(`${API_BASE_URL}/company/get_balance.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } });
-        return await res.json();
-    } catch (e) { return { success: false, message: 'Error de conexión' }; }
+    return await requestJson(`${API_BASE_URL}/company/get_balance.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } }, 'Error de conexión');
 };
 
 export const getEmpresaPricing = async (empresaId) => {
-    try {
-        const res = await fetch(`${API_BASE_URL}/company/pricing.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } });
-        return await res.json();
-    } catch (e) { return { success: false, message: 'Error de conexión' }; }
+    return await requestJson(`${API_BASE_URL}/company/pricing.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } }, 'Error de conexión');
 };
 
 export const updateEmpresaPricing = async (empresaId, precios) => {
-    try {
-        const res = await fetch(`${API_BASE_URL}/company/pricing.php`, {
+    return await requestJson(
+        `${API_BASE_URL}/company/pricing.php`,
+        {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
             body: JSON.stringify({ empresa_id: empresaId, precios }),
-        });
-        return await res.json();
-    } catch (e) { return { success: false, message: 'Error de conexión' }; }
+        },
+        'Error de conexión'
+    );
 };
 
 export const updateEmpresaSettings = async (data) => {
-    try {
-        const res = await fetch(`${API_BASE_URL}/empresa/settings.php`, {
+    return await requestJson(
+        `${API_BASE_URL}/empresa/settings.php`,
+        {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
             body: JSON.stringify({ ...data, action: 'update_settings' })
-        });
-        return await res.json();
-    } catch (e) { return { success: false, message: 'Error de conexión' }; }
+        },
+        'Error de conexión'
+    );
 };
 
 export const getConductoresEmpresa = async (empresaId) => {
-    try {
-        const res = await fetch(`${API_BASE_URL}/conductor/get_pendientes_empresa.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } });
-        return await res.json();
-    } catch (e) { return { success: false, message: 'Error de conexión' }; }
+    return await requestJson(`${API_BASE_URL}/conductor/get_pendientes_empresa.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } }, 'Error de conexión');
 };
 
 export const getSolicitudesVinculacion = async (empresaId, { page = 1, perPage = 20 } = {}) => {
     try {
         const params = new URLSearchParams({ empresa_id: empresaId, incluir_solicitudes: 'true', page, per_page: perPage });
-        const res = await fetch(`${API_BASE_URL}/company/conductores_documentos.php?${params}`, { headers: { Accept: 'application/json' } });
-        const data = await res.json();
+        const data = await requestJson(`${API_BASE_URL}/company/conductores_documentos.php?${params}`, { headers: { Accept: 'application/json' } }, 'Error de conexión');
 
         if (!data?.success) {
             return data;
@@ -102,9 +89,11 @@ export const getSolicitudesVinculacion = async (empresaId, { page = 1, perPage =
 };
 
 export const gestionarSolicitud = async (empresaId, solicitudId, accion, motivo = '', procesadoPor = null) => {
-    try {
-        const mappedAction = accion === 'aprobar' ? 'aprobar_solicitud' : 'rechazar_solicitud';
-        const res = await fetch(`${API_BASE_URL}/company/conductores_documentos.php`, {
+    const mappedAction = accion === 'aprobar' ? 'aprobar_solicitud' : 'rechazar_solicitud';
+
+    return await requestJson(
+        `${API_BASE_URL}/company/conductores_documentos.php`,
+        {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
             body: JSON.stringify({
@@ -114,7 +103,7 @@ export const gestionarSolicitud = async (empresaId, solicitudId, accion, motivo 
                 procesado_por: procesadoPor || empresaId,
                 razon: motivo,
             })
-        });
-        return await res.json();
-    } catch (e) { return { success: false, message: 'Error de conexión' }; }
+        },
+        'Error de conexión'
+    );
 };

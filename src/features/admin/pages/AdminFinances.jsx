@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FiDollarSign, FiTrendingUp, FiCreditCard, FiAlertTriangle, FiArrowDownRight, FiBriefcase } from 'react-icons/fi';
+import { FiDollarSign, FiTrendingUp, FiCreditCard, FiAlertTriangle, FiArrowDownRight, FiArrowUpRight, FiBriefcase } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getPlatformEarnings } from '../services/adminService';
 import PageHeader from '../../shared/components/PageHeader';
@@ -39,7 +39,10 @@ const AdminFinances = () => {
     const formatCurrency = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
 
     const { resumen, empresas_deudoras, ultimos_movimientos } = finances || {};
-    const movimientosChartData = (ultimos_movimientos || []).slice(0, 8).map((mov, index) => ({
+
+    const pagosMovimientos = (ultimos_movimientos || []).filter((mov) => mov.tipo === 'pago');
+
+    const movimientosChartData = pagosMovimientos.slice(0, 8).map((mov, index) => ({
         fecha: mov.fecha ? new Date(mov.fecha).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }) : `M${index + 1}`,
         monto: Number(mov.monto || 0),
     }));
@@ -133,12 +136,12 @@ const AdminFinances = () => {
                                 <div className="v-section__icon" style={{ background: 'rgba(255, 152, 0, 0.1)' }}>
                                     <FiAlertTriangle size={20} color="#ff9800" />
                                 </div>
-                                <h2 className="v-section__title">Cuentas por cobrar (Top 10)</h2>
+                                <h2 className="v-section__title">Empresas (Top 10)</h2>
                             </div>
 
-                            {empresas_deudoras && empresas_deudoras.filter(e => e.saldo_pendiente > 0).length > 0 ? (
+                            {empresas_deudoras && empresas_deudoras.length > 0 ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                    {empresas_deudoras.filter(e => e.saldo_pendiente > 0).map(empresa => (
+                                    {empresas_deudoras.map(empresa => (
                                         <div key={empresa.id} className="v-activity-item" style={{ padding: '12px', background: 'var(--bg)', borderRadius: '14px' }}>
                                             <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flex: 1 }}>
                                                 <ProfileAvatar src={empresa.logo_url} name={empresa.nombre} size={38} borderRadius={10} bgColor="#ff9800" />
@@ -147,22 +150,29 @@ const AdminFinances = () => {
                                                     <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{empresa.total_viajes} viajes &bull; {empresa.comision_porcentaje}% com</div>
                                                 </div>
                                             </div>
-                                            <div style={{ fontWeight: 800, color: '#f44336', fontSize: '0.95rem' }}>{formatCurrency(empresa.saldo_pendiente)}</div>
+                                            <div style={{ textAlign: 'right' }}>
+                                                <div style={{ fontWeight: 800, color: Number(empresa.saldo_pendiente || 0) > 0 ? '#f44336' : '#4caf50', fontSize: '0.95rem' }}>
+                                                    {formatCurrency(empresa.saldo_pendiente)}
+                                                </div>
+                                                <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
+                                                    {Number(empresa.saldo_pendiente || 0) > 0 ? 'Pendiente' : 'Al día'}
+                                                </div>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
                             ) : (
-                                <EmptyState icon={<FiDollarSign size={40} />} title="Sin deudas" description="No hay empresas con saldos pendientes." />
+                                <EmptyState icon={<FiDollarSign size={40} />} title="Sin empresas" description="No hay empresas registradas para mostrar." />
                             )}
                         </div>
 
-                        {/* Últimos Pagos */}
+                        {/* Últimos Movimientos */}
                         <div className="glass-card v-section">
                             <div className="v-section__header">
                                 <div className="v-section__icon" style={{ background: 'rgba(76, 175, 80, 0.1)' }}>
                                     <FiDollarSign size={20} color="#4caf50" />
                                 </div>
-                                <h2 className="v-section__title">Últimos Pagos Recibidos</h2>
+                                <h2 className="v-section__title">Últimos Movimientos</h2>
                             </div>
 
                             {ultimos_movimientos && ultimos_movimientos.length > 0 ? (
@@ -171,16 +181,31 @@ const AdminFinances = () => {
                                         <div key={mov.id} className="v-activity-item">
                                             <div className="v-activity-item__content">
                                                 <div className="v-activity-item__title">{mov.empresa_nombre}</div>
-                                                <div className="v-activity-item__meta">{new Date(mov.fecha).toLocaleString()} &bull; {mov.descripcion}</div>
+                                                <div className="v-activity-item__meta">
+                                                    {new Date(mov.fecha).toLocaleString()} &bull; {mov.tipo === 'pago' ? 'Pago recibido' : 'Comisión generada'}
+                                                </div>
                                             </div>
-                                            <span style={{ fontWeight: 800, color: '#4caf50', background: 'rgba(76, 175, 80, 0.1)', padding: '6px 12px', borderRadius: '8px', fontSize: '0.85rem' }}>
-                                                +{formatCurrency(mov.monto)}
+                                            <span
+                                                style={{
+                                                    fontWeight: 800,
+                                                    color: mov.tipo === 'pago' ? '#4caf50' : '#ff9800',
+                                                    background: mov.tipo === 'pago' ? 'rgba(76, 175, 80, 0.1)' : 'rgba(255, 152, 0, 0.1)',
+                                                    padding: '6px 12px',
+                                                    borderRadius: '8px',
+                                                    fontSize: '0.85rem',
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px'
+                                                }}
+                                            >
+                                                {mov.tipo === 'pago' ? <FiArrowDownRight size={14} /> : <FiArrowUpRight size={14} />}
+                                                {mov.tipo === 'pago' ? '+' : ''}{formatCurrency(mov.monto)}
                                             </span>
                                         </div>
                                     ))}
                                 </div>
                             ) : (
-                                <EmptyState icon={<FiCreditCard size={40} />} title="Sin pagos" description="No hay pagos registrados recientemente." />
+                                <EmptyState icon={<FiCreditCard size={40} />} title="Sin movimientos" description="No hay movimientos registrados recientemente." />
                             )}
                         </div>
                     </div>

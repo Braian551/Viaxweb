@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '../../../config/env';
+import { requestJson } from '../../../config/httpClient';
 
 const NOTIFICATIONS_API_URL = `${API_BASE_URL}/notifications`;
 
@@ -18,62 +19,49 @@ export async function getNotifications({
     soloNoLeidas = false,
     tipo,
 }) {
-    try {
-        const query = toQueryString({
-            usuario_id: userId,
-            page,
-            limit,
-            solo_no_leidas: soloNoLeidas ? 'true' : undefined,
-            tipo,
-        });
+    const query = toQueryString({
+        usuario_id: userId,
+        page,
+        limit,
+        solo_no_leidas: soloNoLeidas ? 'true' : undefined,
+        tipo,
+    });
 
-        const response = await fetch(`${NOTIFICATIONS_API_URL}/get_notifications.php?${query}`, {
+    const data = await requestJson(
+        `${NOTIFICATIONS_API_URL}/get_notifications.php?${query}`,
+        {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
-        });
+        },
+        'Error de conexión al cargar notificaciones'
+    );
 
-        if (!response.ok) {
-            return { success: false, error: `HTTP ${response.status}` };
-        }
-
-        const data = await response.json();
-        return {
-            success: !!data?.success,
-            notificaciones: data?.notificaciones || [],
-            no_leidas: data?.no_leidas || 0,
-            pagination: data?.pagination || null,
-            error: data?.error,
-        };
-    } catch (error) {
-        console.error('Error getNotifications:', error);
-        return { success: false, error: 'Error de conexión al cargar notificaciones' };
-    }
+    return {
+        success: !!data?.success,
+        notificaciones: data?.notificaciones || [],
+        no_leidas: data?.no_leidas || 0,
+        pagination: data?.pagination || null,
+        error: data?.error || data?.message,
+    };
 }
 
 export async function getUnreadCount({ userId }) {
-    try {
-        const query = toQueryString({ usuario_id: userId });
-        const response = await fetch(`${NOTIFICATIONS_API_URL}/get_unread_count.php?${query}`, {
+    const query = toQueryString({ usuario_id: userId });
+    const data = await requestJson(
+        `${NOTIFICATIONS_API_URL}/get_unread_count.php?${query}`,
+        {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
-        });
-
-        if (!response.ok) {
-            return 0;
-        }
-
-        const data = await response.json();
-        return data?.count || 0;
-    } catch (error) {
-        console.error('Error getUnreadCount:', error);
-        return 0;
-    }
+        },
+        'Error de conexión al cargar no leídas'
+    );
+    return data?.count || 0;
 }
 
 export async function markAsRead({
@@ -82,40 +70,34 @@ export async function markAsRead({
     notificationIds,
     markAll = false,
 }) {
-    try {
-        const body = {
-            usuario_id: userId,
-            ...(notificationId ? { notification_id: notificationId } : {}),
-            ...(Array.isArray(notificationIds) && notificationIds.length
-                ? { notification_ids: notificationIds }
-                : {}),
-            ...(markAll ? { mark_all: true } : {}),
-        };
+    const body = {
+        usuario_id: userId,
+        ...(notificationId ? { notification_id: notificationId } : {}),
+        ...(Array.isArray(notificationIds) && notificationIds.length
+            ? { notification_ids: notificationIds }
+            : {}),
+        ...(markAll ? { mark_all: true } : {}),
+    };
 
-        const response = await fetch(`${NOTIFICATIONS_API_URL}/mark_as_read.php`, {
+    const data = await requestJson(
+        `${NOTIFICATIONS_API_URL}/mark_as_read.php`,
+        {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
             body: JSON.stringify(body),
-        });
+        },
+        'Error de conexión al actualizar notificaciones'
+    );
 
-        if (!response.ok) {
-            return { success: false, error: `HTTP ${response.status}` };
-        }
-
-        const data = await response.json();
-        return {
-            success: !!data?.success,
-            no_leidas: data?.no_leidas ?? 0,
-            affected: data?.affected ?? 0,
-            error: data?.error,
-        };
-    } catch (error) {
-        console.error('Error markAsRead:', error);
-        return { success: false, error: 'Error de conexión al actualizar notificaciones' };
-    }
+    return {
+        success: !!data?.success,
+        no_leidas: data?.no_leidas ?? 0,
+        affected: data?.affected ?? 0,
+        error: data?.error || data?.message,
+    };
 }
 
 export async function deleteNotification({
@@ -124,38 +106,32 @@ export async function deleteNotification({
     notificationIds,
     deleteAll = false,
 }) {
-    try {
-        const body = {
-            usuario_id: userId,
-            ...(notificationId ? { notification_id: notificationId } : {}),
-            ...(Array.isArray(notificationIds) && notificationIds.length
-                ? { notification_ids: notificationIds }
-                : {}),
-            ...(deleteAll ? { delete_all: true } : {}),
-        };
+    const body = {
+        usuario_id: userId,
+        ...(notificationId ? { notification_id: notificationId } : {}),
+        ...(Array.isArray(notificationIds) && notificationIds.length
+            ? { notification_ids: notificationIds }
+            : {}),
+        ...(deleteAll ? { delete_all: true } : {}),
+    };
 
-        const response = await fetch(`${NOTIFICATIONS_API_URL}/delete_notification.php`, {
+    const data = await requestJson(
+        `${NOTIFICATIONS_API_URL}/delete_notification.php`,
+        {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
             body: JSON.stringify(body),
-        });
+        },
+        'Error de conexión al eliminar notificaciones'
+    );
 
-        if (!response.ok) {
-            return { success: false, error: `HTTP ${response.status}` };
-        }
-
-        const data = await response.json();
-        return {
-            success: !!data?.success,
-            no_leidas: data?.no_leidas ?? 0,
-            affected: data?.affected ?? 0,
-            error: data?.error,
-        };
-    } catch (error) {
-        console.error('Error deleteNotification:', error);
-        return { success: false, error: 'Error de conexión al eliminar notificaciones' };
-    }
+    return {
+        success: !!data?.success,
+        no_leidas: data?.no_leidas ?? 0,
+        affected: data?.affected ?? 0,
+        error: data?.error || data?.message,
+    };
 }

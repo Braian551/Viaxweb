@@ -4,11 +4,12 @@ import { Helmet } from 'react-helmet-async';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useSharedLocation } from '../hooks/useSharedLocation';
+import { API_BASE_URL } from '../../../config/env';
 import '../styles/locationShare.css';
 
 // Deep link scheme
 const DEEP_LINK_SCHEME = 'viax://share/';
-const API_URL = __API_URL__;
+const API_URL = API_BASE_URL;
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 

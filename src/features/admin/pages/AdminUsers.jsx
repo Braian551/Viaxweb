@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { FiSearch, FiUsers } from 'react-icons/fi';
+import { FiEdit2, FiPauseCircle, FiPlayCircle, FiSearch, FiUsers } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
-import { getUsers } from '../services/adminService';
+import { getUsers, toggleUserStatus, updateUser } from '../services/adminService';
 import PageHeader from '../../shared/components/PageHeader';
 import FilterBar from '../../shared/components/FilterBar';
 import Pagination from '../../shared/components/Pagination';
@@ -36,6 +36,14 @@ const AdminUsers = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalUsers, setTotalUsers] = useState(0);
+    const [actionLoadingId, setActionLoadingId] = useState(null);
+    const [editingUser, setEditingUser] = useState(null);
+    const [editForm, setEditForm] = useState({
+        nombre: '',
+        apellido: '',
+        telefono: '',
+        tipo_usuario: 'cliente',
+    });
 
     useEffect(() => {
         const timer = setTimeout(() => setDebouncedSearch(search), 500);
@@ -76,6 +84,60 @@ const AdminUsers = () => {
     };
 
     const isUserActive = (value) => value === true || value === 1 || value === '1' || value === 't';
+
+    const openEditModal = (selectedUser) => {
+        setEditingUser(selectedUser);
+        setEditForm({
+            nombre: selectedUser.nombre || '',
+            apellido: selectedUser.apellido || '',
+            telefono: selectedUser.telefono || '',
+            tipo_usuario: selectedUser.tipo_usuario || 'cliente',
+        });
+    };
+
+    const closeEditModal = () => {
+        setEditingUser(null);
+    };
+
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+        if (!editingUser) return;
+
+        setActionLoadingId(editingUser.id);
+        const res = await updateUser(user.id, editingUser.id, {
+            nombre: editForm.nombre.trim(),
+            apellido: editForm.apellido.trim(),
+            telefono: editForm.telefono.trim(),
+            tipo_usuario: editForm.tipo_usuario,
+        });
+
+        alert(res.message || (res.success ? 'Usuario actualizado correctamente' : 'No se pudo actualizar el usuario'));
+
+        if (res.success) {
+            closeEditModal();
+            fetchUsersData();
+        }
+
+        setActionLoadingId(null);
+    };
+
+    const handleToggleStatus = async (targetUser) => {
+        const currentlyActive = isUserActive(targetUser.es_activo);
+        const nextStatusActive = !currentlyActive;
+        const actionLabel = nextStatusActive ? 'activar' : 'desactivar';
+
+        if (!window.confirm(`¿Estás seguro de que deseas ${actionLabel} a ${targetUser.nombre} ${targetUser.apellido}?`)) return;
+
+        setActionLoadingId(targetUser.id);
+        const res = await toggleUserStatus(user.id, targetUser.id, nextStatusActive);
+        alert(res.message || (res.success ? 'Estado actualizado correctamente' : 'No se pudo actualizar el estado'));
+
+        if (res.success) {
+            fetchUsersData();
+        }
+
+        setActionLoadingId(null);
+    };
 
     return (
         <div className="v-dashboard">
@@ -122,6 +184,7 @@ const AdminUsers = () => {
                                     <th>Estado</th>
                                     <th>Teléfono</th>
                                     <th>Registro</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -152,6 +215,33 @@ const AdminUsers = () => {
                                         </td>
                                         <td>{u.telefono || 'N/A'}</td>
                                         <td>{new Date(u.fecha_registro).toLocaleDateString()}</td>
+                                        <td>
+                                            <div className="admin-users-actions">
+                                                <button
+                                                    type="button"
+                                                    className="admin-users-action-btn"
+                                                    onClick={() => openEditModal(u)}
+                                                    disabled={actionLoadingId === u.id}
+                                                    title="Editar usuario"
+                                                >
+                                                    <FiEdit2 size={14} />
+                                                    Editar
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    className={`admin-users-action-btn ${isUserActive(u.es_activo) ? 'warning' : 'success'}`}
+                                                    onClick={() => handleToggleStatus(u)}
+                                                    disabled={actionLoadingId === u.id}
+                                                    title={isUserActive(u.es_activo) ? 'Desactivar usuario' : 'Activar usuario'}
+                                                >
+                                                    {isUserActive(u.es_activo) ? <FiPauseCircle size={14} /> : <FiPlayCircle size={14} />}
+                                                    {actionLoadingId === u.id
+                                                        ? 'Procesando...'
+                                                        : (isUserActive(u.es_activo) ? 'Desactivar' : 'Activar')}
+                                                </button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -165,6 +255,70 @@ const AdminUsers = () => {
                     </div>
                 )}
             </div>
+
+            {editingUser && (
+                <div className="admin-users-modal-backdrop" onClick={closeEditModal}>
+                    <div className="admin-users-modal" onClick={(e) => e.stopPropagation()}>
+                        <h3>Editar Usuario</h3>
+                        <form onSubmit={handleEditSubmit} className="admin-users-form">
+                            <label>
+                                Nombre
+                                <input
+                                    type="text"
+                                    value={editForm.nombre}
+                                    onChange={(e) => setEditForm((prev) => ({ ...prev, nombre: e.target.value }))}
+                                    required
+                                />
+                            </label>
+
+                            <label>
+                                Apellido
+                                <input
+                                    type="text"
+                                    value={editForm.apellido}
+                                    onChange={(e) => setEditForm((prev) => ({ ...prev, apellido: e.target.value }))}
+                                    required
+                                />
+                            </label>
+
+                            <label>
+                                Teléfono
+                                <input
+                                    type="text"
+                                    value={editForm.telefono}
+                                    onChange={(e) => setEditForm((prev) => ({ ...prev, telefono: e.target.value }))}
+                                />
+                            </label>
+
+                            <label>
+                                Rol
+                                <select
+                                    value={editForm.tipo_usuario}
+                                    onChange={(e) => setEditForm((prev) => ({ ...prev, tipo_usuario: e.target.value }))}
+                                >
+                                    <option value="cliente">Cliente</option>
+                                    <option value="conductor">Conductor</option>
+                                    <option value="empresa">Empresa</option>
+                                    <option value="administrador">Admin</option>
+                                </select>
+                            </label>
+
+                            <div className="admin-users-modal-actions">
+                                <button type="button" className="admin-users-action-btn" onClick={closeEditModal}>
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="admin-users-action-btn primary"
+                                    disabled={actionLoadingId === editingUser.id}
+                                >
+                                    {actionLoadingId === editingUser.id ? 'Guardando...' : 'Guardar cambios'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
