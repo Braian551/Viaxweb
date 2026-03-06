@@ -157,6 +157,26 @@
     box-shadow: none;
 }
 
+.auth-social-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1rem 0 0.25rem;
+    color: var(--text-secondary, #666);
+    font-size: 0.85rem;
+}
+
+.auth-social-separator::before,
+.auth-social-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border, rgba(0, 0, 0, 0.1));
+}
+
+.auth-social-separator span {
+    padding: 0 0.75rem;
+}
+
 .auth-error {
     background-color: rgba(244, 67, 54, 0.1);
     color: #d32f2f;

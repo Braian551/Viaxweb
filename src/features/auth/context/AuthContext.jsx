@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { loginUser, registerUser } from '../services/authService';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider, hasFirebaseConfig } from '../../../config/firebase';
+import { loginUser, loginWithGoogleToken, registerUser, updateGoogleUserPhone } from '../services/authService';
 
 const AuthContext = createContext(null);
 
@@ -54,13 +56,57 @@ export const AuthProvider = ({ children }) => {
         return response;
     };
 
+    const loginWithGoogle = async () => {
+        if (!hasFirebaseConfig || !auth || !googleProvider) {
+            return {
+                success: false,
+                message: 'Google Sign-In no está configurado en este entorno.',
+            };
+        }
+
+        try {
+            const popupResult = await signInWithPopup(auth, googleProvider);
+            const googleCredential = GoogleAuthProvider.credentialFromResult(popupResult);
+            const response = await loginWithGoogleToken({
+                idToken: googleCredential?.idToken || null,
+                accessToken: googleCredential?.accessToken || null,
+            });
+
+            if (response.success && response.data?.user) {
+                setUser(response.data.user);
+                localStorage.setItem('viax_user', JSON.stringify(response.data.user));
+            }
+
+            return response;
+        } catch (error) {
+            const firebaseCode = error?.code;
+            const firebaseMessage =
+                firebaseCode === 'auth/popup-closed-by-user'
+                    ? 'Cancelaste el inicio de sesión con Google.'
+                    : firebaseCode === 'auth/popup-blocked'
+                        ? 'El navegador bloqueó la ventana emergente de Google. Permite popups e inténtalo de nuevo.'
+                        : 'No se pudo iniciar sesión con Google.';
+
+            return { success: false, message: firebaseMessage };
+        }
+    };
+
     const logout = () => {
         setUser(null);
         localStorage.removeItem('viax_user');
     };
 
+    const completeGooglePhone = async ({ userId, phone }) => {
+        const response = await updateGoogleUserPhone({ userId, phone });
+        if (response.success && response.user) {
+            setUser(response.user);
+            localStorage.setItem('viax_user', JSON.stringify(response.user));
+        }
+        return response;
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+        <AuthContext.Provider value={{ user, loading, login, register, loginWithGoogle, completeGooglePhone, logout }}>
             {children}
         </AuthContext.Provider>
     );

@@ -135,7 +135,6 @@ const ForgotPasswordPage = () => {
                             id="newPassword"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
-                            placeholder="********"
                             icon={<FiLock />}
                             required
                         />

@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { FcGoogle } from 'react-icons/fc';
 import { useAuth } from '../context/AuthContext';
 import AuthInput from '../components/AuthInput';
 import './AuthPage.css';
 
 const LoginPage = () => {
-    const { login } = useAuth();
+    const { login, loginWithGoogle } = useAuth();
     const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const navigateByRole = (responseData) => {
+        const role = responseData?.user?.tipo_usuario || responseData?.admin?.tipo_usuario;
+        if (role === 'admin' || role === 'administrador') navigate('/admin');
+        else if (role === 'cliente') navigate('/cliente');
+        else if (role === 'conductor') navigate('/conductor');
+        else if (role === 'empresa') navigate('/empresa');
+        else navigate('/');
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,15 +36,24 @@ const LoginPage = () => {
         const res = await login(email, password);
 
         if (res.success) {
-            // Determine role to route
-            const role = res.data?.user?.tipo_usuario || res.data?.admin?.tipo_usuario;
-            if (role === 'admin' || role === 'administrador') navigate('/admin');
-            else if (role === 'cliente') navigate('/cliente');
-            else if (role === 'conductor') navigate('/conductor');
-            else if (role === 'empresa') navigate('/empresa');
-            else navigate('/');
+            navigateByRole(res.data);
         } else {
             setError(res.message || 'Error al iniciar sesión.');
+        }
+
+        setLoading(false);
+    };
+
+    const handleGoogleLogin = async () => {
+        setLoading(true);
+        setError('');
+
+        const res = await loginWithGoogle();
+
+        if (res.success) {
+            navigateByRole(res.data);
+        } else {
+            setError(res.message || 'Error al iniciar sesión con Google.');
         }
 
         setLoading(false);
@@ -60,7 +79,6 @@ const LoginPage = () => {
                     <AuthInput
                         label="Contraseña"
                         type="password"
-                        placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         icon="lock"
@@ -72,6 +90,20 @@ const LoginPage = () => {
 
                     <button type="submit" className="auth-button" disabled={loading}>
                         {loading ? 'Iniciando...' : 'Iniciar Sesión'}
+                    </button>
+
+                    <div className="auth-social-separator">
+                        <span>o</span>
+                    </div>
+
+                    <button
+                        type="button"
+                        className="auth-button auth-button--secondary"
+                        onClick={handleGoogleLogin}
+                        disabled={loading}
+                    >
+                        <FcGoogle size={20} style={{ marginRight: '0.55rem' }} />
+                        Continuar con Google
                     </button>
                 </form>
 

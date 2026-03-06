@@ -55,6 +55,39 @@
   -webkit-backdrop-filter: blur(10px);
 }
 
+.auth-input-field--password {
+  padding-right: 3rem;
+}
+
+.auth-input-visibility-toggle {
+  position: absolute;
+  right: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #7a8596);
+  cursor: pointer;
+  padding: 0.25rem;
+  z-index: 2;
+}
+
+.auth-input-visibility-toggle svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.auth-input-visibility-toggle:hover {
+  color: var(--primary, #2196f3);
+}
+
+.auth-input-visibility-toggle:focus-visible {
+  outline: 2px solid var(--primary, #2196f3);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
 /* When focused, glow effect */
 .auth-input-wrapper:focus-within .auth-input-icon {
   color: var(--primary, #2196f3);
@@ -91,5 +124,9 @@
 }
 
 [data-theme='dark'] .auth-input-icon {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+[data-theme='dark'] .auth-input-visibility-toggle {
   color: rgba(255, 255, 255, 0.72);
 }
