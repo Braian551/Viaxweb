@@ -58,10 +58,10 @@ export default function Header() {
               </button>
             </div>
           ) : (
-            <div className="header__auth-buttons" style={{ display: 'flex', gap: '10px' }}>
-              <Link to="/login" className="header__login-btn btn btn--primary" style={{ padding: '6px 14px', fontSize: '0.85rem' }}>
-                <FiUser size={16} style={{ marginRight: '6px' }} />
-                Iniciar Sesión
+            <div className="header__auth-buttons">
+              <Link to="/login" className="header__login-btn btn btn--primary">
+                <FiUser className="header__login-icon" size={16} />
+                <span className="header__login-text">Iniciar Sesión</span>
               </Link>
             </div>
           )}

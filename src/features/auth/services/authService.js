@@ -140,6 +140,21 @@ export async function requestPasswordResetCode(email) {
 }
 
 /**
+ * Sends a verification code for new user registration.
+ */
+export async function sendVerificationCode(email, code, userName) {
+    return await requestJson(
+        `${AUTH_API_URL}/email_service.php`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ email, type: 'verification', userName, code })
+        },
+        'No se pudo enviar el código de verificación.'
+    );
+}
+
+/**
  * Note: the backend handles code verification locally or via the change_password.php?action=verify_change_code
  * We'll use the proper change_password.php endpoint which uses real verification logic.
  */
