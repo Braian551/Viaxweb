@@ -2289,3 +2289,108 @@ button {
     font-size: 0.48rem;
   }
 }
+
+/* ===================================================
+   REPORTS DASHBOARD
+   =================================================== */
+.v-tabs-container {
+  display: flex;
+  gap: 8px;
+  background: var(--glass-strong);
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+  width: fit-content;
+  overflow-x: auto;
+}
+
+.v-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.v-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
+
+.v-tab-btn.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(var(--primary), 0.3);
+}
+
+.v-tab-btn svg {
+  font-size: 1.1rem;
+}
+
+.v-reports-pane {
+  animation: v-fadeIn 0.3s ease-out;
+}
+
+.v-list-item-lite {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: all var(--transition);
+}
+
+.v-list-item-lite:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--border);
+  transform: translateX(4px);
+}
+
+.v-btn-lite {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--glass-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.v-btn-lite:hover {
+  background: var(--bg-alt);
+  transform: translateY(-2px);
+}
+
+@keyframes v-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .v-tabs-container {
+    width: 100%;
+  }
+}

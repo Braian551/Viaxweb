@@ -130,3 +130,47 @@
 [data-theme='dark'] .auth-input-visibility-toggle {
   color: rgba(255, 255, 255, 0.72);
 }
+
+/* ─── Error state ─── */
+.auth-input-wrapper--error .auth-input-field {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.12);
+}
+
+.auth-input-wrapper--error .auth-input-icon,
+.auth-input-wrapper--error .auth-input-icon-node {
+  color: #ef4444 !important;
+  opacity: 1 !important;
+}
+
+/* ─── Error message ─── */
+.auth-input-error {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  color: #ef4444;
+  font-weight: 500;
+  margin-top: 4px;
+  animation: authErrorSlide 0.2s ease;
+}
+
+@keyframes authErrorSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Hint text ─── */
+.auth-input-hint {
+  font-size: 0.73rem;
+  color: var(--text-secondary, #64748b);
+  font-style: italic;
+  margin-top: 3px;
+}

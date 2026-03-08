@@ -88,10 +88,16 @@
 .auth-form-row {
     display: flex;
     gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .auth-form-row>* {
     flex: 1;
+}
+
+.auth-form-row .auth-input-container,
+.auth-form-row .sm-container {
+    margin-bottom: 0;
 }
 
 .auth-actions {
@@ -379,6 +385,11 @@
 [data-theme='dark'] .auth-textarea {
     background: rgba(15, 23, 42, 0.42);
     border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .auth-select option {
+    background-color: #0f172a;
+    color: #f1f5f9;
 }
 
 [data-theme='dark'] .auth-chip {

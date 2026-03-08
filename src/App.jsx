@@ -37,6 +37,8 @@ import EmpresaDashboard from './features/empresa/pages/EmpresaDashboard';
 import EmpresaConductors from './features/empresa/pages/EmpresaConductors';
 import EmpresaFinances from './features/empresa/pages/EmpresaFinances';
 import EmpresaSettings from './features/empresa/pages/EmpresaSettings';
+import EmpresaTarifas from './features/empresa/pages/EmpresaTarifas';
+import EmpresaReports from './features/empresa/pages/EmpresaReports';
 import { ThemeProvider } from './features/shared/context/ThemeContext';
 import GlobalScrollbar from './features/shared/components/GlobalScrollbar';
 import DashboardNotificationsPage from './features/shared/pages/DashboardNotificationsPage';
@@ -76,99 +78,101 @@ export default function App() {
       <GlobalScrollbar />
       <AuthProvider>
         <Routes>
-        {/* ── Share location — standalone, no header/footer ── */}
-        <Route path="/share/:token" element={<LocationSharePage />} />
+          {/* ── Share location — standalone, no header/footer ── */}
+          <Route path="/share/:token" element={<LocationSharePage />} />
 
-        {/* ── Auth routes — standalone ── */}
-        <Route path="/login" element={
-          <>
-            <Header />
-            <LoginPage />
-          </>
-        } />
-        <Route path="/register" element={
-          <>
-            <Header />
-            <RegisterPage />
-          </>
-        } />
-        <Route path="/forgot-password" element={
-          <>
-            <Header />
-            <ForgotPasswordPage />
-          </>
-        } />
-        <Route path="/register-company" element={
-          <>
-            <Header />
-            <CompanyRegisterPage />
-          </>
-        } />
-
-        {/* ── Protected Dashboards ────────────────────────────── */}
-
-        {/* Admin */}
-        <Route element={<RoleRoute allowedRoles={['admin']} />}>
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="companies" element={<AdminCompanies />} />
-            <Route path="finances" element={<AdminFinances />} />
-            <Route path="audit" element={<AdminAudit />} />
-            <Route path="notifications" element={<DashboardNotificationsPage roleType="admin" />} />
-          </Route>
-        </Route>
-
-        {/* Cliente */}
-        <Route element={<RoleRoute allowedRoles={['cliente']} />}>
-          <Route path="/cliente" element={<ClienteLayout />}>
-            <Route index element={<ClienteDashboard />} />
-            <Route path="profile" element={<ClienteProfile />} />
-            <Route path="notifications" element={<DashboardNotificationsPage roleType="cliente" />} />
-          </Route>
-        </Route>
-
-        {/* Conductor */}
-        <Route element={<RoleRoute allowedRoles={['conductor']} />}>
-          <Route path="/conductor" element={<ConductorLayout />}>
-            <Route index element={<ConductorDashboard />} />
-            <Route path="earnings" element={<ConductorEarnings />} />
-            <Route path="profile" element={<ConductorProfile />} />
-            <Route path="notifications" element={<DashboardNotificationsPage roleType="conductor" />} />
-          </Route>
-        </Route>
-
-        {/* Empresa */}
-        <Route element={<RoleRoute allowedRoles={['empresa']} />}>
-          <Route path="/empresa" element={<EmpresaLayout />}>
-            <Route index element={<EmpresaDashboard />} />
-            <Route path="conductors" element={<EmpresaConductors />} />
-            <Route path="finances" element={<EmpresaFinances />} />
-            <Route path="settings" element={<EmpresaSettings />} />
-            <Route path="notifications" element={<DashboardNotificationsPage roleType="empresa" />} />
-          </Route>
-        </Route>
-
-        {/* ── Main public site ────────────────────────────────────── */}
-        <Route path="/" element={<RootRedirect />} />
-
-        <Route
-          path="*"
-          element={
+          {/* ── Auth routes — standalone ── */}
+          <Route path="/login" element={
             <>
               <Header />
-              <main>
-                <Routes>
-                  <Route path="/clientes" element={<ClientesPage />} />
-                  <Route path="/conductores" element={<ConductoresPage />} />
-                  <Route path="/empresas" element={<EmpresasPage />} />
-                  <Route path="/legal" element={<LegalPage />} />
-                </Routes>
-              </main>
-              <Footer />
+              <LoginPage />
             </>
-          }
-        />
+          } />
+          <Route path="/register" element={
+            <>
+              <Header />
+              <RegisterPage />
+            </>
+          } />
+          <Route path="/forgot-password" element={
+            <>
+              <Header />
+              <ForgotPasswordPage />
+            </>
+          } />
+          <Route path="/register-company" element={
+            <>
+              <Header />
+              <CompanyRegisterPage />
+            </>
+          } />
+
+          {/* ── Protected Dashboards ────────────────────────────── */}
+
+          {/* Admin */}
+          <Route element={<RoleRoute allowedRoles={['admin']} />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="companies" element={<AdminCompanies />} />
+              <Route path="finances" element={<AdminFinances />} />
+              <Route path="audit" element={<AdminAudit />} />
+              <Route path="notifications" element={<DashboardNotificationsPage roleType="admin" />} />
+            </Route>
+          </Route>
+
+          {/* Cliente */}
+          <Route element={<RoleRoute allowedRoles={['cliente']} />}>
+            <Route path="/cliente" element={<ClienteLayout />}>
+              <Route index element={<ClienteDashboard />} />
+              <Route path="profile" element={<ClienteProfile />} />
+              <Route path="notifications" element={<DashboardNotificationsPage roleType="cliente" />} />
+            </Route>
+          </Route>
+
+          {/* Conductor */}
+          <Route element={<RoleRoute allowedRoles={['conductor']} />}>
+            <Route path="/conductor" element={<ConductorLayout />}>
+              <Route index element={<ConductorDashboard />} />
+              <Route path="earnings" element={<ConductorEarnings />} />
+              <Route path="profile" element={<ConductorProfile />} />
+              <Route path="notifications" element={<DashboardNotificationsPage roleType="conductor" />} />
+            </Route>
+          </Route>
+
+          {/* Empresa */}
+          <Route element={<RoleRoute allowedRoles={['empresa']} />}>
+            <Route path="/empresa" element={<EmpresaLayout />}>
+              <Route index element={<EmpresaDashboard />} />
+              <Route path="conductors" element={<EmpresaConductors />} />
+              <Route path="finances" element={<EmpresaFinances />} />
+              <Route path="reports" element={<EmpresaReports />} />
+              <Route path="tarifas" element={<EmpresaTarifas />} />
+              <Route path="settings" element={<EmpresaSettings />} />
+              <Route path="notifications" element={<DashboardNotificationsPage roleType="empresa" />} />
+            </Route>
+          </Route>
+
+          {/* ── Main public site ────────────────────────────────────── */}
+          <Route path="/" element={<RootRedirect />} />
+
+          <Route
+            path="*"
+            element={
+              <>
+                <Header />
+                <main>
+                  <Routes>
+                    <Route path="/clientes" element={<ClientesPage />} />
+                    <Route path="/conductores" element={<ConductoresPage />} />
+                    <Route path="/empresas" element={<EmpresasPage />} />
+                    <Route path="/legal" element={<LegalPage />} />
+                  </Routes>
+                </main>
+                <Footer />
+              </>
+            }
+          />
         </Routes>
       </AuthProvider>
     </ThemeProvider>

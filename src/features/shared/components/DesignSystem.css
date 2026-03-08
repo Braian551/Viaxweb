@@ -859,9 +859,17 @@
     display: inline-block;
 }
 
-.v-dot--green { background: var(--v-green); }
-.v-dot--gray { background: #94a3b8; }
-.v-dot--blue { background: var(--v-blue); }
+.v-dot--green {
+    background: var(--v-green);
+}
+
+.v-dot--gray {
+    background: #94a3b8;
+}
+
+.v-dot--blue {
+    background: var(--v-blue);
+}
 
 .v-activity-list {
     display: flex;
@@ -944,6 +952,12 @@
     background: var(--bg, #f1f5f9);
 }
 
+[data-theme='dark'] select.v-form-input option,
+[data-theme='dark'] select.v-form-input optgroup {
+    background-color: #1e293b;
+    color: #f1f5f9;
+}
+
 .v-form-hint {
     font-size: 0.75rem;
     color: var(--text-secondary, #94a3b8);
@@ -952,8 +966,13 @@
 
 /* ===== SPINNER ===== */
 @keyframes v-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .v-spin {

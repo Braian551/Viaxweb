@@ -4,6 +4,7 @@ import { FiMail, FiLock, FiKey } from 'react-icons/fi';
 import { checkUserExists, getProfileByEmail, requestPasswordResetCodeReal, requestPasswordResetCode, verifyPasswordResetCode, changePasswordWithCode } from '../services/authService';
 import AuthInput from '../components/AuthInput';
 import OtpInput from '../components/OtpInput';
+import { V } from '../../shared/utils/validators';
 import './AuthPage.css';
 
 const ForgotPasswordPage = () => {
@@ -13,6 +14,7 @@ const ForgotPasswordPage = () => {
     const [userId, setUserId] = useState(null);
     const [code, setCode] = useState('');
     const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -21,7 +23,9 @@ const ForgotPasswordPage = () => {
     const handleRequestCode = async (e) => {
         e.preventDefault();
         setError('');
-        if (!email) return setError('Ingresa tu correo electrónico.');
+
+        const emErr = V.email(email);
+        if (emErr) return setError(emErr);
 
         setLoading(true);
         // 1. Check if user exists
@@ -44,7 +48,6 @@ const ForgotPasswordPage = () => {
         setUserId(realUserId);
 
         // 2. Request OTP Code
-        // Attempt using backend's real endpoint or fallback to email_service
         let resp = await requestPasswordResetCodeReal(realUserId);
         if (!resp || !resp.success) {
             // Fallback (older phpmailer flow)
@@ -55,7 +58,21 @@ const ForgotPasswordPage = () => {
             setSuccessMsg('Código enviado exitosamente a tu correo.');
             setStep(2);
         } else {
-            setError(resp?.message || 'Error al enviar el código de recuperación.');
+            // Extract a user-friendly message from the response
+            let msg = resp?.message || 'Error al enviar el código de recuperación.';
+            // Handle cases where message is a JSON string
+            if (typeof msg === 'string' && msg.trim().startsWith('{')) {
+                try { msg = JSON.parse(msg).message || msg; } catch { /* use as-is */ }
+            }
+            // Handle known error codes
+            if (resp?.error_code === 'EMAIL_SEND_BLOCKED' || msg.includes('EMAIL_SEND_BLOCKED')) {
+                msg = 'El servicio de correo está temporalmente limitado. Intenta de nuevo en unos minutos.';
+            }
+            // If msg still looks like raw JSON, use fallback
+            if (typeof msg === 'object') {
+                msg = msg.message || 'Error al enviar el código de recuperación.';
+            }
+            setError(msg);
         }
         setLoading(false);
     };
@@ -79,7 +96,12 @@ const ForgotPasswordPage = () => {
     const handleResetPassword = async (e) => {
         e.preventDefault();
         setError('');
-        if (!newPassword || newPassword.length < 6) return setError('La contraseña debe tener al menos 6 caracteres.');
+
+        const passErr = V.password(newPassword);
+        const confirmErr = V.confirmPassword(confirmPassword, newPassword);
+
+        if (passErr) return setError(passErr);
+        if (confirmErr) return setError(confirmErr);
 
         setLoading(true);
         const resp = await changePasswordWithCode(userId, newPassword, code);
@@ -115,6 +137,7 @@ const ForgotPasswordPage = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="ejemplo@correo.com"
                             icon={<FiMail />}
+                            validate={V.email}
                             required
                         />
                     )}
@@ -129,15 +152,30 @@ const ForgotPasswordPage = () => {
                     )}
 
                     {step === 3 && (
-                        <AuthInput
-                            label="Nueva Contraseña"
-                            type="password"
-                            id="newPassword"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            icon={<FiLock />}
-                            required
-                        />
+                        <>
+                            <AuthInput
+                                label="Nueva Contraseña"
+                                type="password"
+                                id="newPassword"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                icon={<FiLock />}
+                                validate={V.password}
+                                required
+                            />
+                            <div style={{ marginTop: '1.25rem' }}>
+                                <AuthInput
+                                    label="Confirmar Contraseña"
+                                    type="password"
+                                    id="confirmPassword"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    icon={<FiLock />}
+                                    validate={(v) => V.confirmPassword(v, newPassword)}
+                                    required
+                                />
+                            </div>
+                        </>
                     )}
 
                     <button type="submit" className="auth-button btn-primary" disabled={loading}>

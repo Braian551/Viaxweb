@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
 import { useAuth } from '../context/AuthContext';
 import AuthInput from '../components/AuthInput';
+import { V } from '../../shared/utils/validators';
 import './AuthPage.css';
 
 const LoginPage = () => {
@@ -25,8 +26,12 @@ const LoginPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!email || !password) {
-            setError('Por favor, completa todos los campos.');
+
+        const emErr = V.email(email);
+        const passErr = V.required('La contraseña')(password);
+
+        if (emErr || passErr) {
+            setError(emErr || passErr);
             return;
         }
 
@@ -75,6 +80,7 @@ const LoginPage = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         icon="email"
+                        validate={V.email}
                     />
                     <AuthInput
                         label="Contraseña"
@@ -82,6 +88,7 @@ const LoginPage = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         icon="lock"
+                        validate={V.required('La contraseña')}
                     />
 
                     <div className="auth-actions">

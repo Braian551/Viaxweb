@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { checkUserExists, sendVerificationCode } from "../services/authService";
 import AuthInput from "../components/AuthInput";
 import OtpInput from "../components/OtpInput";
+import { V, F } from "../../shared/utils/validators";
 import "./AuthPage.css";
 
 const RegisterPage = () => {
@@ -79,6 +80,16 @@ const RegisterPage = () => {
       return;
     }
 
+    const nErr = V.name('El nombre')(formData.name);
+    const lnErr = V.name('El apellido')(formData.lastName);
+    const emErr = V.email(formData.email);
+    const phErr = V.phone(formData.phone);
+
+    if (nErr || lnErr || emErr || phErr) {
+      setError(nErr || lnErr || emErr || phErr);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -105,7 +116,7 @@ const RegisterPage = () => {
       } else {
         setError(
           sendResult?.message ||
-            "Error al enviar código de verificación. Intenta nuevamente.",
+          "Error al enviar código de verificación. Intenta nuevamente.",
         );
       }
     } catch (err) {
@@ -147,13 +158,14 @@ const RegisterPage = () => {
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Las contraseñas no coinciden.");
+    const passErr = V.password(formData.password);
+    if (passErr) {
+      setError(passErr);
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
+    if (formData.password !== formData.confirmPassword) {
+      setError("Las contraseñas no coinciden.");
       return;
     }
 
@@ -218,6 +230,12 @@ const RegisterPage = () => {
       return;
     }
 
+    const phErr = V.phone(requiredPhone);
+    if (phErr) {
+      setError(phErr);
+      return;
+    }
+
     const fullPhone = `${countryCode}${requiredPhone.trim()}`;
 
     setLoading(true);
@@ -271,6 +289,8 @@ const RegisterPage = () => {
               value={requiredPhone}
               onChange={(e) => setRequiredPhone(e.target.value)}
               icon="phone_iphone"
+              validate={V.phone}
+              filter={F.phone}
             />
 
             <button type="submit" className="auth-button" disabled={loading}>
@@ -306,6 +326,8 @@ const RegisterPage = () => {
                 value={formData.name}
                 onChange={handleChange}
                 icon="person"
+                validate={V.name('El nombre')}
+                filter={F.name}
               />
               <AuthInput
                 label="Apellido"
@@ -314,6 +336,8 @@ const RegisterPage = () => {
                 value={formData.lastName}
                 onChange={handleChange}
                 icon="badge"
+                validate={V.name('El apellido')}
+                filter={F.name}
               />
             </div>
 
@@ -325,6 +349,7 @@ const RegisterPage = () => {
               value={formData.email}
               onChange={handleChange}
               icon="email"
+              validate={V.email}
             />
 
             <AuthInput
@@ -335,6 +360,8 @@ const RegisterPage = () => {
               value={formData.phone}
               onChange={handleChange}
               icon="phone_iphone"
+              validate={V.phone}
+              filter={F.phone}
             />
 
             <button type="submit" className="auth-button" disabled={loading}>
@@ -422,6 +449,7 @@ const RegisterPage = () => {
                 value={formData.password}
                 onChange={handleChange}
                 icon="lock"
+                validate={V.password}
               />
               <AuthInput
                 label="Confirmar Contraseña"
@@ -430,6 +458,11 @@ const RegisterPage = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 icon="lock_outline"
+                validate={(v) => {
+                  if (!v) return "Confirma tu contraseña";
+                  if (v !== formData.password) return "Las contraseñas no coinciden";
+                  return null;
+                }}
               />
             </div>
 

@@ -1,0 +1,31 @@
+
+> viax-sitioweb@1.0.0 build
+> vite build
+
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 22 modules transformed.
+[31mx[39m Build failed in 578ms
+[31merror during build:
+[31m[vite:esbuild] Transform failed with 1 error:
+C:/Flutter/viax/sitioweb/src/features/empresa/pages/EmpresaSettings.jsx:308:10: ERROR: The symbol "toggleVehicle" has already been declared[31m
+file: [36mC:/Flutter/viax/sitioweb/src/features/empresa/pages/EmpresaSettings.jsx:308:10[31m
+[33m
+[33mThe symbol "toggleVehicle" has already been declared[33m
+306|      const chS = (field, v) => setSettings(p => ({ ...p, [field]: v }));
+307|  
+308|      const toggleVehicle = (tipo) => setProfile(p => {
+   |            ^
+309|          const cur = p.tipos_vehiculo || [];
+310|          return { ...p, tipos_vehiculo: cur.includes(tipo) ? cur.filter(t => t !== tipo) : [...cur, tipo] };
+[31m
+    at failureErrorWithLog (C:\Flutter\viax\sitioweb\node_modules\esbuild\lib\main.js:1472:15)
+    at C:\Flutter\viax\sitioweb\node_modules\esbuild\lib\main.js:755:50
+    at responseCallbacks.<computed> (C:\Flutter\viax\sitioweb\node_modules\esbuild\lib\main.js:622:9)
+    at handleIncomingPacket (C:\Flutter\viax\sitioweb\node_modules\esbuild\lib\main.js:677:12)
+    at Socket.readFromStdout (C:\Flutter\viax\sitioweb\node_modules\esbuild\lib\main.js:600:7)
+    at Socket.emit (node:events:519:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)[39m

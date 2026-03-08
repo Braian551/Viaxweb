@@ -13,6 +13,33 @@ export const getEmpresaBalance = async (empresaId) => {
     return await requestJson(`${API_BASE_URL}/company/get_balance.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } }, 'Error de conexión');
 };
 
+export const getEmpresaReports = async (empresaId, periodo = '7d') => {
+    return await requestJson(`${API_BASE_URL}/company/reports.php?action=overview&empresa_id=${empresaId}&periodo=${periodo}`, { headers: { Accept: 'application/json' } }, 'Error cargando reportes');
+};
+
+export const getEmpresaTripsReport = async (empresaId, periodo = '30d', page = 1) => {
+    return await requestJson(`${API_BASE_URL}/company/reports.php?action=trips&empresa_id=${empresaId}&periodo=${periodo}&page=${page}`, { headers: { Accept: 'application/json' } }, 'Error cargando historial de viajes');
+};
+
+export const getEmpresaDriversReport = async (empresaId, periodo = '30d') => {
+    return await requestJson(`${API_BASE_URL}/company/reports.php?action=drivers&empresa_id=${empresaId}&periodo=${periodo}`, { headers: { Accept: 'application/json' } }, 'Error cargando reporte de conductores');
+};
+
+export const getEmpresaEarningsDetail = async (empresaId, periodo = '30d') => {
+    return await requestJson(`${API_BASE_URL}/company/reports.php?action=earnings&empresa_id=${empresaId}&periodo=${periodo}`, { headers: { Accept: 'application/json' } }, 'Error cargando detalle de ganancias');
+};
+
+export const getEmpresaVehicleTypesReport = async (empresaId, periodo = '30d') => {
+    return await requestJson(`${API_BASE_URL}/company/reports.php?action=vehicle_types&empresa_id=${empresaId}&periodo=${periodo}`, { headers: { Accept: 'application/json' } }, 'Error cargando análisis de flota');
+};
+
+/**
+ * Constructs the URL for the professional PDF report
+ */
+export const getEmpresaReportPdfUrl = (empresaId, periodo = '30d') => {
+    return `${API_BASE_URL}/company/reports.php?action=pdf&empresa_id=${empresaId}&periodo=${periodo}`;
+};
+
 export const getEmpresaPricing = async (empresaId) => {
     return await requestJson(`${API_BASE_URL}/company/pricing.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } }, 'Error de conexión');
 };
@@ -87,6 +114,92 @@ export const getSolicitudesVinculacion = async (empresaId, { page = 1, perPage =
         };
     } catch (e) { return { success: false, message: 'Error de conexión' }; }
 };
+
+export const updateEmpresaProfile = async (empresaId, data) => {
+    return await requestJson(
+        `${API_BASE_URL}/empresa/profile.php`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ empresa_id: empresaId, action: 'update_profile', ...data })
+        },
+        'Error de conexión'
+    );
+};
+
+export const checkPasswordStatus = async (userId) => {
+    return await requestJson(
+        `${API_BASE_URL}/auth/change_password.php`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ user_id: userId, action: 'check_status' })
+        },
+        'Error de conexión'
+    );
+};
+
+export const changePassword = async (userId, currentPassword, newPassword) => {
+    return await requestJson(
+        `${API_BASE_URL}/auth/change_password.php`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ user_id: userId, action: 'change_password', current_password: currentPassword, new_password: newPassword })
+        },
+        'Error de conexión'
+    );
+};
+
+export const requestPasswordCode = async (userId) => {
+    return await requestJson(
+        `${API_BASE_URL}/auth/change_password.php`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ user_id: userId, action: 'request_change_code' })
+        },
+        'Error de conexión'
+    );
+};
+
+export const changePasswordWithCode = async (userId, verificationCode, newPassword) => {
+    return await requestJson(
+        `${API_BASE_URL}/auth/change_password.php`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ user_id: userId, action: 'change_password_with_code', verification_code: verificationCode, new_password: newPassword })
+        },
+        'Error de conexión'
+    );
+};
+
+export const getColombianBanks = async () => {
+    return await requestJson(
+        `${API_BASE_URL}/company/colombia_banks.php`,
+        { headers: { Accept: 'application/json' } },
+        'Error cargando bancos'
+    );
+};
+
+/* ─── Colombia Location API (api-colombia.com) ─── */
+const COLOMBIA_API = 'https://api-colombia.com/api/v1';
+
+export const getDepartments = async () => {
+    const res = await fetch(`${COLOMBIA_API}/Department`);
+    if (!res.ok) throw new Error('Error cargando departamentos');
+    const data = await res.json();
+    return data.sort((a, b) => a.name.localeCompare(b.name));
+};
+
+export const getCitiesByDepartment = async (departmentId) => {
+    const res = await fetch(`${COLOMBIA_API}/Department/${departmentId}/cities`);
+    if (!res.ok) throw new Error('Error cargando ciudades');
+    const data = await res.json();
+    return data.sort((a, b) => a.name.localeCompare(b.name));
+};
+
 
 export const gestionarSolicitud = async (empresaId, solicitudId, accion, motivo = '', procesadoPor = null) => {
     const mappedAction = accion === 'aprobar' ? 'aprobar_solicitud' : 'rechazar_solicitud';

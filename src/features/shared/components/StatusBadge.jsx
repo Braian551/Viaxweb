@@ -16,6 +16,12 @@ const statusMap = {
     pendiente: { bg: 'rgba(255, 152, 0, 0.12)', color: '#ff9800', label: 'Pendiente' },
     en_revision: { bg: 'rgba(33, 150, 243, 0.12)', color: '#2196f3', label: 'En Revisión' },
     cancelada: { bg: 'rgba(158, 158, 158, 0.12)', color: '#9e9e9e', label: 'Cancelada' },
+    // Vehicle Types
+    moto: { bg: 'rgba(33, 150, 243, 0.12)', color: '#2196f3', label: 'Moto' },
+    mototaxi: { bg: 'rgba(3, 169, 244, 0.12)', color: '#03a9f4', label: 'Mototaxi' },
+    taxi: { bg: 'rgba(255, 193, 7, 0.12)', color: '#ffc107', label: 'Taxi' },
+    carro: { bg: 'rgba(156, 39, 176, 0.12)', color: '#9c27b0', label: 'Carro' },
+    auto: { bg: 'rgba(156, 39, 176, 0.12)', color: '#9c27b0', label: 'Auto' },
 };
 
 const StatusBadge = ({ status, label, icon, style = {} }) => {

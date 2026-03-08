@@ -1,0 +1,294 @@
+/* ═══════════ SearchableModal ═══════════ */
+.sm-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    min-width: 0;
+}
+
+.sm-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.sm-label-icon {
+    opacity: 0.7;
+}
+
+.sm-required {
+    color: #ef4444;
+    margin-left: 2px;
+}
+
+/* ─── Trigger Button ─── */
+.sm-trigger {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border, #e2e8f0);
+    background: var(--card-bg, #fff);
+    color: var(--text);
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    text-align: left;
+    font-family: inherit;
+}
+
+.sm-trigger:hover:not(:disabled) {
+    border-color: var(--v-blue, #2196f3);
+}
+
+.sm-trigger:focus {
+    outline: none;
+    border-color: var(--v-blue, #2196f3);
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.12);
+}
+
+.sm-trigger--error {
+    border-color: #ef4444 !important;
+}
+
+.sm-trigger--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.sm-trigger-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sm-trigger-placeholder {
+    color: var(--text-secondary, #64748b);
+    opacity: 0.6;
+}
+
+.sm-trigger-chevron {
+    flex-shrink: 0;
+    color: var(--text-secondary, #64748b);
+    opacity: 0.5;
+    transition: transform 0.25s ease;
+}
+
+.sm-trigger-chevron--open {
+    transform: rotate(180deg);
+}
+
+/* ─── Backdrop ─── */
+.sm-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    background: transparent;
+}
+
+/* ─── Dropdown Panel (renders via portal, always fixed) ─── */
+.sm-dropdown {
+    position: fixed;
+    z-index: 10000;
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+    max-height: 320px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: smSlideIn 0.2s ease;
+}
+
+@keyframes smSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ─── Search Bar ─── */
+.sm-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border, #e2e8f0);
+}
+
+.sm-search-icon {
+    flex-shrink: 0;
+    color: var(--text-secondary, #64748b);
+    opacity: 0.5;
+}
+
+.sm-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.88rem;
+    color: var(--text);
+    font-family: inherit;
+}
+
+.sm-search-input::placeholder {
+    color: var(--text-secondary, #64748b);
+    opacity: 0.5;
+}
+
+.sm-search-clear {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary, #64748b);
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+
+.sm-search-clear:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+/* ─── Options List ─── */
+.sm-options-list {
+    overflow-y: auto;
+    max-height: 250px;
+    padding: 4px 0;
+}
+
+.sm-options-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sm-options-list::-webkit-scrollbar-thumb {
+    background: var(--text-secondary, #64748b);
+    opacity: 0.3;
+    border-radius: 10px;
+}
+
+.sm-empty {
+    padding: 20px 16px;
+    text-align: center;
+    font-size: 0.84rem;
+    color: var(--text-secondary, #64748b);
+}
+
+/* ─── Option Item ─── */
+.sm-option {
+    width: 100%;
+    padding: 11px 16px;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text);
+    font-size: 0.88rem;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.12s;
+}
+
+.sm-option:hover {
+    background: rgba(33, 150, 243, 0.06);
+}
+
+.sm-option--selected {
+    background: rgba(33, 150, 243, 0.08);
+    font-weight: 600;
+}
+
+.sm-option-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sm-option-check {
+    color: var(--v-blue, #2196f3);
+    flex-shrink: 0;
+}
+
+/* ─── Hint / Error ─── */
+.sm-hint {
+    font-size: 0.73rem;
+    color: var(--text-secondary, #64748b);
+    font-style: italic;
+}
+
+.sm-error-text {
+    font-size: 0.73rem;
+    color: #ef4444;
+    font-weight: 500;
+}
+
+/* ─── Dark Mode Fixes ─── */
+[data-theme='dark'] .sm-dropdown {
+    background: var(--card-bg, #1e293b);
+    border-color: var(--border, #334155);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='dark'] .sm-trigger {
+    background: var(--card-bg, #1e293b);
+    border-color: var(--border, #334155);
+}
+
+[data-theme='dark'] .sm-search-clear:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='dark'] .sm-option:hover {
+    background: rgba(33, 150, 243, 0.12);
+}
+
+/* ─── Mobile: bottom sheet style ─── */
+@media (max-width: 640px) {
+    .sm-dropdown {
+        left: 16px !important;
+        right: 16px !important;
+        top: auto !important;
+        bottom: 16px !important;
+        width: auto !important;
+        max-height: 60vh;
+        border-radius: 18px;
+        animation: smSlideUp 0.25s ease;
+    }
+
+    .sm-backdrop {
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+    }
+
+    @keyframes smSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
