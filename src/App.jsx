@@ -20,6 +20,7 @@ import AdminDashboard from './features/admin/pages/AdminDashboard';
 import AdminUsers from './features/admin/pages/AdminUsers';
 import AdminCompanies from './features/admin/pages/AdminCompanies';
 import AdminFinances from './features/admin/pages/AdminFinances';
+import AdminCompanyPayments from './features/admin/pages/AdminCompanyPayments';
 import AdminAudit from './features/admin/pages/AdminAudit';
 
 // Cliente Dashboard
@@ -39,6 +40,8 @@ import EmpresaFinances from './features/empresa/pages/EmpresaFinances';
 import EmpresaSettings from './features/empresa/pages/EmpresaSettings';
 import EmpresaTarifas from './features/empresa/pages/EmpresaTarifas';
 import EmpresaReports from './features/empresa/pages/EmpresaReports';
+import EmpresaCommissions from './features/empresa/pages/EmpresaCommissions';
+import EmpresaPlatformPayment from './features/empresa/pages/EmpresaPlatformPayment';
 import { ThemeProvider } from './features/shared/context/ThemeContext';
 import GlobalScrollbar from './features/shared/components/GlobalScrollbar';
 import DashboardNotificationsPage from './features/shared/pages/DashboardNotificationsPage';
@@ -116,6 +119,7 @@ export default function App() {
               <Route path="users" element={<AdminUsers />} />
               <Route path="companies" element={<AdminCompanies />} />
               <Route path="finances" element={<AdminFinances />} />
+              <Route path="company-payments" element={<AdminCompanyPayments />} />
               <Route path="audit" element={<AdminAudit />} />
               <Route path="notifications" element={<DashboardNotificationsPage roleType="admin" />} />
             </Route>
@@ -147,6 +151,8 @@ export default function App() {
               <Route path="conductors" element={<EmpresaConductors />} />
               <Route path="finances" element={<EmpresaFinances />} />
               <Route path="reports" element={<EmpresaReports />} />
+              <Route path="commissions" element={<EmpresaCommissions />} />
+              <Route path="platform-payment" element={<EmpresaPlatformPayment />} />
               <Route path="tarifas" element={<EmpresaTarifas />} />
               <Route path="settings" element={<EmpresaSettings />} />
               <Route path="notifications" element={<DashboardNotificationsPage roleType="empresa" />} />

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 import {
     FiHome, FiUsers, FiDollarSign, FiBell, FiSettings,
-    FiMenu, FiX, FiLogOut, FiMoon, FiSun, FiTag, FiBarChart2
+    FiMenu, FiX, FiLogOut, FiMoon, FiSun, FiTag, FiBarChart2, FiPercent, FiCreditCard
 } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getEmpresaProfile } from '../services/empresaService';
@@ -62,6 +62,8 @@ const EmpresaLayout = () => {
         { path: '/empresa', label: 'Dashboard', icon: <FiHome />, end: true },
         { path: '/empresa/conductors', label: 'Conductores', icon: <FiUsers /> },
         { path: '/empresa/finances', label: 'Finanzas', icon: <FiDollarSign /> },
+        { path: '/empresa/commissions', label: 'Comisiones', icon: <FiPercent /> },
+        { path: '/empresa/platform-payment', label: 'Pagar Plataforma', icon: <FiCreditCard /> },
         { path: '/empresa/reports', label: 'Reportes', icon: <FiBarChart2 /> },
         { path: '/empresa/tarifas', label: 'Tarifas', icon: <FiTag /> },
         { path: '/empresa/notifications', label: 'Notificaciones', icon: <FiBell /> },

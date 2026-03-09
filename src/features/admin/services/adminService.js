@@ -204,3 +204,74 @@ export const rejectConductor = async (adminId, conductorId, motivoRechazo) => {
         'Fallo al conectar con el servidor'
     );
 };
+
+// ═══ Pagos empresa → plataforma ═══
+
+/** Obtener empresas deudoras con la plataforma */
+export const getEmpresasDeudoras = async () => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/empresas_deudoras.php`,
+        { headers: { Accept: 'application/json' } },
+        'Error cargando empresas deudoras'
+    );
+};
+
+/** Obtener reportes de pago de empresas */
+export const getEmpresaPaymentReports = async ({ empresaId, estado, limit = 50 } = {}) => {
+    const params = new URLSearchParams();
+    if (empresaId) params.append('empresa_id', empresaId);
+    if (estado) params.append('estado', estado);
+    if (limit) params.append('limit', limit);
+    return await requestJson(
+        `${API_BASE_URL}/admin/empresa_payment_reports.php?${params}`,
+        { headers: { Accept: 'application/json' } },
+        'Error cargando reportes de pago'
+    );
+};
+
+/** Gestionar reporte de pago (aprobar/rechazar/confirmar) */
+export const manageEmpresaPaymentReport = async (data) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/empresa_payment_reports.php`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify(data)
+        },
+        'Error procesando reporte'
+    );
+};
+
+/** Obtener configuración bancaria del administrador */
+export const getAdminBankConfig = async (adminId) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/bank_config.php?admin_id=${adminId}`,
+        { headers: { Accept: 'application/json' } },
+        'Error cargando configuración bancaria'
+    );
+};
+
+/** Actualizar configuración bancaria del administrador */
+export const updateAdminBankConfig = async (data) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/bank_config.php`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify(data)
+        },
+        'Error actualizando configuración bancaria'
+    );
+};
+
+/** Obtener facturas */
+export const getFacturas = async ({ empresaId, tipo, page = 1, limit = 20 } = {}) => {
+    const params = new URLSearchParams({ page, limit });
+    if (empresaId) params.append('empresa_id', empresaId);
+    if (tipo) params.append('tipo', tipo);
+    return await requestJson(
+        `${API_BASE_URL}/admin/facturas.php?${params}`,
+        { headers: { Accept: 'application/json' } },
+        'Error cargando facturas'
+    );
+};

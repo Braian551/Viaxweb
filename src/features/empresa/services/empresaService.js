@@ -13,6 +13,14 @@ export const getEmpresaBalance = async (empresaId) => {
     return await requestJson(`${API_BASE_URL}/company/get_balance.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } }, 'Error de conexión');
 };
 
+export const toggleEmpresaVehicle = async (payload) => {
+    return await requestJson(`${API_BASE_URL}/company/vehicles.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload)
+    }, 'Error al actualizar tipo de vehículo');
+};
+
 export const getEmpresaReports = async (empresaId, periodo = '7d') => {
     return await requestJson(`${API_BASE_URL}/company/reports.php?action=overview&empresa_id=${empresaId}&periodo=${periodo}`, { headers: { Accept: 'application/json' } }, 'Error cargando reportes');
 };
@@ -38,6 +46,13 @@ export const getEmpresaVehicleTypesReport = async (empresaId, periodo = '30d') =
  */
 export const getEmpresaReportPdfUrl = (empresaId, periodo = '30d') => {
     return `${API_BASE_URL}/company/reports.php?action=pdf&empresa_id=${empresaId}&periodo=${periodo}`;
+};
+
+export const getEmpresaReportPdfFallbackUrls = (empresaId, periodo = '30d') => {
+    return [
+        `${API_BASE_URL}/company/reports.php?action=pdf&empresa_id=${empresaId}&periodo=${periodo}`,
+        `${API_BASE_URL}/company/reports_pdf.php?empresa_id=${empresaId}&periodo=${periodo}`,
+    ];
 };
 
 export const getEmpresaPricing = async (empresaId) => {
@@ -218,5 +233,72 @@ export const gestionarSolicitud = async (empresaId, solicitudId, accion, motivo 
             })
         },
         'Error de conexión'
+    );
+};
+
+export const getEmpresaDebtors = async (empresaId) => {
+    return await requestJson(`${API_BASE_URL}/company/get_debtors.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } }, 'Error cargando deudores');
+};
+
+export const getEmpresaPaymentReports = async (empresaId, filters = {}) => {
+    const params = new URLSearchParams({ empresa_id: empresaId, ...filters });
+    return await requestJson(`${API_BASE_URL}/company/debt_payment_reports.php?${params}`, { headers: { Accept: 'application/json' } }, 'Error cargando comprobantes');
+};
+
+export const managePaymentReport = async (data) => {
+    return await requestJson(
+        `${API_BASE_URL}/company/debt_payment_reports.php`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify(data)
+        },
+        'Error procesando comprobante'
+    );
+};
+
+export const registrarPagoComision = async (data) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/registrar_pago_comision.php`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify(data)
+        },
+        'Error registrando pago'
+    );
+};
+
+export const getConductorTransactions = async (conductorId) => {
+    return await requestJson(`${API_BASE_URL}/company/get_conductor_transactions.php?conductor_id=${conductorId}`, { headers: { Accept: 'application/json' } }, 'Error cargando historial');
+};
+
+// ═══ Pagos empresa → plataforma (admin) ═══
+
+/** Obtener contexto de deuda de la empresa con la plataforma */
+export const getPlatformDebtContext = async (empresaId) => {
+    return await requestJson(
+        `${API_BASE_URL}/company/platform_debt_context.php?empresa_id=${empresaId}`,
+        { headers: { Accept: 'application/json' } },
+        'Error cargando contexto de deuda'
+    );
+};
+
+/** Enviar comprobante de pago a la plataforma (FormData con archivo) */
+export const submitPlatformPaymentProof = async (formData) => {
+    return await requestJson(
+        `${API_BASE_URL}/company/report_platform_payment.php`,
+        { method: 'POST', body: formData },
+        'Error enviando comprobante'
+    );
+};
+
+/** Obtener facturas de la empresa con la plataforma */
+export const getEmpresaFacturas = async (empresaId, { page = 1, limit = 20 } = {}) => {
+    const params = new URLSearchParams({ empresa_id: empresaId, page, limit });
+    return await requestJson(
+        `${API_BASE_URL}/admin/facturas.php?${params}`,
+        { headers: { Accept: 'application/json' } },
+        'Error cargando facturas'
     );
 };

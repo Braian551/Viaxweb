@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { FiHome, FiUsers, FiBriefcase, FiDollarSign, FiActivity, FiBell, FiLogOut, FiX } from 'react-icons/fi';
+import { FiHome, FiUsers, FiBriefcase, FiDollarSign, FiActivity, FiBell, FiLogOut, FiX, FiCreditCard } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import './AdminLayout.css';
 
@@ -18,6 +18,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
         { path: '/admin/users', label: 'Usuarios', icon: <FiUsers /> },
         { path: '/admin/companies', label: 'Empresas', icon: <FiBriefcase /> },
         { path: '/admin/finances', label: 'Finanzas', icon: <FiDollarSign /> },
+        { path: '/admin/company-payments', label: 'Pagos Empresas', icon: <FiCreditCard /> },
         { path: '/admin/audit', label: 'Auditoría', icon: <FiActivity /> },
         { path: '/admin/notifications', label: 'Notificaciones', icon: <FiBell /> },
     ];
