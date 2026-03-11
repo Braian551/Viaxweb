@@ -1,0 +1,150 @@
+/* ─── Commissions-specific styles (supplements DesignSystem.css) ─── */
+
+/* Report cards inside driver detail modal */
+.comm-report-card {
+    background: var(--v-glass-bg);
+    border: 1px solid var(--v-glass-border);
+    border-radius: var(--v-radius-sm);
+    padding: 14px;
+    margin-bottom: 10px;
+    transition: var(--v-transition);
+}
+
+.comm-report-card:hover {
+    box-shadow: var(--v-shadow-hover);
+}
+
+.comm-view-proof {
+    background: none;
+    border: none;
+    color: var(--v-blue);
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 0;
+    transition: opacity 0.2s;
+    font-family: inherit;
+}
+
+.comm-view-proof:hover {
+    opacity: 0.7;
+}
+
+/* Reject reason badge */
+.comm-reject-reason {
+    background: rgba(255, 152, 0, 0.08);
+    border-left: 3px solid #ff9800;
+    padding: 8px 12px;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.8rem;
+    color: #ffab40;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Reject form */
+.comm-reject-form {
+    background: rgba(244, 67, 54, 0.04);
+    padding: 16px;
+    border-radius: var(--v-radius-sm);
+    border: 1px solid rgba(244, 67, 54, 0.12);
+    margin-top: 16px;
+}
+
+.comm-reject-form textarea {
+    width: 100%;
+    background: var(--bg, #f8fafc);
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+    border-radius: var(--v-radius-xs);
+    padding: 10px;
+    color: var(--text, #1e293b);
+    min-height: 70px;
+    margin: 8px 0;
+    resize: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+}
+
+[data-theme='dark'] .comm-reject-form textarea {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: white;
+}
+
+/* Voucher modal two-column layout */
+.comm-voucher-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 768px) {
+    .comm-voucher-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Voucher proof image */
+.comm-proof-preview {
+    position: relative;
+    border-radius: var(--v-radius-sm);
+    overflow: hidden;
+    background: #0a0a0a;
+    border: 1px solid var(--v-glass-border);
+    aspect-ratio: 9/14;
+    max-height: 380px;
+    width: 100%;
+}
+
+.comm-proof-preview a {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.comm-proof-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.comm-proof-preview:hover img {
+    transform: scale(1.03);
+}
+
+.comm-proof-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+    color: white;
+    font-size: 0.78rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.comm-proof-preview:hover .comm-proof-overlay {
+    opacity: 1;
+}
+
+/* Spin helper */
+.v-spin {
+    animation: v-spin 1s linear infinite;
+}
+
+@keyframes v-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

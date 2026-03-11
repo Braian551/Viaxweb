@@ -14,7 +14,7 @@ import SearchableModal from '../../shared/components/SearchableModal';
 import {
     getEmpresaProfile, getEmpresaSettings, updateEmpresaProfile,
     updateEmpresaSettings, checkPasswordStatus, requestPasswordCode,
-    changePasswordWithCode, getColombianBanks, getDepartments, getCitiesByDepartment
+    changePasswordWithCode, getColombianBanks, getDepartments, getCitiesByDepartment, toggleEmpresaVehicle
 } from '../services/empresaService';
 import PageHeader from '../../shared/components/PageHeader';
 import ProfileAvatar from '../../shared/components/ProfileAvatar';
@@ -87,10 +87,10 @@ const Grid = ({ cols = 2, children }) => (
 
 /* ─── Vehicle config ─── */
 const VEHICLE_MAP = {
-    moto: { label: 'Moto', icon: FaMotorcycle, color: '#2196f3' },
-    mototaxi: { label: 'Mototaxi', icon: MdOutlineElectricRickshaw, color: '#ff9800' },
-    taxi: { label: 'Taxi', icon: FaTaxi, color: '#ffc107' },
-    carro: { label: 'Carro', icon: FaCarSide, color: '#4caf50' },
+    moto: { label: 'Moto', desc: 'Motocicletas', icon: FaMotorcycle, color: '#2196f3' },
+    mototaxi: { label: 'Mototaxi', desc: 'Mototaxis de carga', icon: MdOutlineElectricRickshaw, color: '#ff9800' },
+    taxi: { label: 'Taxi', desc: 'Taxis y transporte público', icon: FaTaxi, color: '#ffc107' },
+    carro: { label: 'Carro', desc: 'Automóviles particulares', icon: FaCarSide, color: '#4caf50' },
 };
 
 /* ─── Toast ─── */
@@ -249,10 +249,35 @@ const EmpresaSettings = () => {
     const ch = (field, v) => setProfile(p => ({ ...p, [field]: v }));
     const chS = (field, v) => setSettings(p => ({ ...p, [field]: v }));
 
-    const toggleVehicle = (tipo) => setProfile(p => {
-        const cur = p.tipos_vehiculo || [];
-        return { ...p, tipos_vehiculo: cur.includes(tipo) ? cur.filter(t => t !== tipo) : [...cur, tipo] };
-    });
+    const toggleVehicle = async (tipo) => {
+        const cur = profile.tipos_vehiculo || [];
+        const isCurrentlyActive = cur.includes(tipo);
+        const nextState = isCurrentlyActive ? cur.filter(t => t !== tipo) : [...cur, tipo];
+
+        // Optimistic UI update
+        setProfile(p => ({ ...p, tipos_vehiculo: nextState }));
+
+        try {
+            const res = await toggleEmpresaVehicle({
+                empresa_id: empresaId,
+                tipo_vehiculo: tipo,
+                activo: !isCurrentlyActive,
+                usuario_id: user.id
+            });
+
+            if (!res?.success) {
+                // Revert on failure
+                setProfile(p => ({ ...p, tipos_vehiculo: cur }));
+                showToast(`Error al actualizar vehículo: ${res?.message || 'Error desconocido'}`, 'error');
+            } else {
+                showToast(res.message, 'success');
+            }
+        } catch (e) {
+            // Revert on exception
+            setProfile(p => ({ ...p, tipos_vehiculo: cur }));
+            showToast('Error de conexión al actualizar tipo de vehículo.', 'error');
+        }
+    };
 
     const handleDeptSelect = async (dept) => {
         setSelectedDept(dept);
@@ -434,24 +459,53 @@ const EmpresaSettings = () => {
             </Section>
 
             {/* ═══════ 5. VEHÍCULOS ═══════ */}
-            <Section title="Tipos de Vehículos" icon={FaMotorcycle} iconColor="#2196f3" defaultOpen={false}>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '0 0 14px' }}>Selecciona los tipos de transporte que tu empresa ofrece.</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+            <Section title="Tipos de Vehículo" icon={FaMotorcycle} iconColor="#2196f3" defaultOpen={false}>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 16px' }}>Habilita o deshabilita tipos</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {Object.entries(VEHICLE_MAP).map(([key, cfg]) => {
                         const VIcon = cfg.icon;
                         const sel = (profile.tipos_vehiculo || []).includes(key);
                         return (
-                            <button key={key} onClick={() => toggleVehicle(key)} style={{
-                                display: 'flex', alignItems: 'center', gap: 10, padding: '12px 20px', borderRadius: 12,
-                                border: sel ? `2px solid ${cfg.color}` : '2px solid var(--border, #e2e8f0)',
-                                background: sel ? `${cfg.color}15` : 'transparent', cursor: 'pointer', transition: 'all 0.2s', color: 'var(--text)',
+                            <div key={key} style={{
+                                display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderRadius: 16,
+                                border: sel ? `2px solid ${cfg.color}50` : '1px solid var(--border)',
+                                background: sel ? `${cfg.color}10` : 'var(--v-glass-bg)',
+                                transition: 'all 0.2s'
                             }}>
-                                <VIcon size={20} color={sel ? cfg.color : 'var(--text-secondary)'} />
-                                <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{cfg.label}</span>
-                                {sel && <FiCheck size={16} color={cfg.color} />}
-                            </button>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                                    <div style={{ width: 44, height: 44, borderRadius: 12, background: sel ? `${cfg.color}20` : 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <VIcon size={22} color={sel ? cfg.color : 'var(--text-secondary)'} />
+                                    </div>
+                                    <div>
+                                        <div style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text)', marginBottom: 2 }}>{cfg.label}</div>
+                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{cfg.desc}</div>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => toggleVehicle(key)}
+                                    type="button"
+                                    style={{
+                                        width: 52, height: 28, borderRadius: 14,
+                                        background: sel ? '#2196f3' : 'transparent',
+                                        border: sel ? 'none' : '2px solid var(--text-secondary)',
+                                        cursor: 'pointer', position: 'relative',
+                                        transition: 'all 0.3s'
+                                    }}
+                                >
+                                    <div style={{
+                                        position: 'absolute', top: sel ? 2 : 0, left: sel ? 26 : 0, width: sel ? 24 : 24, height: sel ? 24 : 24,
+                                        borderRadius: '50%', background: sel ? '#fff' : 'var(--text-secondary)', transition: 'left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                                    }} />
+                                </button>
+                            </div>
                         );
                     })}
+                </div>
+                <div style={{ marginTop: 20, padding: '14px 16px', borderRadius: 12, background: 'rgba(33,150,243,0.1)', border: '1px solid rgba(33,150,243,0.2)', display: 'flex', gap: 12, alignItems: 'center' }}>
+                    <FiInfo size={18} color="#2196f3" style={{ flexShrink: 0 }} />
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#2196f3' }}>
+                        Al habilitar un tipo, se creará una configuración de tarifas para ese vehículo.
+                    </p>
                 </div>
             </Section>
 
@@ -474,7 +528,7 @@ const EmpresaSettings = () => {
                     <FiInfo size={14} style={{ flexShrink: 0 }} /> Estos datos se usan para las transferencias de liquidación. Cambios notifican al administrador.
                 </div>
                 <Grid cols={3}>
-                    <SearchableSelect
+                    <SearchableModal
                         label="Banco" icon={FiCreditCard}
                         displayValue={selectedBank?.nombre || settings.banco_nombre}
                         options={banks} loading={loadingBanks}
@@ -482,7 +536,7 @@ const EmpresaSettings = () => {
                         renderOption={b => b.nombre}
                         placeholder="Seleccionar banco..."
                     />
-                    <SearchableSelect
+                    <SearchableModal
                         label="Tipo de Cuenta" icon={FiCreditCard}
                         displayValue={settings.tipo_cuenta === 'corriente' ? 'Corriente' : settings.tipo_cuenta === 'ahorros' ? 'Ahorros' : settings.tipo_cuenta}
                         options={['ahorros', 'corriente']}

@@ -13,6 +13,10 @@ export const getEmpresaBalance = async (empresaId) => {
     return await requestJson(`${API_BASE_URL}/company/get_balance.php?empresa_id=${empresaId}`, { headers: { Accept: 'application/json' } }, 'Error de conexión');
 };
 
+export const getEmpresaDashboardStats = async (empresaId, periodo = 'hoy') => {
+    return await requestJson(`${API_BASE_URL}/company/dashboard_stats.php?empresa_id=${empresaId}&periodo=${periodo}`, { headers: { Accept: 'application/json' } }, 'Error cargando dashboard');
+};
+
 export const toggleEmpresaVehicle = async (payload) => {
     return await requestJson(`${API_BASE_URL}/company/vehicles.php`, {
         method: 'POST',

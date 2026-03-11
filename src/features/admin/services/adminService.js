@@ -264,6 +264,37 @@ export const updateAdminBankConfig = async (data) => {
     );
 };
 
+/** Obtener perfil fiscal del emisor principal */
+export const getAdminEmitterProfile = async (adminId) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/emisor_profile.php?admin_id=${adminId}`,
+        { headers: { Accept: 'application/json' } },
+        'Error cargando perfil fiscal del emisor'
+    );
+};
+
+/** Actualizar perfil fiscal del emisor principal */
+export const updateAdminEmitterProfile = async (data) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/emisor_profile.php`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify(data)
+        },
+        'Error actualizando perfil fiscal del emisor'
+    );
+};
+
+/** Catálogo de bancos Colombia (misma API usada por Empresa en app móvil) */
+export const getColombiaBanks = async () => {
+    return await requestJson(
+        `${API_BASE_URL}/company/colombia_banks.php`,
+        { headers: { Accept: 'application/json' } },
+        'Error cargando bancos'
+    );
+};
+
 /** Obtener facturas */
 export const getFacturas = async ({ empresaId, tipo, page = 1, limit = 20 } = {}) => {
     const params = new URLSearchParams({ page, limit });
@@ -273,5 +304,18 @@ export const getFacturas = async ({ empresaId, tipo, page = 1, limit = 20 } = {}
         `${API_BASE_URL}/admin/facturas.php?${params}`,
         { headers: { Accept: 'application/json' } },
         'Error cargando facturas'
+    );
+};
+
+/** Registrar pago manual de empresa a plataforma */
+export const registrarPagoComisionAdmin = async (data) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/registrar_pago_empresa.php`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify(data)
+        },
+        'Error registrando pago manual'
     );
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     FiDollarSign, FiUpload, FiClock, FiCheckCircle, FiFileText,
-    FiRefreshCw, FiAlertTriangle, FiCreditCard, FiInfo
+    FiRefreshCw, FiAlertTriangle, FiCreditCard, FiInfo, FiDownload
 } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import {
@@ -14,6 +14,9 @@ import GlassStatCard from '../../shared/components/GlassStatCard';
 import EmptyState from '../../shared/components/EmptyState';
 import StatusBadge from '../../shared/components/StatusBadge';
 import { ShimmerStatGrid } from '../../shared/components/ShimmerLoader';
+import { useSnackbar } from '../../shared/components/AppSnackbar';
+import CurrencyInput from '../../shared/components/CurrencyInput';
+import { getR2ImageUrl } from '../../../utils/r2Images';
 
 const fmt = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
 const fmtDate = (d) => { try { return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch { return d; } };
@@ -28,12 +31,47 @@ const EmpresaPlatformPayment = () => {
     const [activeTab, setActiveTab] = useState('pagar');
 
     // Formulario de pago
-    const [monto, setMonto] = useState('');
+    const [monto, setMonto] = useState(0);
     const [comprobante, setComprobante] = useState(null);
     const [observaciones, setObservaciones] = useState('');
     const [submitSuccess, setSubmitSuccess] = useState(false);
+    const { showSnackbar } = useSnackbar();
 
     const empresaId = user?.empresa_id || user?.id;
+
+    /** Descarga segura de archivos R2 (PDF/imagen) sin exponer endpoint */
+    const downloadR2File = useCallback(async (url, filenameBase = 'archivo') => {
+        try {
+            const requestUrl = `${url}${url.includes('?') ? '&' : '?'}_ts=${Date.now()}`;
+            const res = await fetch(requestUrl, { cache: 'no-store' });
+            if (!res.ok) throw new Error('Error descargando archivo');
+            const blob = await res.blob();
+            const contentType = (res.headers.get('content-type') || '').toLowerCase();
+
+            const inferExt = () => {
+                if (contentType.includes('pdf') || /\.pdf(\?|$)/i.test(requestUrl)) return 'pdf';
+                if (contentType.includes('html') || /\.html?(\?|$)/i.test(requestUrl)) return 'html';
+                if (contentType.includes('png') || /\.png(\?|$)/i.test(requestUrl)) return 'png';
+                if (contentType.includes('jpeg') || contentType.includes('jpg') || /\.jpe?g(\?|$)/i.test(requestUrl)) return 'jpg';
+                if (contentType.includes('webp') || /\.webp(\?|$)/i.test(requestUrl)) return 'webp';
+                return 'bin';
+            };
+
+            const cleanBase = String(filenameBase || 'archivo').replace(/\.[^.]+$/, '');
+            const finalName = `${cleanBase}.${inferExt()}`;
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = finalName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(blobUrl);
+        } catch (e) {
+            console.error('Error descargando:', e);
+            showSnackbar('Error al descargar el archivo', { type: 'error' });
+        }
+    }, [showSnackbar]);
 
     const fetchData = useCallback(async () => {
         if (!empresaId) return;
@@ -46,11 +84,12 @@ const EmpresaPlatformPayment = () => {
             if (ctxRes?.success) {
                 setContext(ctxRes.data || {});
                 const deuda = parseFloat(ctxRes.data?.deuda_actual || 0);
-                if (deuda > 0 && !monto) setMonto(Math.round(deuda).toString());
+                if (deuda > 0 && !monto) setMonto(Math.round(deuda));
             }
             if (facRes?.success) {
-                setFacturas(facRes.data?.facturas || []);
-                setResumenFacturas(facRes.data?.resumen || {});
+                const facturasData = Array.isArray(facRes.data) ? facRes.data : (facRes.data?.facturas || []);
+                setFacturas(facturasData);
+                setResumenFacturas(facRes.resumen || facRes.data?.resumen || {});
             }
         } catch (e) {
             console.error('Error cargando datos:', e);
@@ -63,9 +102,22 @@ const EmpresaPlatformPayment = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const montoNum = parseFloat(monto.replace(/\D/g, ''));
-        if (!montoNum || montoNum <= 0) return alert('Ingresa un monto válido');
-        if (!comprobante) return alert('Adjunta un comprobante de pago');
+        const montoNum = Number(monto || 0);
+        const bloqueaEnvio = estadoReporte === 'pendiente_revision' || estadoReporte === 'comprobante_aprobado';
+
+        if (bloqueaEnvio) {
+            showSnackbar('Ya tienes un comprobante en proceso de revisión. Debes esperar el nuevo estado.', { type: 'warning' });
+            return;
+        }
+
+        if (!montoNum || montoNum <= 0) {
+            showSnackbar('Ingresa un monto válido para reportar el pago.', { type: 'warning' });
+            return;
+        }
+        if (!comprobante) {
+            showSnackbar('Debes adjuntar un comprobante de pago.', { type: 'warning' });
+            return;
+        }
 
         setSubmitting(true);
         try {
@@ -81,12 +133,13 @@ const EmpresaPlatformPayment = () => {
                 setSubmitSuccess(true);
                 setComprobante(null);
                 setObservaciones('');
+                showSnackbar('Comprobante enviado con éxito. Queda pendiente validación del administrador.', { type: 'success' });
                 setTimeout(() => { setSubmitSuccess(false); fetchData(); }, 3000);
             } else {
-                alert(res?.message || 'Error al enviar comprobante');
+                showSnackbar(res?.message || 'Error al enviar comprobante', { type: 'error' });
             }
         } catch (e) {
-            alert('Error de conexión');
+            showSnackbar('Error de conexión al enviar comprobante.', { type: 'error' });
         } finally {
             setSubmitting(false);
         }
@@ -97,7 +150,11 @@ const EmpresaPlatformPayment = () => {
     const comision = parseFloat(context.comision_porcentaje || 0);
     const cuenta = context.cuenta_transferencia || {};
     const hasCuenta = cuenta.configurada;
+    const isNequi = (cuenta.metodo_recaudo || '').toLowerCase() === 'nequi' ||
+        (cuenta.tipo_cuenta || '').toLowerCase() === 'nequi' ||
+        (cuenta.banco_nombre || '').toLowerCase() === 'nequi';
     const estadoReporte = context.estado_reporte;
+    const bloqueaEnvio = estadoReporte === 'pendiente_revision' || estadoReporte === 'comprobante_aprobado';
 
     return (
         <div className="v-dashboard">
@@ -151,7 +208,43 @@ const EmpresaPlatformPayment = () => {
                         }}>
                             <FiClock style={{ color: '#ff9800' }} />
                             <span style={{ fontSize: '0.9rem' }}>
-                                Ya tienes un comprobante en estado: <strong>{estadoReporte.replace(/_/g, ' ')}</strong>
+                                Estado del último comprobante: <strong>{String(estadoReporte || '').replace(/_/g, ' ')}</strong>
+                            </span>
+                        </div>
+                    )}
+
+                    {bloqueaEnvio && (
+                        <div style={{
+                            background: 'rgba(33,150,243,0.08)',
+                            border: '1px solid rgba(33,150,243,0.25)',
+                            borderRadius: 12,
+                            padding: '12px 16px',
+                            marginBottom: 24,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 10,
+                        }}>
+                            <FiInfo style={{ color: '#2196f3' }} />
+                            <span style={{ fontSize: '0.9rem' }}>
+                                Tu último comprobante está en proceso de revisión. El envío de nuevos comprobantes está bloqueado hasta que cambie el estado.
+                            </span>
+                        </div>
+                    )}
+
+                    {!hasCuenta && (
+                        <div style={{
+                            background: 'rgba(244, 67, 54, 0.08)',
+                            border: '1px solid rgba(244, 67, 54, 0.3)',
+                            borderRadius: 12,
+                            padding: '14px 20px',
+                            marginBottom: 24,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 10
+                        }}>
+                            <FiAlertTriangle style={{ color: '#ef4444' }} />
+                            <span style={{ fontSize: '0.9rem' }}>
+                                El administrador aún no configuró el destino de recaudo. No realices transferencias hasta ver la cuenta o Nequi oficial.
                             </span>
                         </div>
                     )}
@@ -188,14 +281,26 @@ const EmpresaPlatformPayment = () => {
                                     <h4 style={{ margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
                                         <FiInfo style={{ color: '#1976d2' }} /> Cuenta de transferencia
                                     </h4>
-                                    {['banco_nombre', 'tipo_cuenta', 'numero_cuenta', 'titular_cuenta', 'documento_titular', 'referencia_transferencia'].map(k => {
-                                        const val = cuenta[k];
+                                    {(isNequi
+                                        ? ['metodo_recaudo', 'numero_cuenta', 'titular_cuenta', 'documento_titular', 'referencia_transferencia']
+                                        : ['metodo_recaudo', 'banco_nombre', 'tipo_cuenta', 'numero_cuenta', 'titular_cuenta', 'documento_titular', 'referencia_transferencia']
+                                    ).map(k => {
+                                        const val = k === 'metodo_recaudo'
+                                            ? (cuenta[k] || (isNequi ? 'nequi' : 'cuenta_bancaria'))
+                                            : cuenta[k];
                                         if (!val) return null;
-                                        const label = k.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase());
+                                        const label = k === 'metodo_recaudo'
+                                            ? 'Método'
+                                            : (k === 'numero_cuenta' && isNequi
+                                                ? 'Número Nequi'
+                                                : k.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase()));
+                                        const display = k === 'metodo_recaudo'
+                                            ? (isNequi ? 'Nequi' : 'Cuenta bancaria')
+                                            : val;
                                         return (
                                             <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(128,128,128,0.1)' }}>
                                                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{label}</span>
-                                                <strong style={{ fontSize: '0.9rem' }}>{val}</strong>
+                                                <strong style={{ fontSize: '0.9rem' }}>{display}</strong>
                                             </div>
                                         );
                                     })}
@@ -216,14 +321,14 @@ const EmpresaPlatformPayment = () => {
 
                                         <label style={{ display: 'block', marginBottom: 16 }}>
                                             <span style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: 6, display: 'block' }}>Monto (COP)</span>
-                                            <input
-                                                type="text"
+                                            <CurrencyInput
                                                 value={monto}
-                                                onChange={(e) => setMonto(e.target.value.replace(/[^0-9]/g, ''))}
-                                                placeholder="Ej: 150000"
+                                                onChange={(e) => setMonto(Number(e.target.value || 0))}
+                                                placeholder="Ej: 150.000"
                                                 className="v-input"
-                                                required
-                                                style={{ width: '100%' }}
+                                                min={0}
+                                                hint="Solo valores enteros COP (sin decimales)."
+                                                disabled={bloqueaEnvio}
                                             />
                                         </label>
 
@@ -235,6 +340,7 @@ const EmpresaPlatformPayment = () => {
                                                 onChange={(e) => setComprobante(e.target.files?.[0] || null)}
                                                 className="v-input"
                                                 required
+                                                disabled={bloqueaEnvio}
                                                 style={{ width: '100%' }}
                                             />
                                             {comprobante && (
@@ -252,17 +358,18 @@ const EmpresaPlatformPayment = () => {
                                                 placeholder="Referencia de transferencia, banco emisor..."
                                                 className="v-input"
                                                 rows={3}
+                                                disabled={bloqueaEnvio}
                                                 style={{ width: '100%', resize: 'vertical' }}
                                             />
                                         </label>
 
                                         <button
                                             type="submit"
-                                            disabled={submitting}
+                                            disabled={submitting || bloqueaEnvio}
                                             className="v-btn-primary"
                                             style={{ width: '100%', padding: '12px', borderRadius: 12, fontSize: '0.95rem', fontWeight: 600 }}
                                         >
-                                            {submitting ? 'Enviando...' : 'Enviar comprobante'}
+                                            {bloqueaEnvio ? 'Comprobante en revisión' : (submitting ? 'Enviando...' : 'Enviar comprobante')}
                                         </button>
                                     </form>
                                 )}
@@ -311,7 +418,7 @@ const EmpresaPlatformPayment = () => {
                                                 <tr key={f.id}>
                                                     <td><strong>{f.numero_factura}</strong></td>
                                                     <td>{fmtDate(f.fecha_emision)}</td>
-                                                    <td>{fmt(f.monto)}</td>
+                                                    <td>{fmt(Number(f.total ?? f.subtotal ?? f.monto ?? 0))}</td>
                                                     <td>
                                                         <StatusBadge
                                                             status={f.estado === 'pagada' ? 'success' : 'warning'}
@@ -319,10 +426,13 @@ const EmpresaPlatformPayment = () => {
                                                         />
                                                     </td>
                                                     <td>
-                                                        {f.pdf_url && (
-                                                            <a href={f.pdf_url} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2' }}>
-                                                                <FiFileText /> Ver
-                                                            </a>
+                                                        {(f.pdf_ruta || f.pdf_url) && (
+                                                            <button
+                                                                onClick={() => downloadR2File(getR2ImageUrl(f.pdf_ruta || f.pdf_url), `${f.numero_factura || 'factura'}`)}
+                                                                style={{ border: 'none', background: 'transparent', color: '#1976d2', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.85rem' }}
+                                                            >
+                                                                <FiDownload /> Descargar
+                                                            </button>
                                                         )}
                                                     </td>
                                                 </tr>

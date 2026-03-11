@@ -44,6 +44,7 @@ import EmpresaCommissions from './features/empresa/pages/EmpresaCommissions';
 import EmpresaPlatformPayment from './features/empresa/pages/EmpresaPlatformPayment';
 import { ThemeProvider } from './features/shared/context/ThemeContext';
 import GlobalScrollbar from './features/shared/components/GlobalScrollbar';
+import { SnackbarProvider } from './features/shared/components/AppSnackbar';
 import DashboardNotificationsPage from './features/shared/pages/DashboardNotificationsPage';
 
 // Component to handle root redirection based on role
@@ -79,8 +80,9 @@ export default function App() {
   return (
     <ThemeProvider>
       <GlobalScrollbar />
-      <AuthProvider>
-        <Routes>
+      <SnackbarProvider>
+        <AuthProvider>
+          <Routes>
           {/* ── Share location — standalone, no header/footer ── */}
           <Route path="/share/:token" element={<LocationSharePage />} />
 
@@ -179,8 +181,9 @@ export default function App() {
               </>
             }
           />
-        </Routes>
-      </AuthProvider>
+          </Routes>
+        </AuthProvider>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 }

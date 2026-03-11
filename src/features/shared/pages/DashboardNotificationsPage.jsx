@@ -14,15 +14,27 @@ import {
     FiXCircle,
 } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import PageHeader from '../components/PageHeader';
 import { deleteNotification, getNotifications, getUnreadCount, markAsRead } from '../services/notificationService';
+import { useSnackbar } from '../components/AppSnackbar';
+import { resolveNotificationRedirectPath } from '../utils/notificationRedirect';
 import './DashboardNotificationsPage.css';
 
 const POLLING_MS = 30000;
 const UNDO_MS = 4000;
 
 const TRIP_TYPES = new Set(['trip_accepted', 'trip_cancelled', 'trip_completed', 'driver_arrived', 'driver_waiting']);
-const PAYMENT_TYPES = new Set(['payment_received', 'payment_pending', 'admin_company_payment_info_updated']);
+const PAYMENT_TYPES = new Set([
+    'payment_received',
+    'payment_pending',
+    'admin_company_payment_info_updated',
+    'empresa_payment_submitted',
+    'empresa_payment_approved',
+    'empresa_payment_rejected',
+    'empresa_payment_confirmed',
+    'invoice_generated',
+]);
 const DOCUMENT_TYPES = new Set([
     'document_approved',
     'document_rejected',
@@ -85,6 +97,8 @@ const getRelativeTime = (dateString) => {
 
 const DashboardNotificationsPage = ({ roleType = 'admin' }) => {
     const { user } = useAuth();
+    const navigate = useNavigate();
+    const { showSnackbar } = useSnackbar();
     const userId = useMemo(() => getUserId(user), [user]);
     const visibleFilters = useMemo(() => getVisibleFilters(roleType), [roleType]);
 
@@ -157,6 +171,22 @@ const DashboardNotificationsPage = ({ roleType = 'admin' }) => {
             item.id === notificationId ? { ...item, leida: true, leida_en: new Date().toISOString() } : item
         )));
         setUnreadCount(result.no_leidas ?? 0);
+    };
+
+    const handleNotificationClick = async (notification) => {
+        if (!notification) return;
+
+        if (!notification.leida) {
+            await handleMarkAsRead(notification.id);
+        }
+
+        const targetPath = resolveNotificationRedirectPath({ notification, roleType });
+        if (targetPath) {
+            navigate(targetPath);
+            return;
+        }
+
+        showSnackbar('Aún no es posible redireccionar esta notificación desde web.', { type: 'warning' });
     };
 
     const handleMarkAllAsRead = async () => {

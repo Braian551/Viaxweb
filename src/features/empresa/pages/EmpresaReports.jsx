@@ -11,7 +11,7 @@ import {
     getEmpresaDriversReport,
     getEmpresaTripsReport,
     getEmpresaVehicleTypesReport,
-    getEmpresaReportPdfUrl
+    getEmpresaReportPdfFallbackUrls
 } from '../services/empresaService';
 import PageHeader from '../../shared/components/PageHeader';
 import GlassStatCard from '../../shared/components/GlassStatCard';
@@ -35,6 +35,7 @@ const EmpresaReports = () => {
     const [tripsData, setTripsData] = useState(null);
     const [vehicleData, setVehicleData] = useState(null);
     const [page, setPage] = useState(1);
+    const [generatingPdf, setGeneratingPdf] = useState(false);
 
     const empresaId = useMemo(() => user?.empresa_id || user?.id, [user]);
 
@@ -298,9 +299,49 @@ const EmpresaReports = () => {
         );
     };
 
-    const handleGeneratePdf = () => {
-        const url = getEmpresaReportPdfUrl(empresaId, period);
-        window.open(url, '_blank');
+    const handleGeneratePdf = async () => {
+        if (!empresaId || generatingPdf) return;
+
+        setGeneratingPdf(true);
+        try {
+            const urls = getEmpresaReportPdfFallbackUrls(empresaId, period);
+            let opened = false;
+
+            for (const url of urls) {
+                try {
+                    const response = await fetch(url, { method: 'GET', credentials: 'include' });
+                    if (!response.ok) {
+                        continue;
+                    }
+
+                    const contentType = (response.headers.get('content-type') || '').toLowerCase();
+
+                    if (contentType.includes('application/pdf')) {
+                        const blob = await response.blob();
+                        const objectUrl = URL.createObjectURL(blob);
+                        window.open(objectUrl, '_blank', 'noopener,noreferrer');
+                        // Let browser read the object URL before revoking.
+                        setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+                        opened = true;
+                        break;
+                    }
+
+                    // Some outdated backends return JSON with "Acción no válida".
+                    const maybeJson = await response.text();
+                    if (maybeJson && maybeJson.toLowerCase().includes('no v')) {
+                        continue;
+                    }
+                } catch (err) {
+                    console.error('Error probando endpoint PDF:', url, err);
+                }
+            }
+
+            if (!opened) {
+                alert('No fue posible generar el PDF. Debes desplegar el backend actualizado de reportes (reports.php acción pdf / reports_pdf.php).');
+            }
+        } finally {
+            setGeneratingPdf(false);
+        }
     };
 
     return (
@@ -311,7 +352,7 @@ const EmpresaReports = () => {
                 actions={
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <FilterBar filters={periods} activeValue={period} onChange={setPeriod} />
-                        <button className="v-btn-primary" onClick={handleGeneratePdf}><FiClipboard /> Generar PDF</button>
+                        <button className="v-btn-primary" onClick={handleGeneratePdf} disabled={generatingPdf}><FiClipboard /> {generatingPdf ? 'Generando...' : 'Generar PDF'}</button>
                     </div>
                 }
             />

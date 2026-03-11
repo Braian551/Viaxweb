@@ -19,10 +19,17 @@ export function getR2ImageUrl(r2Key) {
     // Handle legacy r2_proxy.php URLs → extract the key
     if (finalKey.includes('r2_proxy.php') && finalKey.includes('key=')) {
         try {
-            const url = new URL(finalKey);
+            const url = finalKey.startsWith('http')
+                ? new URL(finalKey)
+                : new URL(finalKey, window.location.origin);
             const extracted = url.searchParams.get('key');
             if (extracted) finalKey = extracted;
         } catch { /* ignore parse errors */ }
+    }
+
+    // Si ya es una URL relativa de proxy sin key extraíble, reutilizarla tal cual.
+    if (/^\/api\/r2_proxy\.php\?/i.test(finalKey)) {
+        return finalKey;
     }
 
     // If it's already a valid external URL (not localhost/192.168/legacy), return as-is

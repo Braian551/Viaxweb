@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     FiBell,
     FiCheck,
@@ -14,12 +15,14 @@ import {
     FiXCircle,
 } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
+import { useSnackbar } from './AppSnackbar';
 import {
     deleteNotification,
     getNotifications,
     getUnreadCount,
     markAsRead,
 } from '../services/notificationService';
+import { resolveNotificationRedirectPath, resolveRoleTypeFromUser } from '../utils/notificationRedirect';
 import './NotificationBell.css';
 
 const POLLING_MS = 30000;
@@ -60,7 +63,10 @@ const formatRelativeTime = (dateString) => {
 
 const NotificationBell = ({ buttonClassName }) => {
     const { user } = useAuth();
+    const navigate = useNavigate();
+    const { showSnackbar } = useSnackbar();
     const userId = useMemo(() => getUserId(user), [user]);
+    const roleType = useMemo(() => resolveRoleTypeFromUser(user), [user]);
 
     const containerRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -110,6 +116,23 @@ const NotificationBell = ({ buttonClassName }) => {
             );
             setUnreadCount(result.no_leidas ?? 0);
         }
+    };
+
+    const handleNotificationClick = async (notification) => {
+        if (!notification) return;
+
+        if (!notification.leida) {
+            await handleMarkOneRead(notification);
+        }
+
+        const targetPath = resolveNotificationRedirectPath({ notification, roleType });
+        if (targetPath) {
+            setIsOpen(false);
+            navigate(targetPath);
+            return;
+        }
+
+        showSnackbar('Aún no es posible redireccionar esta notificación desde web.', { type: 'warning' });
     };
 
     const commitSingleDelete = async (notificationId) => {
@@ -314,7 +337,7 @@ const NotificationBell = ({ buttonClassName }) => {
                                     type="button"
                                     key={notification.id}
                                     className={`notif-item ${notification.leida ? 'read' : 'unread'}`}
-                                    onClick={() => handleMarkOneRead(notification)}
+                                    onClick={() => handleNotificationClick(notification)}
                                 >
                                     <span className="notif-item__icon">
                                         <Icon />

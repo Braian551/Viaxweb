@@ -10,6 +10,22 @@ import { ShimmerStatGrid } from '../../shared/components/ShimmerLoader';
 import { ViaxAreaChart, ViaxDonutChart } from '../../shared/components/ViaxCharts';
 
 const PERIODS = ['hoy', 'semana', 'mes', 'anio', 'todo'];
+const DEBT_EPSILON_COP = 1;
+const normalizeSaldoCop = (value) => {
+    const parsed = Number(value || 0);
+    if (!Number.isFinite(parsed)) return 0;
+    return Math.abs(parsed) < DEBT_EPSILON_COP ? 0 : parsed;
+};
+const hasActiveDebt = (empresa) => {
+    if (empresa?.deuda_activa === true || empresa?.deuda_activa === false) {
+        return empresa.deuda_activa;
+    }
+    const debtNumeric = Number(empresa?.deuda_activa);
+    if (Number.isFinite(debtNumeric)) {
+        return debtNumeric === 1;
+    }
+    return normalizeSaldoCop(empresa?.saldo_pendiente) >= DEBT_EPSILON_COP;
+};
 
 const AdminFinances = () => {
     const { user } = useAuth();
@@ -47,11 +63,11 @@ const AdminFinances = () => {
         monto: Number(mov.monto || 0),
     }));
     const deudasChartData = (empresas_deudoras || [])
-        .filter(empresa => Number(empresa.saldo_pendiente || 0) > 0)
+        .filter(empresa => hasActiveDebt(empresa))
         .slice(0, 5)
         .map(empresa => ({
             name: empresa.nombre,
-            value: Number(empresa.saldo_pendiente || 0),
+            value: normalizeSaldoCop(empresa.saldo_pendiente),
         }));
 
     return (
@@ -151,11 +167,11 @@ const AdminFinances = () => {
                                                 </div>
                                             </div>
                                             <div style={{ textAlign: 'right' }}>
-                                                <div style={{ fontWeight: 800, color: Number(empresa.saldo_pendiente || 0) > 0 ? '#f44336' : '#4caf50', fontSize: '0.95rem' }}>
-                                                    {formatCurrency(empresa.saldo_pendiente)}
+                                                <div style={{ fontWeight: 800, color: hasActiveDebt(empresa) ? '#f44336' : '#4caf50', fontSize: '0.95rem' }}>
+                                                    {formatCurrency(normalizeSaldoCop(empresa.saldo_pendiente))}
                                                 </div>
                                                 <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-                                                    {Number(empresa.saldo_pendiente || 0) > 0 ? 'Pendiente' : 'Al día'}
+                                                    {hasActiveDebt(empresa) ? 'Pendiente' : 'Al día'}
                                                 </div>
                                             </div>
                                         </div>

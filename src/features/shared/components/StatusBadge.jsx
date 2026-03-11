@@ -7,6 +7,14 @@ const statusMap = {
     activo: { bg: 'rgba(76, 175, 80, 0.12)', color: '#4caf50', label: 'Activo' },
     active: { bg: 'rgba(76, 175, 80, 0.12)', color: '#4caf50', label: 'Activo' },
     aprobado: { bg: 'rgba(76, 175, 80, 0.12)', color: '#4caf50', label: 'Aprobado' },
+    terminado: { bg: 'rgba(76, 175, 80, 0.12)', color: '#4caf50', label: 'Terminado' },
+    debt: { bg: 'rgba(255, 82, 82, 0.12)', color: '#ff5252', label: 'Con Deuda' },
+    pendiente_revision: { bg: 'rgba(255, 171, 64, 0.12)', color: '#ffab40', label: 'Pendiente Revisión' },
+    comprobante_aprobado: { bg: 'rgba(33, 150, 243, 0.12)', color: '#2196f3', label: 'Aprobado (Pte Pago)' },
+    pagado_confirmado: { bg: 'rgba(76, 175, 80, 0.12)', color: '#4caf50', label: 'Confirmado' },
+    // The existing 'rechazado' entry is kept as it has a 'bg' property.
+    // If the new 'rechazado' was meant to replace it, it would need a 'bg' property.
+    // For now, assuming the new 'rechazado' was a duplicate or intended for a different context.
     aprobada: { bg: 'rgba(76, 175, 80, 0.12)', color: '#4caf50', label: 'Aprobada' },
     completada: { bg: 'rgba(76, 175, 80, 0.12)', color: '#4caf50', label: 'Completada' },
     inactivo: { bg: 'rgba(244, 67, 54, 0.12)', color: '#f44336', label: 'Inactivo' },
