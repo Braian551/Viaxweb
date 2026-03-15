@@ -23,6 +23,7 @@ const DOCUMENT_TYPES = new Set([
 const normalizeRole = (roleType) => {
     const normalized = String(roleType || '').toLowerCase();
     if (normalized === 'administrador') return 'admin';
+    if (normalized === 'soporte' || normalized === 'support') return 'soporte_tecnico';
     if (normalized === 'company') return 'empresa';
     return normalized;
 };
@@ -32,6 +33,7 @@ const buildRoleBase = (roleType) => {
     if (!normalizedRole) return null;
 
     if (normalizedRole === 'admin') return '/admin';
+    if (normalizedRole === 'soporte_tecnico') return '/soporte';
     if (normalizedRole === 'empresa') return '/empresa';
     if (normalizedRole === 'conductor') return '/conductor';
     if (normalizedRole === 'cliente') return '/cliente';
@@ -66,6 +68,12 @@ export const resolveNotificationRedirectPath = ({ notification, roleType }) => {
         if (normalizeRole(roleType) === 'conductor') return '/conductor/earnings';
         if (normalizeRole(roleType) === 'empresa') return '/empresa/platform-payment';
         if (normalizeRole(roleType) === 'admin') return '/admin/company-payments';
+    }
+
+    if (referenciaTipo === 'ticket_soporte' || referenciaTipo === 'ticket') {
+        const normalizedRole = normalizeRole(roleType);
+        if (normalizedRole === 'soporte_tecnico') return '/soporte';
+        return `${base}/support`;
     }
 
     if (tipo.startsWith('trip_') || tipo === 'driver_arrived' || tipo === 'driver_waiting') {

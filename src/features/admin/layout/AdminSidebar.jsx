@@ -1,19 +1,20 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { FiHome, FiUsers, FiBriefcase, FiDollarSign, FiActivity, FiBell, FiLogOut, FiX, FiCreditCard } from 'react-icons/fi';
+import { FiHome, FiUsers, FiBriefcase, FiDollarSign, FiActivity, FiBell, FiLifeBuoy, FiLogOut, FiX, FiCreditCard } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import './AdminLayout.css';
 
 const AdminSidebar = ({ isOpen, toggleSidebar }) => {
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const isSupportUser = user?.tipo_usuario === 'soporte_tecnico';
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
-    const navItems = [
+    const adminNavItems = [
         { path: '/admin', label: 'Dashboard', icon: <FiHome />, end: true },
         { path: '/admin/users', label: 'Usuarios', icon: <FiUsers /> },
         { path: '/admin/companies', label: 'Empresas', icon: <FiBriefcase /> },
@@ -21,7 +22,15 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
         { path: '/admin/company-payments', label: 'Pagos Empresas', icon: <FiCreditCard /> },
         { path: '/admin/audit', label: 'Auditoría', icon: <FiActivity /> },
         { path: '/admin/notifications', label: 'Notificaciones', icon: <FiBell /> },
+        { path: '/admin/support', label: 'Soporte', icon: <FiLifeBuoy /> },
     ];
+
+    const supportNavItems = [
+        { path: '/soporte', label: 'Bandeja Soporte', icon: <FiLifeBuoy />, end: true },
+        { path: '/soporte/notifications', label: 'Notificaciones', icon: <FiBell /> },
+    ];
+
+    const navItems = isSupportUser ? supportNavItems : adminNavItems;
 
     return (
         <>
@@ -34,7 +43,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
             <aside className={`admin-sidebar ${isOpen ? 'open' : 'closed'}`}>
                 <div className="sidebar-header">
                     <img src="/logo.png" alt="Viax Logo" className="sidebar-logo" />
-                    {isOpen && <h2 className="sidebar-title">VIAX Admin</h2>}
+                    {isOpen && <h2 className="sidebar-title">{isSupportUser ? 'VIAX Soporte' : 'VIAX Admin'}</h2>}
                     <button className="sidebar-close-btn mobile-only" onClick={toggleSidebar}>
                         <FiX />
                     </button>

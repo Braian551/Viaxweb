@@ -18,6 +18,7 @@ const LoginPage = () => {
     const navigateByRole = (responseData) => {
         const role = responseData?.user?.tipo_usuario || responseData?.admin?.tipo_usuario;
         if (role === 'admin' || role === 'administrador') navigate('/admin');
+        else if (role === 'soporte_tecnico') navigate('/soporte');
         else if (role === 'cliente') navigate('/cliente');
         else if (role === 'conductor') navigate('/conductor');
         else if (role === 'empresa') navigate('/empresa');

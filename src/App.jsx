@@ -46,6 +46,7 @@ import { ThemeProvider } from './features/shared/context/ThemeContext';
 import GlobalScrollbar from './features/shared/components/GlobalScrollbar';
 import { SnackbarProvider } from './features/shared/components/AppSnackbar';
 import DashboardNotificationsPage from './features/shared/pages/DashboardNotificationsPage';
+import DashboardSupportPage from './features/shared/pages/DashboardSupportPage';
 
 // Component to handle root redirection based on role
 const RootRedirect = () => {
@@ -57,6 +58,7 @@ const RootRedirect = () => {
     switch (user.tipo_usuario) {
       case 'admin':
       case 'administrador': return <Navigate to="/admin" replace />;
+      case 'soporte_tecnico': return <Navigate to="/soporte" replace />;
       case 'cliente': return <Navigate to="/cliente" replace />;
       case 'conductor': return <Navigate to="/conductor" replace />;
       case 'empresa': return <Navigate to="/empresa" replace />;
@@ -124,6 +126,15 @@ export default function App() {
               <Route path="company-payments" element={<AdminCompanyPayments />} />
               <Route path="audit" element={<AdminAudit />} />
               <Route path="notifications" element={<DashboardNotificationsPage roleType="admin" />} />
+              <Route path="support" element={<DashboardSupportPage roleType="admin" />} />
+            </Route>
+          </Route>
+
+          {/* Soporte Tecnico */}
+          <Route element={<RoleRoute allowedRoles={['soporte_tecnico']} />}>
+            <Route path="/soporte" element={<AdminLayout />}>
+              <Route index element={<DashboardSupportPage roleType="soporte_tecnico" />} />
+              <Route path="notifications" element={<DashboardNotificationsPage roleType="soporte_tecnico" />} />
             </Route>
           </Route>
 
@@ -133,6 +144,7 @@ export default function App() {
               <Route index element={<ClienteDashboard />} />
               <Route path="profile" element={<ClienteProfile />} />
               <Route path="notifications" element={<DashboardNotificationsPage roleType="cliente" />} />
+              <Route path="support" element={<DashboardSupportPage roleType="cliente" />} />
             </Route>
           </Route>
 
@@ -143,6 +155,7 @@ export default function App() {
               <Route path="earnings" element={<ConductorEarnings />} />
               <Route path="profile" element={<ConductorProfile />} />
               <Route path="notifications" element={<DashboardNotificationsPage roleType="conductor" />} />
+              <Route path="support" element={<DashboardSupportPage roleType="conductor" />} />
             </Route>
           </Route>
 
@@ -158,6 +171,7 @@ export default function App() {
               <Route path="tarifas" element={<EmpresaTarifas />} />
               <Route path="settings" element={<EmpresaSettings />} />
               <Route path="notifications" element={<DashboardNotificationsPage roleType="empresa" />} />
+              <Route path="support" element={<DashboardSupportPage roleType="empresa" />} />
             </Route>
           </Route>
 

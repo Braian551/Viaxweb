@@ -70,6 +70,7 @@ const ICON_BY_TYPE = {
 
 const getVisibleFilters = (roleType) => {
     if (roleType === 'admin') return ['all', 'unread', 'documents', 'payments', 'system'];
+    if (roleType === 'soporte_tecnico') return ['all', 'unread', 'documents', 'system', 'chat'];
     if (roleType === 'empresa') return ['all', 'unread', 'payments', 'documents'];
     if (roleType === 'conductor') return ['all', 'unread', 'trips', 'payments', 'documents'];
     return ['all', 'unread', 'trips', 'payments', 'documents', 'chat', 'promo'];

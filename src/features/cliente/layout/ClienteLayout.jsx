@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
-import { FiHome, FiUser, FiBell, FiLogOut, FiX } from 'react-icons/fi';
+import { FiHome, FiUser, FiBell, FiLifeBuoy, FiLogOut, FiX } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import DashboardHeader from '../../shared/components/DashboardHeader';
 import '../../../features/shared/DashboardLayout.css';
@@ -15,6 +15,7 @@ const ClienteLayout = () => {
     const navItems = [
         { path: '/cliente', label: 'Mi Panel', icon: <FiHome />, end: true },
         { path: '/cliente/notifications', label: 'Notificaciones', icon: <FiBell /> },
+        { path: '/cliente/support', label: 'Soporte', icon: <FiLifeBuoy /> },
         { path: '/cliente/profile', label: 'Mi Perfil', icon: <FiUser /> },
     ];
 

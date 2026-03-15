@@ -16,6 +16,7 @@ const ROLE_FILTERS = [
     { value: 'cliente', label: 'Clientes' },
     { value: 'conductor', label: 'Conductores' },
     { value: 'empresa', label: 'Empresas' },
+    { value: 'soporte_tecnico', label: 'Soporte técnico' },
     { value: 'administrador', label: 'Admins' },
 ];
 
@@ -24,6 +25,7 @@ const ROLE_COLORS = {
     conductor: '#00bcd4',
     empresa: '#ff9800',
     cliente: '#2196f3',
+    soporte_tecnico: '#4caf50',
 };
 
 const AdminUsers = () => {
@@ -77,6 +79,7 @@ const AdminUsers = () => {
             case 'administrador': return 'Admin';
             case 'conductor': return 'Conductor';
             case 'empresa': return 'Empresa';
+            case 'soporte_tecnico': return 'Soporte técnico';
             case 'cliente':
             default:
                 return 'Cliente';
@@ -299,6 +302,7 @@ const AdminUsers = () => {
                                     <option value="cliente">Cliente</option>
                                     <option value="conductor">Conductor</option>
                                     <option value="empresa">Empresa</option>
+                                    <option value="soporte_tecnico">Soporte técnico</option>
                                     <option value="administrador">Admin</option>
                                 </select>
                             </label>

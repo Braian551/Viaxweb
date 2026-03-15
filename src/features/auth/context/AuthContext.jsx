@@ -7,6 +7,7 @@ import { loginUser, loginWithGoogleToken, registerUser, updateGoogleUserPhone } 
 const AuthContext = createContext(null);
 
 let googleScriptPromise = null;
+let googleClientIdPromise = null;
 
 const loadGoogleIdentityScript = () => {
     if (window.google?.accounts?.oauth2) {
@@ -58,6 +59,17 @@ const getGoogleWebClientId = async () => {
     return clientId;
 };
 
+const preloadGoogleIdentity = () => {
+    if (!googleClientIdPromise) {
+        googleClientIdPromise = Promise.all([
+            loadGoogleIdentityScript(),
+            getGoogleWebClientId(),
+        ]).then(([, clientId]) => clientId);
+    }
+
+    return googleClientIdPromise;
+};
+
 const requestGoogleAccessToken = (clientId) => new Promise((resolve, reject) => {
     const oauth2 = window.google?.accounts?.oauth2;
 
@@ -96,6 +108,17 @@ const requestGoogleAccessToken = (clientId) => new Promise((resolve, reject) => 
     tokenClient.requestAccessToken({ prompt: 'select_account' });
 });
 
+const shouldFallbackToGis = (error) => {
+    const code = (error?.code || '').toString().toLowerCase();
+    const message = (error?.message || '').toString().toLowerCase();
+    return (
+        code.includes('unauthorized-domain') ||
+        message.includes('domain is not authorized') ||
+        message.includes('oauth operations') ||
+        message.includes('auth domain')
+    );
+};
+
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
@@ -120,6 +143,13 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setLoading(false);
         }
+    }, []);
+
+    // Precarga GIS y client_id para mantener el click gesture en el login de Google.
+    useEffect(() => {
+        preloadGoogleIdentity().catch(() => {
+            // No bloquea la sesión; se reintenta durante el click de login.
+        });
     }, []);
 
     const login = async (email, password) => {
@@ -151,20 +181,25 @@ export const AuthProvider = ({ children }) => {
         try {
             let response;
 
-            if (hasFirebaseConfig && auth && googleProvider) {
+            // Flujo primario: Google Identity Services directo (evita dependencia de dominio autorizado de Firebase).
+            try {
+                const clientId = await preloadGoogleIdentity();
+                const accessToken = await requestGoogleAccessToken(clientId);
+                response = await loginWithGoogleToken({
+                    idToken: null,
+                    accessToken,
+                });
+            } catch (gisError) {
+                // Fallback controlado a Firebase solo si está configurado.
+                if (!(hasFirebaseConfig && auth && googleProvider)) {
+                    throw gisError;
+                }
+
                 const popupResult = await signInWithPopup(auth, googleProvider);
                 const googleCredential = GoogleAuthProvider.credentialFromResult(popupResult);
                 response = await loginWithGoogleToken({
                     idToken: googleCredential?.idToken || null,
                     accessToken: googleCredential?.accessToken || null,
-                });
-            } else {
-                await loadGoogleIdentityScript();
-                const clientId = await getGoogleWebClientId();
-                const accessToken = await requestGoogleAccessToken(clientId);
-                response = await loginWithGoogleToken({
-                    idToken: null,
-                    accessToken,
                 });
             }
 
@@ -182,6 +217,8 @@ export const AuthProvider = ({ children }) => {
                     ? 'Cancelaste el inicio de sesión con Google.'
                     : firebaseCode === 'auth/popup-blocked'
                         ? 'El navegador bloqueó la ventana emergente de Google. Permite popups e inténtalo de nuevo.'
+                    : shouldFallbackToGis(error)
+                        ? 'Google Sign-In requiere autorizar el dominio en Firebase. Mientras tanto usamos GIS directo; recarga e inténtalo de nuevo.'
                         : fallbackMessage === 'popup_closed' || fallbackMessage === 'access_denied'
                             ? 'Cancelaste el inicio de sesión con Google.'
                             : fallbackMessage === 'popup_failed'
