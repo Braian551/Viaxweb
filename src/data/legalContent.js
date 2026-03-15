@@ -527,3 +527,66 @@ export const legalContent = {
     },
   },
 };
+
+const accountDeletionSectionsByRole = {
+  cliente: {
+    heading: 'Eliminación de cuenta y retracto (15 días)',
+    bullets: [
+      'El cliente puede solicitar la eliminación de su cuenta desde la app mediante verificación de identidad por código.',
+      'Al confirmar la solicitud, la cuenta pasa a estado pendiente de eliminación durante 15 días calendario.',
+      'Durante ese plazo, el titular puede reactivar la cuenta autenticándose con sus credenciales vigentes.',
+      'Vencido el plazo sin reactivación, se ejecuta eliminación irreversible con anonimización de datos personales.',
+      'La eliminación definitiva no afecta obligaciones legales de conservación mínima para auditoría o defensa jurídica.',
+    ],
+  },
+  conductor: {
+    heading: 'Eliminación de cuenta del conductor y efectos operativos',
+    bullets: [
+      'El conductor puede solicitar eliminación de cuenta bajo verificación reforzada de identidad.',
+      'La cuenta entra en estado pendiente de eliminación por 15 días con posibilidad de reactivación por el titular.',
+      'Durante ese estado, no podrá iniciar sesión ni aceptar servicios hasta reactivar su cuenta.',
+      'Tras el vencimiento del plazo, la cuenta se anonimiza y marca como eliminada de forma irreversible.',
+      'La eliminación no extingue obligaciones legales o económicas previas que deban mantenerse por norma aplicable.',
+    ],
+  },
+  empresa: {
+    heading: 'Eliminación de cuenta empresa y ventana de reversión',
+    bullets: [
+      'La empresa puede solicitar eliminación de cuenta desde su panel autenticado, con verificación por código de seguridad.',
+      'La solicitud activa un período de 15 días en estado pendiente de eliminación antes de la baja definitiva.',
+      'Solo un representante con credenciales válidas puede reactivar la cuenta dentro de dicho período.',
+      'Cumplido el plazo sin reactivación, Viax ejecutará anonimización de datos personales asociados a la cuenta.',
+      'La supresión total puede sujetarse a retenciones legales mínimas en materia contable, tributaria o regulatoria.',
+    ],
+  },
+};
+
+const legalReinforcementSection = {
+  heading: 'Cláusulas reforzadas de cumplimiento y reserva legal',
+  bullets: [
+    'Las partes reconocen que los datos tratados en la plataforma se someten a principios de legalidad, finalidad y minimización.',
+    'El incumplimiento grave de políticas de seguridad, privacidad o uso legítimo puede originar suspensión o terminación inmediata.',
+    'Viax podrá conservar evidencia técnica estrictamente necesaria para investigación de fraude, incidentes y cumplimiento normativo.',
+    'Toda controversia sobre tratamiento de datos o condiciones contractuales se tramitará conforme la legislación colombiana vigente.',
+    'La validez de estas cláusulas no excluye la aplicación de normas imperativas de protección al consumidor y habeas data.',
+  ],
+};
+
+['cliente', 'conductor', 'empresa'].forEach((roleKey) => {
+  const role = legalContent[roleKey];
+  if (!role) {
+    return;
+  }
+
+  const deletionSection = accountDeletionSectionsByRole[roleKey];
+
+  if (role.terms?.sections && deletionSection) {
+    role.terms.sections.push(deletionSection);
+    role.terms.sections.push(legalReinforcementSection);
+  }
+
+  if (role.privacy?.sections && deletionSection) {
+    role.privacy.sections.push(deletionSection);
+    role.privacy.sections.push(legalReinforcementSection);
+  }
+});

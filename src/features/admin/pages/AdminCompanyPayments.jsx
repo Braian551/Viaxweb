@@ -32,6 +32,11 @@ import { useSnackbar } from '../../shared/components/AppSnackbar';
 const fmt = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
 const fmtDate = (d) => { try { return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch { return d; } };
 const safeText = (value, fallback = '-') => (value === null || value === undefined || value === '' ? fallback : String(value));
+const isPdfFile = (path = '') => /\.pdf(\?|$)/i.test(String(path || '').trim());
+const resolveVoucherUrl = (path = '') => {
+    const raw = safeText(path, '').trim();
+    return raw ? getR2ImageUrl(raw) : '';
+};
 const asNumber = (value, fallback = 0) => {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : fallback;
@@ -911,37 +916,68 @@ const AdminCompanyPayments = () => {
 
                                         {/* Image Column */}
                                         <div style={{ background: '#0a0a0a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
-                                            {selectedReport.comprobante_url ? (
+                                            {selectedReport.comprobante_url ? (() => {
+                                                const proofUrl = resolveVoucherUrl(selectedReport.comprobante_url);
+                                                const rawOriginal = safeText(selectedReport.comprobante_url, '').trim();
+                                                const isPdf = isPdfFile(rawOriginal);
+                                                return (
                                                 <>
-                                                    {/* Reutilización obligatoria: resolver URL con helper compartido */}
-                                                    <img
-                                                        src={getR2ImageUrl(selectedReport.comprobante_url)}
-                                                        alt="Voucher"
-                                                        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', zIndex: 2 }}
-                                                        onError={(e) => {
-                                                            const rawOriginal = safeText(selectedReport.comprobante_url, '').trim();
-                                                            // Primer fallback: probar URL original tal cual venga del backend.
-                                                            if (rawOriginal && e.target.dataset.fallbackTried !== 'true') {
-                                                                e.target.dataset.fallbackTried = 'true';
-                                                                e.target.src = rawOriginal;
-                                                                return;
-                                                            }
+                                                    {isPdf ? (
+                                                        <div style={{ width: '100%', height: '100%', padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                                            <iframe
+                                                                src={`${proofUrl}#toolbar=1&navpanes=0&scrollbar=1`}
+                                                                title="Comprobante PDF"
+                                                                style={{ width: '100%', height: '100%', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, background: '#111' }}
+                                                            />
+                                                            <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
+                                                                <button
+                                                                    onClick={() => window.open(proofUrl || rawOriginal, '_blank', 'noopener,noreferrer')}
+                                                                    className="v-btn-icon"
+                                                                    style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', cursor: 'pointer' }}
+                                                                    title="Abrir PDF"
+                                                                >
+                                                                    <FiExternalLink />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => downloadR2File(proofUrl || rawOriginal, `comprobante_${selectedReport.id}.pdf`)}
+                                                                    className="v-btn-icon"
+                                                                    style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', cursor: 'pointer' }}
+                                                                    title="Descargar PDF"
+                                                                >
+                                                                    <FiDownload />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <img
+                                                            src={proofUrl}
+                                                            alt="Voucher"
+                                                            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', zIndex: 2 }}
+                                                            onError={(e) => {
+                                                                if (rawOriginal && e.target.dataset.fallbackTried !== 'true') {
+                                                                    e.target.dataset.fallbackTried = 'true';
+                                                                    e.target.src = rawOriginal;
+                                                                    return;
+                                                                }
 
-                                                            e.target.onerror = null;
-                                                            e.target.src = 'https://placehold.co/600x800?text=Error+al+cargar+comprobante';
-                                                        }}
-                                                    />
+                                                                e.target.onerror = null;
+                                                                e.target.src = 'https://placehold.co/600x800?text=Error+al+cargar+comprobante';
+                                                            }}
+                                                        />
+                                                    )}
                                                     <div style={{ position: 'absolute', bottom: 16, right: 16, zIndex: 3, display: 'flex', gap: 8 }}>
+                                                        {!isPdf && (
+                                                            <button
+                                                                onClick={() => setFullscreenImage(proofUrl || rawOriginal)}
+                                                                className="v-btn-icon"
+                                                                style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', color: 'white', border: 'none', cursor: 'pointer' }}
+                                                                title="Ver en pantalla completa"
+                                                            >
+                                                                <FiExternalLink />
+                                                            </button>
+                                                        )}
                                                         <button
-                                                            onClick={() => setFullscreenImage(getR2ImageUrl(selectedReport.comprobante_url))}
-                                                            className="v-btn-icon"
-                                                            style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', color: 'white', border: 'none', cursor: 'pointer' }}
-                                                            title="Ver en pantalla completa"
-                                                        >
-                                                            <FiExternalLink />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => downloadR2File(getR2ImageUrl(selectedReport.comprobante_url), `comprobante_${selectedReport.id}.jpg`)}
+                                                            onClick={() => downloadR2File(proofUrl || rawOriginal, `comprobante_${selectedReport.id}.${isPdf ? 'pdf' : 'jpg'}`)}
                                                             className="v-btn-icon"
                                                             style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', color: 'white', border: 'none', cursor: 'pointer' }}
                                                             title="Descargar comprobante"
@@ -950,7 +986,8 @@ const AdminCompanyPayments = () => {
                                                         </button>
                                                     </div>
                                                 </>
-                                            ) : (
+                                                );
+                                            })() : (
                                                 <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
                                                     <FiAlertTriangle size={48} style={{ marginBottom: 12, opacity: 0.5 }} />
                                                     <p>Imagen no disponible</p>

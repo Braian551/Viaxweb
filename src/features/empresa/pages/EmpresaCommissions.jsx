@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
     FiDollarSign, FiUsers, FiClock, FiCheckCircle, FiXCircle,
     FiEye, FiCheck, FiSearch, FiX, FiArrowUpRight,
-    FiArrowDownLeft, FiFileText, FiRefreshCw, FiAlertTriangle, FiPercent, FiCreditCard
+    FiArrowDownLeft, FiFileText, FiRefreshCw, FiAlertTriangle, FiPercent, FiCreditCard,
+    FiDownload, FiExternalLink
 } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import {
@@ -23,6 +24,7 @@ import { getR2ImageUrl } from '../../../utils/r2Images';
 import './EmpresaCommissions.css';
 
 const fmt = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
+const isPdfFile = (path = '') => /\.pdf(\?|$)/i.test(String(path || '').trim());
 
 const TAB_FILTERS = [
     { value: 'debtors', label: 'Deudores', icon: <FiUsers /> },
@@ -661,10 +663,37 @@ const EmpresaCommissions = () => {
                                 <div>
                                     <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-secondary)', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: 600 }}>Imagen del Comprobante</label>
                                     <div className="comm-proof-preview">
-                                        <a href={getR2ImageUrl(selectedVoucher.comprobante_url)} target="_blank" rel="noopener noreferrer">
-                                            <img src={getR2ImageUrl(selectedVoucher.comprobante_url)} alt="Comprobante" onError={e => { e.target.style.display = 'none'; }} />
-                                            <div className="comm-proof-overlay"><FiSearch /> Ver en tamaño completo</div>
-                                        </a>
+                                        {(() => {
+                                            const proofUrl = getR2ImageUrl(selectedVoucher.comprobante_url);
+                                            const isPdf = isPdfFile(selectedVoucher.comprobante_url);
+
+                                            if (isPdf) {
+                                                return (
+                                                    <div style={{ width: '100%', height: '100%', minHeight: 340, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                                                        <iframe
+                                                            src={`${proofUrl}#toolbar=1&navpanes=0&scrollbar=1`}
+                                                            title="Comprobante PDF"
+                                                            style={{ width: '100%', height: '100%', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, background: '#111' }}
+                                                        />
+                                                        <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
+                                                            <a className="v-btn-outline" href={proofUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                                                <FiExternalLink /> Abrir PDF
+                                                            </a>
+                                                            <a className="v-btn-secondary" href={proofUrl} download={`comprobante_${selectedVoucher.id}.pdf`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                                                <FiDownload /> Descargar
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
+
+                                            return (
+                                                <a href={proofUrl} target="_blank" rel="noopener noreferrer">
+                                                    <img src={proofUrl} alt="Comprobante" onError={e => { e.target.style.display = 'none'; }} />
+                                                    <div className="comm-proof-overlay"><FiSearch /> Ver en tamaño completo</div>
+                                                </a>
+                                            );
+                                        })()}
                                     </div>
                                 </div>
                             </div>
