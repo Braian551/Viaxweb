@@ -310,7 +310,6 @@ const EmpresaTarifas = () => {
             descuento_distancia_larga: parseNumber(item.descuento_distancia_larga),
             umbral_km_descuento: parseNumber(item.umbral_km_descuento, 15),
             comision_plataforma: parseNumber(item.comision_plataforma),
-            comision_metodo_pago: parseNumber(item.comision_metodo_pago),
             distancia_minima: parseNumber(item.distancia_minima, 1),
             distancia_maxima: parseNumber(item.distancia_maxima, 50),
             tiempo_espera_gratis: parseNumber(item.tiempo_espera_gratis, 3),
@@ -622,7 +621,7 @@ const EmpresaTarifas = () => {
                                     icon={FiCreditCard}
                                     iconColor="#607d8b"
                                     defaultOpen={false}
-                                    info="Estructura de cobros de la empresa hacia los conductores por usar la plataforma."
+                                    info="Comisión única aplicada a los conductores por viaje según el tipo de vehículo."
                                 >
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '12px' }}>
                                         <RateInput
@@ -631,17 +630,8 @@ const EmpresaTarifas = () => {
                                             unit="%"
                                             value={currentVehicle.comision_plataforma}
                                             onChange={e => ch('comision_plataforma', e.target.value)}
-                                            hint="Deducción por uso de la app"
-                                            info="Porcentaje del viaje que la empresa retiene por el servicio de conexión. Es la ganancia bruta de la empresa."
-                                        />
-                                        <RateInput
-                                            label="Comisión método de pago"
-                                            icon={FiCreditCard}
-                                            unit="%"
-                                            value={currentVehicle.comision_metodo_pago}
-                                            onChange={e => ch('comision_metodo_pago', e.target.value)}
-                                            hint="Adicional por pago electrónico"
-                                            info="Porcentaje extra que se deduce si el pago es por tarjeta o billetera digital, para cubrir costos bancarios de pasarela."
+                                            hint="Comisión por viaje para conductores"
+                                            info="Porcentaje que se descuenta del valor del viaje para calcular la ganancia neta del conductor."
                                         />
                                     </div>
                                     <div style={{
@@ -650,7 +640,7 @@ const EmpresaTarifas = () => {
                                         color: 'var(--text-secondary, #64748b)', display: 'flex', alignItems: 'center', gap: '10px',
                                     }}>
                                         <FiInfo size={16} style={{ flexShrink: 0, color: '#2196f3' }} />
-                                        <span>Estas comisiones se deducen del valor neto por viaje, adicional a la comisión general del administrador (<strong>{Number(empresaInfo?.comision_admin_porcentaje || 0).toFixed(1)}%</strong>).</span>
+                                        <span>Solo se aplica la comisión de conductor por tipo de vehículo. No se usa comisión adicional por método de pago.</span>
                                     </div>
                                 </RateSection>
 
