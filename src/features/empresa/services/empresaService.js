@@ -134,7 +134,28 @@ export const getSolicitudesVinculacion = async (empresaId, { page = 1, perPage =
     } catch (e) { return { success: false, message: 'Error de conexión' }; }
 };
 
-export const updateEmpresaProfile = async (empresaId, data) => {
+export const updateEmpresaProfile = async (empresaId, data, logoFile = null) => {
+    if (logoFile) {
+        const formData = new FormData();
+        formData.append('empresa_id', String(empresaId));
+        formData.append('action', 'update_profile');
+        Object.entries(data || {}).forEach(([key, value]) => {
+            if (value === undefined || value === null) return;
+            formData.append(key, String(value));
+        });
+        formData.append('logo', logoFile);
+
+        return await requestJson(
+            `${API_BASE_URL}/empresa/profile.php`,
+            {
+                method: 'POST',
+                headers: { Accept: 'application/json' },
+                body: formData,
+            },
+            'Error de conexión'
+        );
+    }
+
     return await requestJson(
         `${API_BASE_URL}/empresa/profile.php`,
         {

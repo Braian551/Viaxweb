@@ -142,6 +142,7 @@ const EmpresaSettings = () => {
     const [pwMsg, setPwMsg] = useState({ text: '', type: 'success' });
     // Logo
     const [logoPreview, setLogoPreview] = useState(null);
+    const [logoFile, setLogoFile] = useState(null);
 
     const normalizedSettingsQuery = settingsQuery.trim().toLowerCase();
     const matchesSettingsQuery = useCallback((...terms) => {
@@ -320,7 +321,12 @@ const EmpresaSettings = () => {
 
     const handleLogoChange = (e) => {
         const file = e.target.files[0];
-        if (file) { const reader = new FileReader(); reader.onload = ev => setLogoPreview(ev.target.result); reader.readAsDataURL(file); }
+        if (file) {
+            setLogoFile(file);
+            const reader = new FileReader();
+            reader.onload = ev => setLogoPreview(ev.target.result);
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSaveProfile = async () => {
@@ -336,7 +342,10 @@ const EmpresaSettings = () => {
             if (payload.nombre) { payload.nombre_empresa = payload.nombre; delete payload.nombre; }
             payload.municipio = selectedCity?.name || profile.municipio || '';
             payload.departamento = selectedDept?.name || profile.departamento || '';
-            const res = await updateEmpresaProfile(empresaId, payload);
+            const res = await updateEmpresaProfile(empresaId, payload, logoFile);
+            if (res?.success && logoFile) {
+                setLogoFile(null);
+            }
             showToast(res?.success ? 'Perfil actualizado exitosamente.' : `Error: ${res?.message || 'No se pudo guardar'}`, res?.success ? 'success' : 'error');
         } catch { showToast('Error al conectar con el servidor.', 'error'); }
         setSavingProfile(false);
