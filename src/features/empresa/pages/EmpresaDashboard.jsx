@@ -74,7 +74,7 @@ const EmpresaDashboard = () => {
     const operationChartData = [
         { metric: 'Conductores', valor: Number(displayConductores) },
         { metric: 'Viajes', valor: Number(displayViajes) },
-        { metric: 'Ganancias', valor: Number(displayGanancias) },
+        { metric: 'Ganancia Neta', valor: Number(displayGanancias) },
     ];
 
     const solicitudStatusMap = solicitudes.reduce((acc, item) => {

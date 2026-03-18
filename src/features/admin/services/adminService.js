@@ -96,6 +96,65 @@ export const getCompanies = async (adminId, { page = 1, limit = 20, search = '',
     );
 };
 
+export const updateCompany = async (adminId, companyId, payload = {}) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/empresas.php`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'update',
+                admin_id: adminId,
+                id: companyId,
+                ...payload,
+            }),
+        },
+        'No se pudo actualizar la empresa'
+    );
+};
+
+export const approveCompany = async (adminId, companyId) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/empresas.php`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'approve',
+                admin_id: adminId,
+                id: companyId,
+            }),
+        },
+        'No se pudo aprobar la empresa'
+    );
+};
+
+export const rejectCompany = async (adminId, companyId, motivo) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/empresas.php`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'reject',
+                admin_id: adminId,
+                id: companyId,
+                motivo,
+            }),
+        },
+        'No se pudo rechazar la empresa'
+    );
+};
+
 /**
  * Obtiene las ganancias y finanzas de la plataforma.
  */

@@ -22,6 +22,7 @@ const EmpresaConductors = () => {
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(null);
     const [filtro, setFiltro] = useState('');
+    const [notesByConductor, setNotesByConductor] = useState({});
 
     const empresaId = user?.empresa_id || user?.id;
 
@@ -38,10 +39,17 @@ const EmpresaConductors = () => {
         const confirmMsg = accion === 'aprobar' ? '¿Aprobar esta solicitud?' : '¿Rechazar esta solicitud?';
         if (!window.confirm(confirmMsg)) return;
         setActionLoading(conductorId);
-        const res = await gestionarSolicitud(empresaId, conductorId, accion, '', user?.id);
+        const note = (notesByConductor[conductorId] || '').trim();
+        const res = await gestionarSolicitud(empresaId, conductorId, accion, note, user?.id);
         alert(res.message || (res.success ? 'Acción realizada' : 'Error'));
         if (res.success) fetchData();
         setActionLoading(null);
+    };
+
+    const handleEditNote = (conductorId, currentNote = '') => {
+        const updated = window.prompt('Editar observación para esta solicitud:', notesByConductor[conductorId] ?? currentNote ?? '');
+        if (updated === null) return;
+        setNotesByConductor((prev) => ({ ...prev, [conductorId]: updated }));
     };
 
     const filtered = filtro ? solicitudes.filter(s => s.estado === filtro) : solicitudes;
@@ -99,8 +107,22 @@ const EmpresaConductors = () => {
                                 Solicitado: {s.fecha_solicitud ? new Date(s.fecha_solicitud).toLocaleDateString() : '—'}
                             </div>
 
+                            {!!(notesByConductor[s.conductor_id] || s.mensaje_conductor) && (
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 8 }}>
+                                    <strong>Observación:</strong> {notesByConductor[s.conductor_id] || s.mensaje_conductor}
+                                </div>
+                            )}
+
                             {s.estado === 'pendiente' && s.es_solicitud_pendiente && (
                                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: 4 }}>
+                                    <button
+                                        className="v-btn v-btn--outline"
+                                        onClick={() => handleEditNote(s.conductor_id, s.mensaje_conductor)}
+                                        disabled={actionLoading === s.conductor_id}
+                                        style={{ fontSize: '0.8rem', padding: '6px 14px' }}
+                                    >
+                                        Editar nota
+                                    </button>
                                     <button
                                         className="v-btn v-btn--outline v-btn--danger"
                                         onClick={() => handleAction(s.conductor_id, 'rechazar')}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FiSearch, FiBriefcase, FiMapPin, FiPhone } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
-import { getCompanies } from '../services/adminService';
+import { approveCompany, getCompanies, rejectCompany, updateCompany } from '../services/adminService';
 import PageHeader from '../../shared/components/PageHeader';
 import FilterBar from '../../shared/components/FilterBar';
 import Pagination from '../../shared/components/Pagination';
@@ -27,6 +27,17 @@ const AdminCompanies = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCompanies, setTotalCompanies] = useState(0);
+    const [processingCompanyId, setProcessingCompanyId] = useState(null);
+    const [editingCompany, setEditingCompany] = useState(null);
+    const [editForm, setEditForm] = useState({
+        nombre: '',
+        razon_social: '',
+        telefono: '',
+        representante_nombre: '',
+        representante_email: '',
+        municipio: '',
+        departamento: '',
+    });
 
     useEffect(() => {
         const timer = setTimeout(() => setDebouncedSearch(search), 500);
@@ -53,6 +64,62 @@ const AdminCompanies = () => {
     const handleFilterChange = (status) => {
         setStatusFilter(status);
         setPage(1);
+    };
+
+    const handleApprove = async (company) => {
+        if (!window.confirm(`¿Aprobar empresa ${company.nombre}?`)) return;
+        setProcessingCompanyId(company.id);
+        const res = await approveCompany(user.id, company.id);
+        setProcessingCompanyId(null);
+        if (!res?.success) {
+            window.alert(res?.message || 'No se pudo aprobar la empresa');
+            return;
+        }
+        window.alert(res.message || 'Empresa aprobada');
+        fetchCompaniesData();
+    };
+
+    const handleReject = async (company) => {
+        const motivo = window.prompt('Motivo de rechazo (requerido):', '');
+        if (!motivo || !motivo.trim()) return;
+        if (!window.confirm(`¿Rechazar y eliminar ${company.nombre}?`)) return;
+
+        setProcessingCompanyId(company.id);
+        const res = await rejectCompany(user.id, company.id, motivo.trim());
+        setProcessingCompanyId(null);
+        if (!res?.success) {
+            window.alert(res?.message || 'No se pudo rechazar la empresa');
+            return;
+        }
+        window.alert(res.message || 'Empresa rechazada');
+        fetchCompaniesData();
+    };
+
+    const openEdit = (company) => {
+        setEditingCompany(company);
+        setEditForm({
+            nombre: company.nombre || '',
+            razon_social: company.razon_social || '',
+            telefono: company.telefono || '',
+            representante_nombre: company.representante_nombre || '',
+            representante_email: company.representante_email || company.email || '',
+            municipio: company.municipio || '',
+            departamento: company.departamento || '',
+        });
+    };
+
+    const saveEdit = async () => {
+        if (!editingCompany) return;
+        setProcessingCompanyId(editingCompany.id);
+        const res = await updateCompany(user.id, editingCompany.id, editForm);
+        setProcessingCompanyId(null);
+        if (!res?.success) {
+            window.alert(res?.message || 'No se pudo editar la empresa');
+            return;
+        }
+        setEditingCompany(null);
+        window.alert(res.message || 'Empresa actualizada');
+        fetchCompaniesData();
     };
 
     return (
@@ -120,9 +187,36 @@ const AdminCompanies = () => {
 
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border, rgba(0,0,0,0.06))' }}>
                                 <StatusBadge status={c.estado} />
-                                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                                    {new Date(c.creado_en).toLocaleDateString()}
-                                </span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <button
+                                        type="button"
+                                        className="btn btn--ghost"
+                                        onClick={() => openEdit(c)}
+                                        disabled={processingCompanyId === c.id}
+                                    >
+                                        Editar
+                                    </button>
+                                    {c.estado === 'pendiente' && (
+                                        <>
+                                            <button
+                                                type="button"
+                                                className="btn btn--ghost"
+                                                onClick={() => handleReject(c)}
+                                                disabled={processingCompanyId === c.id}
+                                            >
+                                                Rechazar
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn btn--primary"
+                                                onClick={() => handleApprove(c)}
+                                                disabled={processingCompanyId === c.id}
+                                            >
+                                                Aprobar
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -130,6 +224,35 @@ const AdminCompanies = () => {
             )}
 
             {totalPages > 1 && <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />}
+
+            {editingCompany && (
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    background: 'rgba(0,0,0,0.38)',
+                    display: 'grid',
+                    placeItems: 'center',
+                    zIndex: 1200,
+                    padding: 16,
+                }}>
+                    <div className="glass-card" style={{ width: 'min(640px, 100%)', padding: 20 }}>
+                        <h3 style={{ marginTop: 0 }}>Editar empresa</h3>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
+                            <input value={editForm.nombre} onChange={(e) => setEditForm((prev) => ({ ...prev, nombre: e.target.value }))} placeholder="Nombre" className="v-form-input" />
+                            <input value={editForm.razon_social} onChange={(e) => setEditForm((prev) => ({ ...prev, razon_social: e.target.value }))} placeholder="Razón social" className="v-form-input" />
+                            <input value={editForm.telefono} onChange={(e) => setEditForm((prev) => ({ ...prev, telefono: e.target.value }))} placeholder="Teléfono" className="v-form-input" />
+                            <input value={editForm.representante_nombre} onChange={(e) => setEditForm((prev) => ({ ...prev, representante_nombre: e.target.value }))} placeholder="Representante" className="v-form-input" />
+                            <input value={editForm.representante_email} onChange={(e) => setEditForm((prev) => ({ ...prev, representante_email: e.target.value }))} placeholder="Email representante" className="v-form-input" />
+                            <input value={editForm.municipio} onChange={(e) => setEditForm((prev) => ({ ...prev, municipio: e.target.value }))} placeholder="Municipio" className="v-form-input" />
+                            <input value={editForm.departamento} onChange={(e) => setEditForm((prev) => ({ ...prev, departamento: e.target.value }))} placeholder="Departamento" className="v-form-input" />
+                        </div>
+                        <div style={{ marginTop: 14, display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                            <button type="button" className="btn btn--ghost" onClick={() => setEditingCompany(null)}>Cancelar</button>
+                            <button type="button" className="btn btn--primary" onClick={saveEdit} disabled={processingCompanyId === editingCompany.id}>Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

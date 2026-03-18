@@ -132,6 +132,7 @@ const EmpresaSettings = () => {
     const [banks, setBanks] = useState([]);
     const [selectedBank, setSelectedBank] = useState(null);
     const [loadingBanks, setLoadingBanks] = useState(false);
+    const [settingsQuery, setSettingsQuery] = useState('');
     // Password
     const [pwStep, setPwStep] = useState('idle'); // idle | sending | otp | newpw | saving
     const [pwOtp, setPwOtp] = useState('');
@@ -141,6 +142,25 @@ const EmpresaSettings = () => {
     const [pwMsg, setPwMsg] = useState({ text: '', type: 'success' });
     // Logo
     const [logoPreview, setLogoPreview] = useState(null);
+
+    const normalizedSettingsQuery = settingsQuery.trim().toLowerCase();
+    const matchesSettingsQuery = useCallback((...terms) => {
+        if (!normalizedSettingsQuery) return true;
+        return terms.some(term => String(term || '').toLowerCase().includes(normalizedSettingsQuery));
+    }, [normalizedSettingsQuery]);
+
+    const visibleSections = useMemo(() => ({
+        basic: matchesSettingsQuery('informacion basica', 'informacion', 'datos empresariales', 'nombre', 'nit', 'razon social'),
+        contact: matchesSettingsQuery('contacto', 'email', 'telefono'),
+        location: matchesSettingsQuery('ubicacion', 'direccion', 'departamento', 'municipio', 'ciudad'),
+        legalRep: matchesSettingsQuery('representante', 'representante legal'),
+        vehicles: matchesSettingsQuery('tipos de vehiculo', 'vehiculos', 'moto', 'mototaxi', 'taxi', 'carro'),
+        description: matchesSettingsQuery('descripcion', 'acerca de la empresa'),
+        payments: matchesSettingsQuery('datos de pago', 'bancarios', 'banco', 'cuenta', 'transferencia', 'financiero'),
+        security: matchesSettingsQuery('seguridad', 'contrasena', 'password', 'otp', 'codigo de verificacion'),
+    }), [matchesSettingsQuery]);
+
+    const shouldShowSaveProfile = visibleSections.basic || visibleSections.contact || visibleSections.location || visibleSections.legalRep || visibleSections.vehicles || visibleSections.description;
 
     const showToast = (message, type = 'success') => { setToast({ message, type }); setTimeout(() => setToast({ message: '', type: 'success' }), 5000); };
 
@@ -372,6 +392,30 @@ const EmpresaSettings = () => {
             <PageHeader title="Configuración de Empresa" subtitle="Administra los detalles, datos de pago y seguridad de tu organización." />
             <Toast message={toast.message} type={toast.type} />
 
+            <div className="glass-card v-section" style={{ padding: '14px 16px', marginBottom: 16 }}>
+                <div style={{ position: 'relative' }}>
+                    <FiSearch size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', pointerEvents: 'none' }} />
+                    <input
+                        className="v-form-input"
+                        type="text"
+                        value={settingsQuery}
+                        onChange={(e) => setSettingsQuery(e.target.value)}
+                        placeholder="Buscar en configuración..."
+                        style={{ width: '100%', paddingLeft: 36, paddingRight: settingsQuery ? 36 : undefined }}
+                    />
+                    {settingsQuery && (
+                        <button
+                            type="button"
+                            onClick={() => setSettingsQuery('')}
+                            style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', padding: 6 }}
+                            aria-label="Limpiar búsqueda"
+                        >
+                            <FiX size={16} />
+                        </button>
+                    )}
+                </div>
+            </div>
+
             {/* ═══════ LOGO & HEADER ═══════ */}
             <div className="glass-card v-section" style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '20px 24px', marginBottom: 16, flexWrap: 'wrap' }}>
                 <div style={{ position: 'relative' }}>
@@ -408,6 +452,7 @@ const EmpresaSettings = () => {
             </div>
 
             {/* ═══════ 1. INFORMACIÓN BÁSICA ═══════ */}
+            {visibleSections.basic && (
             <Section title="Información Básica" icon={FiBriefcase} iconColor="#2196f3">
                 <Grid cols={3}>
                     <Field label="Nombre de la Empresa" icon={FiBriefcase} value={profile.nombre} onChange={e => ch('nombre', e.target.value)} validate={V.required('El nombre')} />
@@ -415,8 +460,10 @@ const EmpresaSettings = () => {
                     <Field label="Razón Social" icon={FiShield} value={profile.razon_social} onChange={e => ch('razon_social', e.target.value)} validate={V.required('La razón social')} />
                 </Grid>
             </Section>
+            )}
 
             {/* ═══════ 2. CONTACTO ═══════ */}
+            {visibleSections.contact && (
             <Section title="Contacto" icon={FiPhone} iconColor="#9c27b0">
                 <Grid cols={3}>
                     <Field label="Email Corporativo" icon={FiMail} type="email" value={profile.email} onChange={e => ch('email', e.target.value)} validate={V.email} />
@@ -424,8 +471,10 @@ const EmpresaSettings = () => {
                     <Field label="Teléfono Secundario" icon={FiPhone} value={profile.telefono_secundario} onChange={e => ch('telefono_secundario', e.target.value)} placeholder="Opcional" validate={V.phoneOpt} filter={F.phone} />
                 </Grid>
             </Section>
+            )}
 
             {/* ═══════ 3. UBICACIÓN ═══════ */}
+            {visibleSections.location && (
             <Section title="Ubicación" icon={FiMapPin} iconColor="#ff5722" defaultOpen={false}>
                 <Grid cols={3}>
                     <Field label="Dirección" icon={FiHome} value={profile.direccion} onChange={e => ch('direccion', e.target.value)} />
@@ -448,8 +497,10 @@ const EmpresaSettings = () => {
                     />
                 </Grid>
             </Section>
+            )}
 
             {/* ═══════ 4. REPRESENTANTE ═══════ */}
+            {visibleSections.legalRep && (
             <Section title="Representante Legal" icon={FiUser} iconColor="#4caf50" defaultOpen={false}>
                 <Grid cols={3}>
                     <Field label="Nombre Completo" icon={FiUser} value={profile.representante_nombre} onChange={e => ch('representante_nombre', e.target.value)} validate={V.name('El representante')} filter={F.name} />
@@ -457,8 +508,10 @@ const EmpresaSettings = () => {
                     <Field label="Email Personal" icon={FiMail} value={profile.representante_email} onChange={e => ch('representante_email', e.target.value)} validate={V.emailOpt} />
                 </Grid>
             </Section>
+            )}
 
             {/* ═══════ 5. VEHÍCULOS ═══════ */}
+            {visibleSections.vehicles && (
             <Section title="Tipos de Vehículo" icon={FaMotorcycle} iconColor="#2196f3" defaultOpen={false}>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 16px' }}>Habilita o deshabilita tipos</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -508,21 +561,27 @@ const EmpresaSettings = () => {
                     </p>
                 </div>
             </Section>
+            )}
 
             {/* ═══════ 6. DESCRIPCIÓN ═══════ */}
+            {visibleSections.description && (
             <Section title="Descripción" icon={FiInfo} iconColor="#607d8b" defaultOpen={false}>
                 <textarea className="v-form-input" rows={4} value={profile.descripcion || ''} onChange={e => ch('descripcion', e.target.value)}
                     placeholder="Breve descripción de tu empresa de transporte..." style={{ resize: 'vertical', width: '100%', minHeight: 80 }} />
             </Section>
+            )}
 
             {/* ─── Guardar Perfil ─── */}
+            {shouldShowSaveProfile && (
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
                 <button className="v-btn-primary" onClick={handleSaveProfile} disabled={savingProfile}>
                     {savingProfile ? <><FiRefreshCw className="v-spin" size={14} /> Guardando...</> : <><FiSave size={14} /> Guardar Perfil</>}
                 </button>
             </div>
+            )}
 
             {/* ═══════ 7. DATOS DE PAGO ═══════ */}
+            {visibleSections.payments && (
             <Section title="Datos de Pago / Bancarios" icon={FiCreditCard} iconColor="#e91e63" defaultOpen={false} badge="Financiero">
                 <div style={{ padding: '10px 14px', borderRadius: 8, fontSize: '0.8rem', marginBottom: 16, background: 'rgba(33,150,243,0.06)', borderLeft: '3px solid #2196f3', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 8 }}>
                     <FiInfo size={14} style={{ flexShrink: 0 }} /> Estos datos se usan para las transferencias de liquidación. Cambios notifican al administrador.
@@ -559,8 +618,10 @@ const EmpresaSettings = () => {
                     </button>
                 </div>
             </Section>
+            )}
 
             {/* ═══════ 8. SEGURIDAD — CAMBIO DE CONTRASEÑA CON OTP ═══════ */}
+            {visibleSections.security && (
             <Section title="Seguridad — Cambiar Contraseña" icon={FiLock} iconColor="#f44336" defaultOpen={false}>
                 {pwMsg.text && (
                     <div style={{ padding: '10px 14px', borderRadius: 8, fontSize: '0.82rem', marginBottom: 16, background: pwMsg.type === 'error' ? 'rgba(244,67,54,0.08)' : 'rgba(76,175,80,0.08)', color: pwMsg.type === 'error' ? '#f44336' : '#4caf50', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -634,6 +695,7 @@ const EmpresaSettings = () => {
                     </div>
                 )}
             </Section>
+            )}
         </div>
     );
 };

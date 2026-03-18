@@ -47,6 +47,7 @@ import GlobalScrollbar from './features/shared/components/GlobalScrollbar';
 import { SnackbarProvider } from './features/shared/components/AppSnackbar';
 import DashboardNotificationsPage from './features/shared/pages/DashboardNotificationsPage';
 import DashboardSupportPage from './features/shared/pages/DashboardSupportPage';
+import CookieConsentBanner from './features/shared/components/CookieConsentBanner';
 
 // Component to handle root redirection based on role
 const RootRedirect = () => {
@@ -84,6 +85,7 @@ export default function App() {
       <GlobalScrollbar />
       <SnackbarProvider>
         <AuthProvider>
+          <CookieConsentBanner />
           <Routes>
           {/* ── Share location — standalone, no header/footer ── */}
           <Route path="/share/:token" element={<LocationSharePage />} />
