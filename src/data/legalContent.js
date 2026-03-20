@@ -58,16 +58,120 @@ const securityAndFraudSection = {
     'Trazabilidad Técnica: Para mitigar incidentes de ciberseguridad o abuso en la plataforma, registramos automáticamente datos de conectividad como tu Dirección IP y el Identificador de Dispositivo (DeviceID/MAC).',
     'Evidencia Digital: Los informes técnicos (logs) de conexión proveídos por los servidores podrán emplearse como material de investigación o probatorio frente a intentos de suplantación, reclamaciones financieras o procesos ante autoridades lícitas.',
     'Biometría Autorizada: Cuando la ley o la seguridad operativa (ej. conductores) lo requieran, la plataforma utilizará reconocimiento facial en vivo o APIs biométricas (local_auth) exclusivamente con fines de homologación y validación transitoria frente al fraude, sin comercializar dichos escaneos.',
+    'Los datos biométricos son considerados información sensible conforme a la Ley 1581 de 2012, por lo cual su tratamiento requiere autorización previa, expresa e informada del titular.',
+    'Presunción de Autenticidad: Toda instrucción, aceptación tarifaria o solicitud gestada bajo una sesión activa y validada por OTP se presumirá auténtica, íntegra y originada por el titular legítimo de la cuenta, recayendo sobre este la carga probatoria en caso de repudiación probada.',
+    'Custodia de Credenciales: El usuario asume la responsabilidad exclusiva de proteger sus credenciales de acceso. Viax no se hará responsable patrimonial ni judicialmente frente a vulneraciones o suplantaciones resultantes de la negligencia, préstamo de cuenta o pérdida del dispositivo por parte del titular.',
   ],
 };
 
 const privacyRightsSection = {
   heading: 'Tus Derechos como Titular (Habeas Data)',
-  summary: 'Tienes el poder absoluto sobre tu información. Puedes pedirnos actualizarla o eliminarla cuando quieras sin costo alguno.',
+  summary: 'Tienes el control legal sobre tu información. Puedes pedirnos actualizarla o eliminarla cuando quieras sin costo alguno.',
   bullets: [
     'Gozas del derecho a conocer, actualizar y rectificar permanentemente tu información frente a registros inexactos o fraccionados directamente dentro de tu perfil de usuario.',
     'Puedes solicitar copia de la autorización que nos confiaste en tu proceso de registro.',
     'Puedes radicar Peticiones, Quejas o Reclamos (PQR) relacionados con tu privacidad en los canales de atención y correos de la app integrados (previo a escalar ante la Superintendencia de Industria y Comercio).',
+  ],
+};
+
+const contactAndSupportSection = {
+  heading: 'Canales de Atención y Ejercicio de Derechos',
+  summary: 'Puedes comunicarte con Viax para ejercer tus derechos como usuario, solicitar soporte o presentar reclamaciones.',
+  bullets: [
+    'Correo oficial de contacto: viaxoficialcol@gmail.com',
+    'Las solicitudes relacionadas con datos personales (Habeas Data) serán atendidas conforme a los términos legales vigentes.',
+    'Tiempo máximo de respuesta: quince (15) días hábiles conforme a la legislación colombiana.',
+    'El usuario podrá presentar Peticiones, Quejas o Reclamos (PQR) directamente a través de los canales oficiales de la plataforma.',
+    'En caso de inconformidad, el usuario podrá acudir ante la Superintendencia de Industria y Comercio.',
+  ],
+};
+
+const antiFraudSection = {
+  heading: 'Política de Prevención de Fraude',
+  summary: 'Viax implementa medidas tecnológicas para detectar y prevenir actividades fraudulentas dentro de la plataforma.',
+  bullets: [
+    'Se monitorean patrones de uso sospechosos mediante sistemas automatizados.',
+    'Las cuentas involucradas en actividades fraudulentas podrán ser suspendidas o eliminadas.',
+    'Los intentos de suplantación de identidad serán reportados a las autoridades competentes.',
+    'Los registros técnicos podrán utilizarse como evidencia en procesos legales.',
+  ],
+};
+
+// --- NUEVAS SECCIONES TRANSVERSALES (AUDITORÍA AVANZADA + PROTECCIÓN ESTRUCTURAL) ---
+
+const cookiesAndStorageSection = {
+  heading: 'Política de Cookies y Almacenamiento Local',
+  summary: 'Usamos cookies y tecnologías similares para que no tengas que iniciar sesión cada vez que entras y para entender cómo mejorar la plataforma.',
+  bullets: [
+    'Tecnologías de rastreo analítico y funcional: Viax utiliza cookies operativas, identificadores de sesión (JWT) y almacenamiento local (Secure Storage) para gestionar la autenticación, mantener preferencias en la app y realizar analíticas de rendimiento del ecosistema.',
+    'Finalidad y consentimiento tácito: Estos elementos son esenciales para la prestación del servicio. El uso continuado de la plataforma web o móvil implica tu aceptación explícita de estas tecnologías base.',
+    'Exclusión técnica: Puedes configurar tu navegador o dispositivo para rechazar cookies o denegar accesos de almacenamiento (Storage Rules), bajo la advertencia de que la experiencia de usuario y la interconexión con los servidores sufrirán interrupciones funcionales críticas.',
+  ],
+};
+
+const termsModificationSection = {
+  heading: 'Modificaciones y Actualizaciones del Acuerdo',
+  summary: 'Estas reglas de tecnología pueden actualizarse con el tiempo. Si hay cambios muy grandes, te avisaremos para que estés enterado antes de que apliquen.',
+  bullets: [
+    'Derecho de enmienda unilateral: Viax en su calidad de propietario de la plataforma tecnológica se reserva la potestad de modificar de manera unilateral estos términos y políticas, a fin de adaptarlos a novedades operacionales, jurídicas o jurisprudenciales.',
+    'Notificación de cambios sustanciales: Toda alteración que limite de facto garantías o impacte significativamente el modelo transaccional y comisionario será notificada a los usuarios activos mediante avisos prominentes (in-app, mail, push notification) con antelación razonable a su entrada en rigor.',
+    'Aceptación subsecuente: El acceso, interacción o uso continuado de la plataforma tras la exposición pública de las enmiendas constituirá una aceptación electrónica, revalidada y vinculatoria de dichas modificaciones (Ley 527 de 1999).',
+  ],
+};
+
+const serviceTerminationSection = {
+  heading: 'Suspensión y Terminación del Servicio por Viax',
+  summary: 'Viax tiene el derecho de cancelar tu cuenta (como usuario, conductor o empresa) si incumples nuestras reglas, detectamos trampas o pones en peligro a la comunidad conectada.',
+  bullets: [
+    'Potestad tecnológica de bloqueo: Viax se reserva el derecho para restringir temporalmente, suspender o revocar de manera definitiva la cuenta y licencias de cualquier usuario prestatario o solicitante incurso en anomalías de red, conforme a la normativa vigente y estos términos, de manera preventiva.',
+    'Causales de interrupción: Engloban de manera enunciativa, no taxativa: Presentación de PQR y documentos RUNT apócrifos, alteración de algoritmos GPS (Spoofing), cometer hostigamiento verbal/físico, elusión perjudicial en la cadencia de pagos inter e intra operadores o propiciar elementos prohibidos definidos en la legislación colombiana (Código Penal).',
+    'Persistencia de la deuda y obligaciones: Bajo ninguna circunstancia, la suspensión unilateral tecnológica dispuesta por este apartado extinguirá u obliterará obligaciones monetarias vencidas, comisiones insolutas o deudas resarcitorias derivadas previamente tras el rol particular (Conductor / Empresa).',
+  ],
+};
+
+const financialLimitationSection = {
+  heading: 'Limitación de Responsabilidad Financiera',
+  summary: 'Hacemos lo mejor para que la app no falle, pero si por algún motivo técnico el servicio se interrumpe y dejas de poder trabajar o pedir carro temporalmente, no pagaremos lucro cesante por ese tiempo "muerto".',
+  bullets: [
+    'Tope perentorio de indemnización: En la mayor medida permitida por derecho y el Estatuto del Consumidor, la responsabilidad económica estricta, probada y acumulada por Viax ante caídas de servicio (o disrupciones que causen impacto a oferentes), nunca superará el volumen de lucro de la transacción en conflicto (comisiones disputadas) sobre la cual se alega el perjuicio base.',
+    'Cláusula contra de lucro cesante tecnológico: Viax y sus administradores no asumen responsabilidad frente a presuntos daños indirectos, incidentales, de índole punitorio o por el lucro cesante (es decir, el potencial rendimiento económico estipulado no percibido por el conductor o la Empresa) derivado de desconexiones parciales, caídas de base de datos interurbanas o ciberataques contra los ecosistemas Cloud que retrasen o malogren temporalmente las interacciones del modelo logístico, en la máxima medida permitida por la ley.',
+  ],
+};
+
+const jurisdictionSection = {
+  heading: 'Ley Aplicable, Jurisdicción y Resolución de MASC',
+  summary: 'Para cualquier problema legal grave que no podamos resolver arreglando pacíficamente nosotros, nos apoyaremos exclusivamente en los mecanismos formales y los jueces que existan en Colombia.',
+  bullets: [
+    'Gobernanza local y legislación principal: La integridad, el alcance normativo e interpretación de este documento contractual y las directivas adjuntas se enmarcan, ejecutan y subordinan a plenitud frente a las estatutos constitucionales y código civil y de comercio de la República de Colombia.',
+    'MASC (Mecanismos Alternativos de Solución de Conflictos): Previo al litigio, toda controversia legal derivada de este acuerdo entre partes propiciará forzosamente la ruta de "Arreglo Directo" (30 días de agotamiento en derecho, a contar a partir desde la radicación oficial argumentada expuesta desde la Plataforma/PQR) para intentar dilucidar las discrepancias transaccionales por vías mediadas.',
+    'Forum Selection: Súperada irremediablemente la etapa conciliatoria y agotamiento de vías del recurso directivo, la jurisdicción y la competencia judicial frente a la discrepancia de mayor complejidad se adjudica excluyentemente al arbitrio y los jueces de la jurisdicción ordinaria ubicados en la ciudad de Bogotá D.C., renunciando a otro fuero departamental adyacente que pueda recaerles temporalmente.',
+  ],
+};
+
+const serviceAvailabilitySection = {
+  heading: 'As-Is y Disponibilidad Tecnológica del Servicio',
+  summary: 'La plataforma funciona "tal cual" está. No prometemos que siempre habrá conductores disponibles o que la app nunca se caerá.',
+  bullets: [
+    'Suministro Tecnológico As-Is: La plataforma se provee en el estado en que se encuentra y según total disponibilidad material. Viax no garantiza ni asegura el emparejamiento ininterrumpido o la disponibilidad perpetua de oferentes (conductores) o demandantes (clientes) en el ecosistema.',
+    'Ausencia de Promesa de Transporte: Al ser un ente de intermediación puramente digital, en la medida máxima permitida por la ley mercantil, no se asegura u obliga que las solicitudes de servicio sean efectivamente aceptadas por terceros independientes en un marco de tiempo específico.',
+  ],
+};
+
+const gpsLimitationSection = {
+  heading: 'Limitación de Precisión Tecnológica (GPS)',
+  summary: 'El mapa puede fallar. Si el marcador se mueve o tiene retardo por mala señal de tu celular o satélite, no es error imputable a Viax.',
+  bullets: [
+    'Factor Externo de Geolocalización: La precisión de los trazos, tiempos estimados de llegada (ETA) y ubicaciones reflejadas en la interfaz de Viax dependen estocásticamente de las APIs de cartografía de terceros, cobertura satelital (GPS) y el proveedor de red móvil del hardware interviniente.',
+    'Exención de Exactitud Absoluta: Viax no garantiza la exactitud absoluta de las coordenadas milimétricas arrojadas y, en la máxima medida permitida por las leyes de consumo, se exime de perjuicios tarifarios o desvíos derivados de imprecisiones provocadas por triangulación ineficiente o topografía urbana ajena al software.',
+  ],
+};
+
+const authorityCooperationSection = {
+  heading: 'Cooperación Proactiva con Autoridades Competentes',
+  summary: 'Si un juez o la policía pertinente nos requiere información por un delito, por ley debemos entregar los archivos y evidencias técnicas de tu cuenta.',
+  bullets: [
+    'Levantamiento Preventivo de Reserva de Datos: En cumplimiento inalienable del deber constitucional de colaboración con la justicia, Viax cooperará proactivamente suministrando la base de datos perimetral, trazas de ubicación y logs cifrados a la Policía Nacional, Fiscalía General o magistrados que instruyan formalmente un requerimiento válido amparado en la ley.',
+    'Omisión de Notificación Previa a Usuarios: Viax se rige estrictamente por disposiciones procesales, reservándose el derecho o adoptando la obligación de no notificar previamente al presunto infractor sobre la entrega de su información a entes gubernamentales si la ley confiere confidencialidad a la investigación legal.',
   ],
 };
 
@@ -100,7 +204,7 @@ const accountDeletionSectionsByRole = {
     bullets: [
       'El panel y atributos empresariales (Máster) son revocables elevando la PQR tecnológica desde un usuario administrador matriculado.',
       'Aplica una franja precautoria de 15 días estándar previniendo una contingencia (Cyberattack, Extorsiones Corporativas); cesando tras ese margen cualquier vínculo o enrutamiento activo sobre las flotillas que tenga censadas el NIT empresarial de referencia.',
-      'La supresión del NIT es inexorable; no obstante los balances brutos pendientes o conciliados superviven a manera de extracto inmutable con fines de sustanciación contable corporativa nacional (Libros, IVA, Renta).',
+      'La supresión del NIT es un proceso definitivo; no obstante los balances brutos pendientes o conciliados superviven a manera de extracto inmutable con fines de sustanciación contable corporativa nacional (Libros, IVA, Renta).',
     ],
   },
 };
@@ -123,6 +227,18 @@ export const legalContent = {
             'Siendo Viax un conducto puramente ecosistémico en la nube, los riesgos inherentes, culpas materiales, físicas, viales o siniestrales surgidos adentro del automotor recaen legalmente sobre el proveedor físico y los seguros obligatorios correspondientes (SOAT / Pólizas RC Vehiculares).',
             'La compañía aboga por la seguridad aplicando barreras tecnológicas de expulsión a conductores o vehículos que incumplan calificaciones estándar, pero como intermediario puro no puede constituirse civil ni solidariamente responsable extracontractual por los hechos de proveedores independientes o aseguradoras de empresas afiliadas.',
             'Sin perjuicio de lo expuesto, de acaecer incidencias de consumo dentro del ámbito tecnológico (ej. cobros debitados erróneamente en pasarelas), la PQR frente a Viax sí surtirá acompañamiento de reembolso basado plenamente en las trazas de bitácora electrónica levantadas sobre ese cargo digital.',
+            'Lo anterior no limita ni desconoce los derechos irrenunciables del consumidor establecidos en la legislación colombiana vigente.',
+          ],
+        },
+        {
+          heading: 'Política de Pagos y Reembolsos',
+          summary: 'Regulamos cómo se procesan los pagos dentro de la plataforma y en qué casos aplican devoluciones.',
+          bullets: [
+            'Los pagos realizados dentro de la plataforma se procesan a través de pasarelas tecnológicas seguras.',
+            'Los errores de cobro podrán ser reclamados mediante los canales oficiales de atención.',
+            'Viax analizará cada caso con base en los registros digitales (logs) del sistema.',
+            'En caso de proceder, se realizará el reembolso correspondiente al medio de pago utilizado.',
+            'Los tiempos de reversión dependerán de la entidad financiera del usuario.',
           ],
         },
         {
@@ -150,6 +266,7 @@ export const legalContent = {
             'Obtención de Ubicación Activa: La App Viax recopila de ti (cliente civil) variables in-situ temporales sobre latitud y longitud. Este acceso se produce de manera activa únicamente y mientras mantengas la solicitud viva abierta en la interfaz digital.',
             'Funcionalidad Lógica: El recaudo es fundamental para procrear trazos tarifarios, estimaciones precisas de distancia contra el tráfico en tiempo real y poder acoplar el ID más cercano del conductor prestatario del municipio pertinente.',
             'Mitigación Operacional: Si decides revocar el permiso GPS en tu dispositivo, la app Viax no surtirá un bloqueo punitivo; simplemente no logrará materializar la asignación correcta al faltar el dato estructurante primario para localizarte físicamente.',
+            'Base jurídica: El tratamiento de los datos de ubicación se realiza bajo el consentimiento previo, expreso e informado del usuario, así como por la necesidad de ejecutar el servicio solicitado dentro de la plataforma.',
           ],
         },
         securityAndFraudSection,
@@ -172,15 +289,18 @@ export const legalContent = {
             'Múltiples afiliaciones operativas: Viax permite dos modalidades operativas base: como actor independiente con vehículo propio, o como actor subordinado operativamente a un panel Empresa debidamente registrado en un municipio específico bajo sus lineamientos adicionales.',
             'Responsabilidad Personal Vehicular: El acto de aportar a los servidores originadores (ej. Cloudflare R2) de Tarjetas de Propiedad, Seguros Vigentes (SOAT) y Licencias ostenta peso de Declaración Juramentada sobre su vigencia y autenticidad plena. Presentar documentos falsos habilita a la plataforma a suspender todo vínculo e informar las discrepancias a las autoridades sectoriales y Fiscalía.',
             'Total Independencia de Tiempo: Ninguna directriz de Viax menoscaba la facultad del conductor para decidir sobre el tiempo, duración y forma de ejecutar recorridos; la no exigencia de cuotas temporales excluye cualquier presunción de subordinación laboral tipificada ante el Ministerio del Trabajo.',
+            'Libertad de Pluralidad (No Exclusividad): La intermediación no exige mandato de exclusividad alguno. El conductor independiente ostenta pleno derecho a mantener instaladas y operar activamente para plataformas competidoras (ej. software de terceros) en paralelo o en el mismo equipo sin incurrir en causal de penalidad pecuniaria por parte de la plataforma.',
           ],
         },
         {
           heading: 'Cargos de Intermediación Tecnológica (Comisiones y Tarifas)',
-          summary: 'Cobramos nuestra tarifa tecnológica cada vez que la app te interconecta con un cliente exitosamente. Si deudas sobrepasan límites, la app no te mandará más viajes.',
+          summary: 'Cobramos nuestra tarifa tecnológica cada vez que la app te interconecta con un cliente exitosamente. Si deudas sobrepasan límites, la app no te mandará más viajes. Tú pagas los impuestos de tu operación.',
           bullets: [
             'Liquidación del Servicio P2B: En estricto contraprestación económica por facilitarle la red electrónica de clientes y usar el algoritmo tarifario, la plataforma técnica retiene, líquida o comisiona porcentualmente los costos de conexión por trayecto aceptado de manera exitosa.',
             'Manejo de Cartera: La inacción morosa y la acumulación de saldos crediticios deudores en la aplicación faculta normativamente a Viax para aplicar bloqueos operacionales algorítmicos transitorios; es decir, suspendiendo la capacidad del aplicativo para notificarle viajes nuevos hasta la estabilización o depósito de la deuda de recargo.',
-            'Naturaleza de Obligaciones Tributarias: Debido a que la compañía no asume roles de retenedor laboral sobre salarios ficticios, el conductor y/o su respectiva Empresa asumen la obligación inalienable de pagar el respectivo régimen de retenciones e impuestos directos sobre sus utilidades generadas originariamente por su mandato civil adscrito a ley.',
+            'Naturaleza de Obligaciones Tributarias: Debido a que la compañía no asume roles de retenedor patronal laboral sobre salarios ficticios, el conductor y/o su respectiva Empresa asumen la obligación inalienable de pagar el respectivo régimen de retenciones e impuestos directos sobre sus utilidades generadas originariamente por su mandato civil adscrito a ley.',
+            'El conductor acepta expresamente las tarifas de intermediación establecidas por la plataforma al hacer uso de los servicios tecnológicos ofrecidos.',
+            'Independencia Fiscal ante la DIAN: Viax actúa como facilitador tecnológico puro. La liquidación, declaración de IVA, Renta y pago de obligaciones tributarias derivadas de la prestación material de los trayectos son de competencia y responsabilidad inexcusable y directa del conductor independiente o la Empresa frente a la administración tributaria nacional.',
           ],
         },
       ],
@@ -319,7 +439,7 @@ const legalReinforcementSection = {
   bullets: [
     'Expresión de la Voluntad Digital Confirmada: Operacionalizando la norma y doctrina establecida en el Comercio Electrónico moderno, la sola acción del usuario de haber superado un doble factor numérico en Firebase, o haber cliqueado afirmativamente durante las actualizaciones en la GUI de la app, funge con el carácter de validez irrefutable que representa un repudio en contra, enmarcado dentro del aval tecnológico de la Ley 527 de 1999 nacional.',
     'Separabilidad Contractual Divisible (Severability Covenants): Al momento fortuito que a vista de autoridades jurisdiccionales se dictaminare nulo estrictamente alguno de los subenunciados expuestos en estos estamentos, ello no erosionará, anulará, o infectará de inoperancia a la sobrevivencia paralela lógica o estructura global del acuerdo con base informática y las remanentes obligaciones asumidas lícitamente inalteradas.',
-    'Indemnidad Generalizada Final P2P: Reiterando que el contrato real, el perfeccionamiento legal y los trayectos se logran distantes del espectro binario de Viax; las comunidades viales y de provistas admiten someterse asumiendo exclusión formal pura de daños contra de nuestra entidad empresarial originaria limitando de primera voz reclamos donde se aduzca responsabilidad nuestra por eventualidades nacidas entre el viaje. Instaurándose adicionalmente el pacto arbitral o el requisito de procedimiento jurídico que estipula la conciliación y transaccion extrajudicial oficial obligatoria colombiana en derecho.',
+    'Indemnidad Generalizada Final P2P: Reiterando que el contrato real, el perfeccionamiento legal y los trayectos se logran distantes del espectro binario de Viax; las comunidades viales y de provistas admiten someterse asumiendo exoneración de responsabilidad sobre daños originados por terceros contra de nuestra entidad empresarial originaria limitando, en la medida permitida por la ley, reclamos donde se aduzca responsabilidad nuestra por eventualidades nacidas entre el viaje. Instaurándose adicionalmente el pacto arbitral o el requisito de procedimiento jurídico que estipula la conciliación y transaccion extrajudicial oficial obligatoria colombiana en derecho.',
   ],
 };
 
@@ -335,13 +455,37 @@ const legalReinforcementSection = {
     if (deletionSection && (roleKey === 'cliente' || roleKey === 'conductor' || roleKey === 'empresa')) {
       role.terms.sections.push(deletionSection);
     }
-    role.terms.sections.push(legalReinforcementSection);
+    
+    // Inyectar antifraude a usuarios
+    if (roleKey !== 'servidor') {
+      role.terms.sections.push(antiFraudSection, serviceAvailabilitySection);
+    }
+    
+    // Inyectar auditoría legal masiva global en los Terms
+    role.terms.sections.push(
+      termsModificationSection,
+      serviceTerminationSection,
+      financialLimitationSection,
+      jurisdictionSection,
+      legalReinforcementSection
+    );
   }
 
   if (role.privacy?.sections) {
     if (deletionSection && (roleKey === 'cliente' || roleKey === 'conductor' || roleKey === 'empresa')) {
       role.privacy.sections.push(deletionSection);
     }
+
+    // Inyectar a los perfiles humanos (App / Web frontend) Cookie policy y Canales de PQR
+    if (roleKey !== 'servidor') {
+      role.privacy.sections.push(
+        contactAndSupportSection, 
+        cookiesAndStorageSection, 
+        gpsLimitationSection, 
+        authorityCooperationSection
+      );
+    }
+
     role.privacy.sections.push(legalReinforcementSection);
   }
 });
