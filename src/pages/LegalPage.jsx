@@ -41,7 +41,7 @@ export default function LegalPage() {
         '@type': 'ListItem',
         position: 2,
         name: 'Legal',
-        item: `https://viaxcol.online/legal?doc=${doc}&role=${role}`,
+        item: 'https://viaxcol.online/legal',
       },
     ],
   };
@@ -49,9 +49,9 @@ export default function LegalPage() {
   return (
     <div className="page-shell">
       <SeoMeta
-        title="Términos y privacidad"
-        description="Consulta los términos y condiciones y la política de privacidad de Viax por rol: cliente, conductor, empresa, administrador y servidor."
-        path={`/legal?doc=${doc}&role=${role}`}
+        title="Terminos y privacidad"
+        description="Consulta los terminos y condiciones y la politica de privacidad de Viax por rol: cliente, conductor, empresa, administrador y servidor."
+        path="/legal"
         keywords="terminos y condiciones viax, politica de privacidad viax, legal"
         jsonLd={breadcrumbJsonLd}
       />

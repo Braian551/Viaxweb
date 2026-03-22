@@ -15,8 +15,8 @@ const footerLinks = {
     { label: 'Empresas', to: '/empresas' },
   ],
   Legal: [
-    { label: 'Terminos y condiciones', to: '/legal?doc=terms&role=cliente' },
-    { label: 'Politica de privacidad', to: '/legal?doc=privacy&role=cliente' },
+    { label: 'Terminos y condiciones', to: '/legal' },
+    { label: 'Politica de privacidad', to: '/legal' },
     { label: 'Eliminacion de cuenta', to: '/eliminar-cuenta' },
   ],
   Compania: [

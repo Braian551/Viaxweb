@@ -22,7 +22,7 @@ export default function Header() {
     { label: 'Clientes', to: '/clientes' },
     { label: 'Conductores', to: '/conductores' },
     { label: 'Empresas', to: '/empresas' },
-    { label: 'Legal', to: '/legal?doc=terms&role=cliente' },
+    { label: 'Legal', to: '/legal' },
   ];
 
   return (

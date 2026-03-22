@@ -327,3 +327,17 @@ export const getEmpresaFacturas = async (empresaId, { page = 1, limit = 20 } = {
         'Error cargando facturas'
     );
 };
+
+export const revealSecureAccountNumber = async ({ actorUserId, resource, resourceId }) => {
+    const params = new URLSearchParams({
+        actor_user_id: String(actorUserId),
+        resource: String(resource),
+        ...(resourceId ? { resource_id: String(resourceId) } : {}),
+    });
+
+    return await requestJson(
+        `${API_BASE_URL}/secure/account_number.php?${params}`,
+        { headers: { Accept: 'application/json' } },
+        'Error revelando cuenta segura'
+    );
+};

@@ -7,7 +7,8 @@ import { useAuth } from '../../auth/context/AuthContext';
 import {
     getPlatformDebtContext,
     submitPlatformPaymentProof,
-    getEmpresaFacturas
+    getEmpresaFacturas,
+    revealSecureAccountNumber
 } from '../services/empresaService';
 import PageHeader from '../../shared/components/PageHeader';
 import GlassStatCard from '../../shared/components/GlassStatCard';
@@ -29,6 +30,9 @@ const EmpresaPlatformPayment = () => {
     const [resumenFacturas, setResumenFacturas] = useState({});
     const [submitting, setSubmitting] = useState(false);
     const [activeTab, setActiveTab] = useState('pagar');
+    const [revealedAccountNumber, setRevealedAccountNumber] = useState('');
+    const [showFullAccount, setShowFullAccount] = useState(false);
+    const [loadingReveal, setLoadingReveal] = useState(false);
 
     // Formulario de pago
     const [monto, setMonto] = useState(0);
@@ -100,6 +104,33 @@ const EmpresaPlatformPayment = () => {
 
     useEffect(() => { fetchData(); }, [fetchData]);
 
+    const revealAccount = async () => {
+        if (!user?.id) return;
+
+        if (showFullAccount) {
+            setShowFullAccount(false);
+            return;
+        }
+
+        setLoadingReveal(true);
+        try {
+            const res = await revealSecureAccountNumber({
+                actorUserId: user.id,
+                resource: 'admin_bank',
+            });
+            if (res?.success) {
+                setRevealedAccountNumber(res?.data?.account_number || '');
+                setShowFullAccount(true);
+            } else {
+                showSnackbar(res?.message || 'No se pudo revelar la cuenta', { type: 'error' });
+            }
+        } catch {
+            showSnackbar('Error de conexión al revelar cuenta', { type: 'error' });
+        } finally {
+            setLoadingReveal(false);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const montoNum = Number(monto || 0);
@@ -155,6 +186,8 @@ const EmpresaPlatformPayment = () => {
         (cuenta.banco_nombre || '').toLowerCase() === 'nequi';
     const estadoReporte = context.estado_reporte;
     const bloqueaEnvio = estadoReporte === 'pendiente_revision' || estadoReporte === 'comprobante_aprobado';
+    const accountMasked = cuenta.numero_cuenta_masked || cuenta.numero_cuenta || '-';
+    const accountShown = showFullAccount && revealedAccountNumber ? revealedAccountNumber : accountMasked;
 
     return (
         <div className="v-dashboard">
@@ -281,6 +314,17 @@ const EmpresaPlatformPayment = () => {
                                     <h4 style={{ margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
                                         <FiInfo style={{ color: '#1976d2' }} /> Cuenta de transferencia
                                     </h4>
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+                                        <button
+                                            type="button"
+                                            onClick={revealAccount}
+                                            className="v-btn-icon"
+                                            disabled={loadingReveal}
+                                            title={showFullAccount ? 'Ocultar cuenta' : 'Mostrar cuenta'}
+                                        >
+                                            {loadingReveal ? <FiRefreshCw className="v-spin" /> : (showFullAccount ? 'Ocultar' : 'Mostrar')}
+                                        </button>
+                                    </div>
                                     {(isNequi
                                         ? ['metodo_recaudo', 'numero_cuenta', 'titular_cuenta', 'documento_titular', 'referencia_transferencia']
                                         : ['metodo_recaudo', 'banco_nombre', 'tipo_cuenta', 'numero_cuenta', 'titular_cuenta', 'documento_titular', 'referencia_transferencia']
@@ -296,7 +340,7 @@ const EmpresaPlatformPayment = () => {
                                                 : k.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase()));
                                         const display = k === 'metodo_recaudo'
                                             ? (isNequi ? 'Nequi' : 'Cuenta bancaria')
-                                            : val;
+                                            : (k === 'numero_cuenta' ? accountShown : val);
                                         return (
                                             <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(128,128,128,0.1)' }}>
                                                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{label}</span>
