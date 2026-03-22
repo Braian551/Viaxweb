@@ -1810,6 +1810,91 @@ button {
 }
 
 /* ===================================================
+   ACCOUNT DELETION
+   =================================================== */
+.account-deletion {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 100px 24px;
+}
+
+.account-deletion__notice {
+  border: 1px solid rgba(33, 150, 243, 0.24);
+  background: var(--primary-bg);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+}
+
+.account-deletion__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.account-deletion__card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 20px 20px 18px;
+  background: var(--glass);
+  transition: all var(--transition);
+}
+
+.account-deletion__card:hover {
+  border-color: rgba(33, 150, 243, 0.22);
+  transform: translateY(-1px);
+}
+
+.account-deletion__card h2 {
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.account-deletion__card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.account-deletion__card ul,
+.account-deletion__card ol {
+  padding-left: 18px;
+}
+
+.account-deletion__card li {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  padding: 4px 0;
+  line-height: 1.58;
+}
+
+.account-deletion__card li strong {
+  color: var(--text);
+}
+
+.account-deletion__card a {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.account-deletion__card--contact {
+  background:
+    linear-gradient(135deg, rgba(33, 150, 243, 0.08), rgba(0, 188, 212, 0.05)),
+    var(--glass);
+}
+
+.account-deletion__mail {
+  display: inline-flex;
+  margin-top: 8px;
+}
+
+/* ===================================================
    FOOTER
    =================================================== */
 .footer {
@@ -1968,6 +2053,10 @@ button {
   .legal__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .account-deletion__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 768px) {
@@ -2083,6 +2172,14 @@ button {
   }
 
   .legal__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-deletion {
+    padding: 86px 20px;
+  }
+
+  .account-deletion__grid {
     grid-template-columns: 1fr;
   }
 
@@ -2244,6 +2341,18 @@ button {
   }
 
   .legal__card li {
+    font-size: 0.84rem;
+  }
+
+  .account-deletion {
+    padding: 78px 14px;
+  }
+
+  .account-deletion__card {
+    padding: 16px 14px;
+  }
+
+  .account-deletion__card li {
     font-size: 0.84rem;
   }
 

@@ -15,10 +15,11 @@ const footerLinks = {
     { label: 'Empresas', to: '/empresas' },
   ],
   Legal: [
-    { label: 'Términos y condiciones', to: '/legal?doc=terms&role=cliente' },
-    { label: 'Política de privacidad', to: '/legal?doc=privacy&role=cliente' },
+    { label: 'Terminos y condiciones', to: '/legal?doc=terms&role=cliente' },
+    { label: 'Politica de privacidad', to: '/legal?doc=privacy&role=cliente' },
+    { label: 'Eliminacion de cuenta', to: '/eliminar-cuenta' },
   ],
-  Compañía: [
+  Compania: [
     { label: 'Sobre nosotros', to: '/' },
     { label: 'Para conductores', to: '/conductores' },
     { label: 'Para empresas', to: '/empresas' },

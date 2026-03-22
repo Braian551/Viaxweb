@@ -7,6 +7,7 @@ import ClientesPage from './pages/ClientesPage';
 import ConductoresPage from './pages/ConductoresPage';
 import EmpresasPage from './pages/EmpresasPage';
 import LegalPage from './pages/LegalPage';
+import EliminarCuentaPage from './pages/EliminarCuentaPage';
 import LocationSharePage from './features/locationShare/pages/LocationSharePage';
 import { AuthProvider } from './features/auth/context/AuthContext';
 import LoginPage from './features/auth/pages/LoginPage';
@@ -179,6 +180,18 @@ export default function App() {
 
           {/* ── Main public site ────────────────────────────────────── */}
           <Route path="/" element={<RootRedirect />} />
+          <Route
+            path="/eliminar-cuenta"
+            element={
+              <>
+                <Header />
+                <main>
+                  <EliminarCuentaPage />
+                </main>
+                <Footer />
+              </>
+            }
+          />
 
           <Route
             path="*"
@@ -191,6 +204,7 @@ export default function App() {
                     <Route path="/conductores" element={<ConductoresPage />} />
                     <Route path="/empresas" element={<EmpresasPage />} />
                     <Route path="/legal" element={<LegalPage />} />
+                    <Route path="/eliminar-cuenta" element={<EliminarCuentaPage />} />
                   </Routes>
                 </main>
                 <Footer />
