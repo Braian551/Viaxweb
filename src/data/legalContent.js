@@ -7,27 +7,33 @@ export const roleLabels = {
 };
 
 const updateDate = '21 de marzo de 2026';
+const TERMS_VERSION = 'v1.0.0-2026-03-21';
+const ROLE_KEYS = ['cliente', 'conductor', 'empresa', 'administrador', 'servidor'];
 
 // 1. Intermediación
 const intermediationSection = {
+  id: 'intermediation',
   heading: 'Nuestra Función: Intermediación Tecnológica',
   summary: 'Viax es una plataforma tecnológica que conecta a usuarios con conductores y empresas de transporte. No prestamos el servicio de transporte directamente.',
   bullets: [
     'Naturaleza: Viax opera exclusivamente como plataforma de intermediación tecnológica entre usuarios y prestadores del servicio de transporte.',
     'Alcance: No prestamos el servicio de transporte ni actuamos como empresa transportadora. La responsabilidad del transporte recae en el conductor y su empresa afiliada.',
-    'Independencia: No existe relación laboral, societaria ni de subordinación entre Viax y los conductores, empresas o usuarios registrados.',
+    'Independencia: Viax no establece relación laboral directa con los conductores o empresas. La naturaleza de la relación se rige por la legislación colombiana y las condiciones reales de prestación del servicio.',
+    'Limitación operativa: Viax no controla, dirige ni supervisa en tiempo real la prestación del servicio de transporte. La ejecución del servicio es responsabilidad exclusiva del conductor y la empresa de transporte.',
     'Responsabilidad: Viax actúa como intermediario tecnológico, sin perjuicio de las obligaciones legales que le correspondan como plataforma tecnológica conforme a la legislación colombiana, incluyendo las disposiciones aplicables de protección al consumidor y tratamiento de datos personales.',
   ],
 };
 
 // 1b. Identificación legal de la empresa
 const companyIdentificationSection = {
+  id: 'company_identification',
   heading: 'Identificación de la Empresa',
   summary: 'Datos de identificación de la entidad responsable de la plataforma tecnológica Viax.',
   bullets: [
     'Razón social: VIAX TECHNOLOGY S.A.S.',
     'NIT: 902040253-1.',
     'País de constitución: República de Colombia.',
+    'Domicilio: Bogotá D.C., Colombia.',
     'Contacto y canal oficial: viaxoficialcol@gmail.com. Este correo es el canal oficial para notificaciones, solicitudes legales, PQR y comunicaciones formales relacionadas con la plataforma.',
     'Publicación en tienda: La aplicación puede ser publicada en plataformas digitales a través de cuentas de desarrollador administradas por representantes autorizados, sin que ello afecte la titularidad de la plataforma, la cual pertenece exclusivamente a VIAX TECHNOLOGY S.A.S.',
   ],
@@ -35,6 +41,7 @@ const companyIdentificationSection = {
 
 // 2. Marco legal
 const legalFrameworkSection = {
+  id: 'legal_framework',
   heading: 'Marco Normativo',
   summary: 'Tus derechos están protegidos bajo las leyes colombianas vigentes sobre protección de datos, comercio electrónico y derechos del consumidor.',
   bullets: [
@@ -45,6 +52,7 @@ const legalFrameworkSection = {
 };
 
 const dataControllerSection = {
+  id: 'data_controller',
   heading: 'Responsable del Tratamiento y Uso de Datos',
   summary: 'VIAX TECHNOLOGY S.A.S. (NIT 902040253-1) es el responsable del tratamiento de tus datos personales y los protege conforme a la ley colombiana. No comercializamos tu información.',
   bullets: [
@@ -55,6 +63,7 @@ const dataControllerSection = {
 };
 
 const permissionsUsageSection = {
+  id: 'permissions_usage',
   heading: 'Uso de Permisos del Dispositivo',
   summary: 'Solicitamos ciertos permisos en tu dispositivo exclusivamente para que la aplicación funcione correctamente.',
   bullets: [
@@ -68,35 +77,42 @@ const permissionsUsageSection = {
 
 // 3. Responsabilidades
 const driverResponsibilitySection = {
+  id: 'driver_responsibility',
   heading: 'Responsabilidades del Conductor',
   summary: 'Como conductor registrado en Viax, te comprometes a cumplir con las normas de tránsito y a mantener tu documentación vigente.',
   bullets: [
     'Afiliación: Debes estar vinculado a una empresa de transporte legalmente habilitada. No se admite el registro como conductor independiente sin empresa.',
     'Documentación: Tu licencia de conducción, SOAT y revisión técnico-mecánica deben ser auténticos y estar vigentes.',
+    'Edad mínima: El uso de la plataforma está permitido únicamente para personas mayores de 18 años.',
     'Autonomía: Tú defines tus propios horarios y tiempos de conexión. Viax no exige exclusividad ni establece relación de dependencia.',
   ],
 };
 
 const clientResponsibilitySection = {
+  id: 'client_responsibility',
   heading: 'Responsabilidades del Cliente',
   summary: 'Al solicitar un servicio, te comprometes a utilizar la plataforma de manera respetuosa y conforme a la ley.',
   bullets: [
     'Información veraz: Debes proporcionar datos reales y actualizados al registrarte y solicitar servicios.',
     'Prohibiciones: Está prohibido utilizar la plataforma para transportar sustancias ilegales, elementos prohibidos por la ley o cualquier objeto que ponga en riesgo la seguridad.',
+    'Edad mínima: El uso de la plataforma está permitido únicamente para personas mayores de 18 años.',
     'Conducta: El uso abusivo de la plataforma, como cancelaciones fraudulentas, daños al vehículo o evasión de pago, podrá dar lugar a la suspensión o cancelación de tu cuenta.',
   ],
 };
 
 const enterpriseResponsibilitySection = {
+  id: 'enterprise_responsibility',
   heading: 'Responsabilidades de la Empresa',
   summary: 'La empresa registrada es responsable ante la ley por la idoneidad de sus vehículos y la conducta de sus conductores afiliados.',
   bullets: [
     'Garante: La empresa es responsable de verificar la idoneidad de los vehículos y la documentación de los conductores vinculados a su flota.',
+    'Edad mínima: El uso de la plataforma está permitido únicamente para personas mayores de 18 años.',
     'Obligaciones legales: Asumes la responsabilidad sobre el cumplimiento de las obligaciones tributarias, laborales y de seguridad social de tu operación de transporte.',
   ],
 };
 
 const adminResponsibilitySection = {
+  id: 'admin_responsibility',
   heading: 'Confidencialidad y Secreto Comercial',
   summary: 'Los administradores del sistema están sujetos a estrictas políticas de confidencialidad para proteger la información de la plataforma y sus usuarios.',
   bullets: [
@@ -106,6 +122,7 @@ const adminResponsibilitySection = {
 };
 
 const serverResponsibilitySection = {
+  id: 'server_responsibility',
   heading: 'Reglas para Conexiones Externas (APIs)',
   summary: 'Medidas de seguridad para regular el tráfico automatizado y proteger la estabilidad de la plataforma.',
   bullets: [
@@ -115,6 +132,7 @@ const serverResponsibilitySection = {
 
 // 4. Pagos
 const paymentsSection = {
+  id: 'payments',
   heading: 'Pagos, Tarifas y Comisiones',
   summary: 'El uso de la plataforma tecnológica implica costos y tarifas necesarios para su funcionamiento y mantenimiento.',
   bullets: [
@@ -133,7 +151,7 @@ const accountDeletionSectionsByRole = {
     bullets: [
       'Solicitud: Puedes solicitar la eliminación de tu cuenta desde la aplicación o enviando un correo electrónico a viaxoficialcol@gmail.com con el asunto "Eliminación de cuenta".',
       'Período de gracia: Durante los 15 días siguientes a tu solicitud, la cuenta quedará suspendida. Si inicias sesión durante este período, la solicitud se cancelará automáticamente.',
-      'Eliminación de datos: Una vez confirmada la eliminación, tus datos personales serán suprimidos de nuestros sistemas. En caso de no existir obligación legal de retención, podrás solicitar la eliminación inmediata sin esperar el período de gracia.',
+      'Eliminación de datos: Una vez confirmada la eliminación, tus datos personales serán suprimidos de nuestros sistemas. En caso de no existir obligación legal de retención, la eliminación podrá realizarse en el menor tiempo posible, sujeta a validaciones técnicas y obligaciones legales aplicables.',
       'Retención legal: Conforme a la normativa vigente, Viax conservará únicamente los registros exigidos por obligaciones contables, fiscales o de seguridad por el plazo legal correspondiente, tras lo cual serán eliminados.',
     ],
   },
@@ -142,8 +160,8 @@ const accountDeletionSectionsByRole = {
     summary: 'Puedes solicitar la eliminación de tu cuenta como conductor. Algunos registros se conservarán según lo exija la normativa vigente.',
     bullets: [
       'Solicitud: Puedes iniciar el proceso desde la aplicación o enviando un correo electrónico a viaxoficialcol@gmail.com. El proceso tomará hasta 15 días hábiles.',
-      'Eliminación inmediata: Puedes solicitar la eliminación inmediata de tus datos personales cuando no exista obligación legal que requiera su conservación.',
-      'Datos biométricos: Si se capturaron datos biométricos, estos serán eliminados de todos los sistemas de la plataforma de forma inmediata tras la solicitud.',
+      'Eliminación de datos: La eliminación podrá realizarse en el menor tiempo posible, sujeta a validaciones técnicas y obligaciones legales aplicables.',
+      'Datos biométricos: Si se capturaron datos biométricos, su eliminación podrá realizarse en el menor tiempo posible, sujeta a validaciones técnicas y obligaciones legales aplicables.',
       'Retención legal: Se conservarán únicamente los registros de viajes e información financiera exigidos por las autoridades fiscales o de tránsito, conforme a la normativa aplicable.',
     ],
   },
@@ -152,7 +170,7 @@ const accountDeletionSectionsByRole = {
     summary: 'La empresa puede solicitar su desvinculación de la plataforma a través de los canales autorizados.',
     bullets: [
       'Solicitud formal: La desvinculación debe ser solicitada por el representante legal o administrador autorizado de la empresa, a través de la plataforma o del correo viaxoficialcol@gmail.com.',
-      'Eliminación de datos: Los datos de la empresa que no estén sujetos a obligación legal de retención podrán ser eliminados de forma inmediata a solicitud del representante legal.',
+      'Eliminación de datos: La eliminación podrá realizarse en el menor tiempo posible, sujeta a validaciones técnicas y obligaciones legales aplicables.',
       'Saldos pendientes: Cualquier saldo pendiente de pago será liquidado antes de completar la desvinculación.',
     ],
   },
@@ -160,25 +178,61 @@ const accountDeletionSectionsByRole = {
 
 // 6. Seguridad / fraude
 const securityAndFraudSection = {
+  id: 'security_and_fraud',
   heading: 'Seguridad y Prevención de Fraude',
   summary: 'Viax implementa medidas de seguridad tecnológica para proteger a los usuarios y prevenir actividades fraudulentas en la plataforma.',
   bullets: [
     'Cifrado: Todas las comunicaciones entre la aplicación y los servidores de Viax están protegidas mediante cifrado HTTPS/TLS. Los datos sensibles se almacenan de forma cifrada en los sistemas de la plataforma.',
     'Monitoreo: Viax realiza monitoreo técnico de actividad sospechosa, incluyendo análisis de direcciones IP y patrones de uso, para detectar y prevenir conductas fraudulentas.',
-    'Autenticación: El inicio de sesión se realiza mediante código OTP o cuenta de Google. Las acciones realizadas mediante autenticación válida se considerarán realizadas por el titular de la cuenta, salvo prueba en contrario conforme a la legislación vigente. No compartas tus credenciales de acceso.',
+    'Responsabilidad de la cuenta: El usuario es responsable de mantener la confidencialidad de sus credenciales. Viax podrá considerar como válidas las acciones realizadas desde una cuenta autenticada, sin perjuicio del derecho del usuario a reportar accesos no autorizados.',
+    'Gestión de sesiones: Viax puede invalidar sesiones activas y restringir accesos concurrentes sospechosos para proteger la cuenta del usuario, conforme a la normativa vigente.',
     'Medidas: Viax podrá suspender o cancelar cuentas cuando detecte actividades que infrinjan estos términos, sin perjuicio de las acciones legales correspondientes.',
   ],
 };
 
+const conductorOverlayPermissionBullet = 'Superposición (overlay): Viax puede solicitar permiso para mostrar un elemento flotante sobre otras aplicaciones durante un viaje activo. Esta función permite al conductor gestionar el servicio sin salir de la aplicación en uso. Su activación es completamente opcional y solo se utiliza durante la ejecución de un viaje. No se utiliza para fines publicitarios ni para recolectar información sensible. No se utiliza para capturar información de otras aplicaciones ni para monitorear actividad fuera del contexto del servicio.';
+const conductorOverlaySecurityBullet = 'Uso contextual de funciones: Funcionalidades como la superposición en pantalla (overlay) se activan únicamente en contextos específicos del servicio, como viajes activos, y nunca de forma permanente o invasiva.';
+const securitySessionProtectionBullet = 'Gestión de sesiones: Viax puede invalidar sesiones activas y restringir accesos concurrentes sospechosos para proteger la cuenta del usuario, conforme a la normativa vigente.';
+
+const mergeUniqueBullets = (...bulletGroups) => {
+  return bulletGroups.reduce((accumulator, group) => {
+    const items = Array.isArray(group) ? group : [group];
+    items.forEach((bullet) => {
+      if (typeof bullet === 'string' && bullet.trim().length > 0 && !accumulator.includes(bullet)) {
+        accumulator.push(bullet);
+      }
+    });
+    return accumulator;
+  }, []);
+};
+
+const extendSection = (baseSection, extraBullet) => {
+  return {
+    ...baseSection,
+    bullets: mergeUniqueBullets(baseSection.bullets, extraBullet),
+  };
+};
+
+const conductorPermissionsUsageSection = extendSection(
+  permissionsUsageSection,
+  conductorOverlayPermissionBullet,
+);
+
+const conductorSecurityAndFraudSection = extendSection(
+  securityAndFraudSection,
+  conductorOverlaySecurityBullet,
+);
 // 6b. Biometría (sección independiente)
 const biometryConsentSection = {
+  id: 'biometry_consent',
   heading: 'Datos Biométricos',
   summary: 'Los datos biométricos son considerados datos sensibles conforme a la Ley 1581 de 2012. Su uso en Viax es opcional, requiere tu consentimiento expreso e independiente, y se utiliza exclusivamente para fines de seguridad.',
   bullets: [
     'Datos sensibles: Los datos biométricos son considerados datos sensibles conforme a la Ley 1581 de 2012 y su tratamiento está sujeto a las garantías especiales previstas para este tipo de información.',
     'Consentimiento: El uso de verificación biométrica (como reconocimiento facial) requiere tu autorización previa, expresa e informada, otorgada de forma independiente a la aceptación de estos términos.',
     'Finalidad: Los datos biométricos se utilizan exclusivamente para fines de verificación de identidad, seguridad y prevención de fraude.',
-    'Carácter opcional: La verificación biométrica es opcional cuando existan métodos alternativos de verificación disponibles. Nunca serás obligado a proporcionar datos biométricos para utilizar el servicio.',
+    'Almacenamiento: Los datos biométricos pueden ser procesados mediante servicios seguros de terceros o almacenados de forma cifrada. En ningún caso se utilizan para fines distintos a la verificación de identidad.',
+    'Carácter opcional: La verificación biométrica NO es obligatoria para utilizar la plataforma. Viax ofrece siempre métodos alternativos de verificación que no requieren datos biométricos.',
     'No comercialización: Viax no comercializa, vende ni comparte datos biométricos con terceros bajo ninguna circunstancia.',
     'Eliminación: Los datos biométricos son eliminados de nuestros sistemas una vez cumplida la finalidad para la cual fueron recolectados, o cuando el usuario solicite su eliminación.',
   ],
@@ -186,11 +240,12 @@ const biometryConsentSection = {
 
 // 6c. Transferencia internacional de datos
 const internationalTransferSection = {
+  id: 'international_transfer',
   heading: 'Transferencia Internacional de Datos',
   summary: 'Viax utiliza proveedores de servicios en la nube que pueden almacenar datos fuera de Colombia, siempre con medidas de protección adecuadas conforme a la Ley 1581 de 2012.',
   bullets: [
     'Base legal: La transferencia internacional de datos se realiza conforme al artículo 26 de la Ley 1581 de 2012 y sus decretos reglamentarios, garantizando niveles adecuados de protección.',
-    'Proveedores: Viax utiliza servicios de Firebase (Google Cloud) y Cloudflare, cuyos servidores pueden estar ubicados fuera de Colombia, en países que pueden incluir Estados Unidos y otras jurisdicciones donde estos proveedores operan.',
+    'Proveedores: Viax utiliza servicios de Firebase (Google LLC) y Cloudflare, Inc., cuyos servidores pueden estar ubicados fuera de Colombia, en países que pueden incluir Estados Unidos y otras jurisdicciones donde estos proveedores operan.',
     'Estándares de seguridad: Estos proveedores cumplen con estándares internacionales de seguridad de la información, incluyendo certificaciones ISO 27001, SOC 2 y el cumplimiento del GDPR.',
     'Medidas de protección: Se implementan medidas técnicas y contractuales adecuadas para garantizar la protección de tus datos personales durante y después de la transferencia.',
     'Finalidad: La transferencia se realiza únicamente para garantizar la prestación del servicio, la seguridad de la plataforma y el almacenamiento seguro de la información.',
@@ -199,21 +254,41 @@ const internationalTransferSection = {
 };
 
 // 6d. Seguridad de datos (Google Play Data Safety)
+const googlePlayAdvancedSecurityBullet = 'Seguridad avanzada: Los datos sensibles, incluyendo información financiera, son protegidos mediante cifrado fuerte (AES-256) y controles de acceso por roles en los sistemas internos.';
+const googlePlayLegalBasisBullet = 'Base legal del tratamiento: El tratamiento de datos personales se realiza con base en el consentimiento del usuario y en la necesidad de ejecutar la relación contractual derivada del uso de la plataforma.';
+const googlePlayUserSecurityBullet = 'Seguridad del usuario: Viax implementa medidas para prevenir accesos no autorizados, incluyendo validación de identidad, control de sesiones y monitoreo de actividad sospechosa.';
+const googlePlayRequiredBullets = [
+  'No venta de datos: Viax NO vende datos personales de los usuarios a terceros bajo ninguna circunstancia.',
+  'Cifrado: Toda la información transmitida entre tu dispositivo y nuestros servidores está protegida mediante cifrado HTTPS/TLS.',
+  'Finalidad: Todos los datos recolectados se utilizan exclusivamente para la prestación del servicio de intermediación tecnológica, la seguridad de los usuarios y el cumplimiento de obligaciones legales.',
+  'Eliminación: Puedes solicitar la eliminación de tus datos personales en cualquier momento desde la aplicación o enviando un correo a viaxoficialcol@gmail.com. Los datos serán eliminados conforme a lo establecido en la sección de Eliminación de Cuenta.',
+  googlePlayAdvancedSecurityBullet,
+  googlePlayLegalBasisBullet,
+  googlePlayUserSecurityBullet,
+];
+const googlePlayDataSafetyBaseBullets = [
+  'Datos recolectados: Viax recolecta datos de ubicación (para asignación de viajes y navegación), datos de identificación personal (nombre, correo electrónico, número de teléfono para el registro y prestación del servicio) y datos de uso de la aplicación (para mejorar la experiencia y la seguridad).',
+  'Finalidad: Todos los datos recolectados se utilizan exclusivamente para la prestación del servicio de intermediación tecnológica, la seguridad de los usuarios y el cumplimiento de obligaciones legales.',
+  'No venta de datos: Viax NO vende datos personales de los usuarios a terceros bajo ninguna circunstancia.',
+  'Cifrado: Toda la información transmitida entre tu dispositivo y nuestros servidores está protegida mediante cifrado HTTPS/TLS.',
+  'Retención: Los datos personales se conservan mientras tu cuenta esté activa y durante el período adicional que la normativa vigente exija. Una vez eliminada la cuenta, solo se retienen los datos requeridos por obligación legal.',
+  'Eliminación: Puedes solicitar la eliminación de tus datos personales en cualquier momento desde la aplicación o enviando un correo a viaxoficialcol@gmail.com. Los datos serán eliminados conforme a lo establecido en la sección de Eliminación de Cuenta.',
+  'Compartición con terceros: Los datos personales solo se comparten con proveedores de infraestructura tecnológica (como Firebase de Google LLC y Cloudflare, Inc.) en calidad de encargados del tratamiento (data processors), exclusivamente para la operación, almacenamiento y seguridad del servicio. Estos terceros no están autorizados a usar los datos para fines propios, comerciales o publicitarios.',
+];
+const googlePlayDataSafetyBullets = mergeUniqueBullets(
+  googlePlayDataSafetyBaseBullets,
+  googlePlayRequiredBullets,
+);
+
 const googlePlayDataSafetySection = {
+  id: 'google_play_data_safety',
   heading: 'Seguridad de Datos (Google Play)',
   summary: 'Información sobre las prácticas de recolección, uso y seguridad de datos de Viax, conforme a los requisitos de transparencia de Google Play.',
-  bullets: [
-    'Datos recolectados: Viax recolecta datos de ubicación (para asignación de viajes y navegación), datos de identificación personal (nombre, correo electrónico, número de teléfono para el registro y prestación del servicio) y datos de uso de la aplicación (para mejorar la experiencia y la seguridad).',
-    'Finalidad: Todos los datos recolectados se utilizan exclusivamente para la prestación del servicio de intermediación tecnológica, la seguridad de los usuarios y el cumplimiento de obligaciones legales.',
-    'No venta de datos: Viax NO vende datos personales de los usuarios a terceros bajo ninguna circunstancia.',
-    'Cifrado: Toda la información transmitida entre tu dispositivo y nuestros servidores está protegida mediante cifrado HTTPS/TLS.',
-    'Retención: Los datos personales se conservan mientras tu cuenta esté activa y durante el período adicional que la normativa vigente exija. Una vez eliminada la cuenta, solo se retienen los datos requeridos por obligación legal.',
-    'Eliminación: Puedes solicitar la eliminación de tus datos personales en cualquier momento desde la aplicación o enviando un correo a viaxoficialcol@gmail.com. Los datos serán eliminados conforme a lo establecido en la sección de Eliminación de Cuenta.',
-    'Compartición con terceros: Los datos solo se comparten con proveedores de infraestructura tecnológica (Firebase, Cloudflare) necesarios para la operación del servicio, y con autoridades competentes cuando la ley lo exija.',
-  ],
+  bullets: googlePlayDataSafetyBullets,
 };
 
 const adminSecuritySection = {
+  id: 'admin_security',
   heading: 'Auditoría de Administradores',
   summary: 'Todas las operaciones realizadas por los administradores de la plataforma quedan registradas en un log de auditoría inmutable.',
   bullets: [
@@ -222,6 +297,7 @@ const adminSecuritySection = {
 };
 
 const serverSecuritySection = {
+  id: 'server_security',
   heading: 'Protección de Infraestructura',
   summary: 'Viax implementa medidas de seguridad perimetral y cifrado para proteger la infraestructura tecnológica de la plataforma.',
   bullets: [
@@ -231,6 +307,7 @@ const serverSecuritySection = {
 
 // 7. UGC / chat
 const chatAndUGCSection = {
+  id: 'chat_and_ugc',
   heading: 'Chat y Contenido Generado por Usuarios',
   summary: 'Viax ofrece un sistema de chat interno entre pasajeros y conductores durante el servicio. La plataforma cuenta con herramientas de moderación para garantizar un entorno seguro.',
   bullets: [
@@ -244,6 +321,7 @@ const chatAndUGCSection = {
 
 // 8. Disponibilidad
 const serviceAvailabilitySection = {
+  id: 'service_availability',
   heading: 'Disponibilidad del Servicio y Precisión del GPS',
   summary: 'Viax se esfuerza por mantener la plataforma disponible, pero no puede garantizar un funcionamiento ininterrumpido debido a factores externos.',
   bullets: [
@@ -254,6 +332,7 @@ const serviceAvailabilitySection = {
 
 // 9. Modificaciones
 const termsModificationSection = {
+  id: 'terms_modification',
   heading: 'Actualizaciones de este Acuerdo',
   summary: 'Viax podrá actualizar estos términos y te notificará sobre los cambios relevantes para que puedas revisarlos.',
   bullets: [
@@ -263,6 +342,7 @@ const termsModificationSection = {
 
 // 10. Terminación
 const serviceTerminationSection = {
+  id: 'service_termination',
   heading: 'Suspensión y Terminación del Servicio',
   summary: 'Viax podrá suspender o cancelar cuentas que incumplan estos términos o la legislación vigente, garantizando el debido proceso.',
   bullets: [
@@ -273,6 +353,7 @@ const serviceTerminationSection = {
 
 // 11. Responsabilidad financiera
 const financialLimitationSection = {
+  id: 'financial_limitation',
   heading: 'Límites de Responsabilidad',
   summary: 'Como intermediario tecnológico, la responsabilidad de Viax se limita conforme a la legislación aplicable, sin eximir el deber de diligencia propio de la plataforma.',
   bullets: [
@@ -286,6 +367,7 @@ const financialLimitationSection = {
 
 // 12. Jurisdicción
 const jurisdictionSection = {
+  id: 'jurisdiction',
   heading: 'Ley Aplicable y Resolución de Conflictos',
   summary: 'Estos términos se rigen por la legislación colombiana. Ante cualquier conflicto, priorizamos la solución directa y el diálogo.',
   bullets: [
@@ -298,6 +380,7 @@ const jurisdictionSection = {
 
 // 13. Cláusula final
 const finalClauseSection = {
+  id: 'final_clause',
   heading: 'Consentimiento y Disposiciones Finales',
   summary: 'Al utilizar Viax, confirmas que has leído, comprendido y aceptado estos términos.',
   bullets: [
@@ -309,6 +392,7 @@ const finalClauseSection = {
 
 // Extras o Específicas
 const cookiesAndStorageSection = {
+  id: 'cookies_and_storage',
   heading: 'Cookies y Almacenamiento Local',
   summary: 'Información sobre el uso de cookies en el sitio web y el almacenamiento local en la aplicación móvil.',
   bullets: [
@@ -319,6 +403,7 @@ const cookiesAndStorageSection = {
 };
 
 const rightsPrivacySection = {
+  id: 'rights_privacy',
   heading: 'Tus Derechos como Titular de Datos (Habeas Data)',
   summary: 'Tienes derecho a conocer, actualizar, rectificar y solicitar la eliminación de tus datos personales en cualquier momento.',
   bullets: [
@@ -400,15 +485,51 @@ export const legalContent = {
   },
 };
 
+function cloneSection(section) {
+  return {
+    ...section,
+    bullets: Array.isArray(section.bullets) ? [...section.bullets] : [],
+  };
+}
+
+const normalizeIdentityValue = (value) => {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+};
+
+const getSectionIdentity = (section) => {
+  if (!section) return '';
+  const sectionId = normalizeIdentityValue(section.id);
+  const sectionHeading = normalizeIdentityValue(section.heading);
+  if (sectionId && sectionHeading) return `id:${sectionId}|heading:${sectionHeading}`;
+  if (sectionId) return `id:${sectionId}`;
+  if (sectionHeading) return `heading:${sectionHeading}`;
+  return '';
+};
+
 const addSectionOnce = (sections, sectionToAdd) => {
   if (!sectionToAdd) return;
-  const isDuplicate = sections.some((s) => s.heading === sectionToAdd.heading);
+  const incomingId = normalizeIdentityValue(sectionToAdd.id);
+  const incomingHeading = normalizeIdentityValue(sectionToAdd.heading);
+  const isDuplicate = sections.some((currentSection) => {
+    const currentId = normalizeIdentityValue(currentSection?.id);
+    const currentHeading = normalizeIdentityValue(currentSection?.heading);
+    const sameId = incomingId && currentId && incomingId === currentId;
+    const sameHeading = incomingHeading && currentHeading && incomingHeading === currentHeading;
+    const sameIdentity = sameId && sameHeading;
+    return sameIdentity || sameId || sameHeading;
+  });
   if (!isDuplicate) {
-    sections.push(sectionToAdd);
+    sections.push(cloneSection(sectionToAdd));
   }
 };
 
-['cliente', 'conductor', 'empresa', 'administrador', 'servidor'].forEach((roleKey) => {
+ROLE_KEYS.forEach((roleKey) => {
+  if (legalContent[roleKey]?.terms) {
+    legalContent[roleKey].terms.version = TERMS_VERSION;
+  }
+  if (legalContent[roleKey]?.privacy) {
+    legalContent[roleKey].privacy.version = TERMS_VERSION;
+  }
   
   if (legalContent[roleKey].terms) {
     const ts = [];
@@ -463,8 +584,13 @@ const addSectionOnce = (sections, sectionToAdd) => {
 
     if (roleKey !== 'servidor') {
       addSectionOnce(ps, dataControllerSection);
-      addSectionOnce(ps, permissionsUsageSection); 
-      addSectionOnce(ps, securityAndFraudSection);
+      if (roleKey === 'conductor') {
+        addSectionOnce(ps, conductorPermissionsUsageSection);
+        addSectionOnce(ps, conductorSecurityAndFraudSection);
+      } else {
+        addSectionOnce(ps, permissionsUsageSection);
+        addSectionOnce(ps, securityAndFraudSection);
+      }
       addSectionOnce(ps, biometryConsentSection);
       addSectionOnce(ps, internationalTransferSection);
       
@@ -533,17 +659,32 @@ const globalSectionOrder = [
   'Consentimiento y Disposiciones Finales',
 ];
 
+const globalSectionOrderLookup = new Map(
+  globalSectionOrder.map((heading, index) => [normalizeIdentityValue(heading), index]),
+);
+
 const sortSections = (sections) => {
-  return sections.sort((a, b) => {
-    const indexA = globalSectionOrder.indexOf(a.heading);
-    const indexB = globalSectionOrder.indexOf(b.heading);
-    const posA = indexA !== -1 ? indexA : 999;
-    const posB = indexB !== -1 ? indexB : 999;
-    return posA - posB;
-  });
+  return [...sections]
+    .map((section, index) => ({ section, index }))
+    .sort((left, right) => {
+      const normalizedHeadingA = normalizeIdentityValue(left.section.heading);
+      const normalizedHeadingB = normalizeIdentityValue(right.section.heading);
+      const posA = globalSectionOrderLookup.has(normalizedHeadingA)
+        ? globalSectionOrderLookup.get(normalizedHeadingA)
+        : Number.MAX_SAFE_INTEGER;
+      const posB = globalSectionOrderLookup.has(normalizedHeadingB)
+        ? globalSectionOrderLookup.get(normalizedHeadingB)
+        : Number.MAX_SAFE_INTEGER;
+      if (posA !== posB) return posA - posB;
+      if (posA === Number.MAX_SAFE_INTEGER && normalizedHeadingA !== normalizedHeadingB) {
+        return normalizedHeadingA.localeCompare(normalizedHeadingB, 'es');
+      }
+      return left.index - right.index;
+    })
+    .map((entry) => entry.section);
 };
 
-['cliente', 'conductor', 'empresa', 'administrador', 'servidor'].forEach((roleKey) => {
+ROLE_KEYS.forEach((roleKey) => {
   if (legalContent[roleKey].terms?.sections) {
     legalContent[roleKey].terms.sections = sortSections(legalContent[roleKey].terms.sections);
   }
@@ -551,3 +692,107 @@ const sortSections = (sections) => {
     legalContent[roleKey].privacy.sections = sortSections(legalContent[roleKey].privacy.sections);
   }
 });
+
+const validateSectionCollection = (sections, roleKey, docKey) => {
+  const issues = [];
+  if (!Array.isArray(sections)) {
+    issues.push(`${roleKey}.${docKey}.sections no es un array`);
+    return issues;
+  }
+
+  const identities = new Set();
+  const sectionIds = new Set();
+  const sectionHeadings = new Set();
+  sections.forEach((section, index) => {
+    if (!section) {
+      issues.push(`${roleKey}.${docKey}.sections[${index}] es null/undefined`);
+      return;
+    }
+
+    const rawHeading = typeof section.heading === 'string' ? section.heading.trim() : '';
+    const rawSummary = typeof section.summary === 'string' ? section.summary.trim() : '';
+    const hasBullets = Array.isArray(section.bullets);
+    if (!rawHeading) {
+      issues.push(`${roleKey}.${docKey}.sections[${index}] sin heading`);
+    }
+    if (!rawSummary) {
+      issues.push(`${roleKey}.${docKey}.sections[${index}] sin summary`);
+    }
+    if (!hasBullets) {
+      issues.push(`${roleKey}.${docKey}.sections[${index}] sin bullets válidos`);
+    } else if (section.bullets.length === 0) {
+      issues.push(`${roleKey}.${docKey}.sections[${index}] con bullets vacíos`);
+    }
+
+    const sectionId = normalizeIdentityValue(section.id);
+    const sectionHeading = normalizeIdentityValue(section.heading);
+    const identity = getSectionIdentity(section) || `index:${index}`;
+    if (identities.has(identity)) {
+      issues.push(`${roleKey}.${docKey}.sections[${index}] duplicada (${identity})`);
+    } else {
+      identities.add(identity);
+    }
+
+    if (sectionId) {
+      if (sectionIds.has(sectionId)) {
+        issues.push(`${roleKey}.${docKey}.sections[${index}] id duplicado (${section.id})`);
+      } else {
+        sectionIds.add(sectionId);
+      }
+    }
+
+    if (sectionHeading) {
+      if (sectionHeadings.has(sectionHeading)) {
+        issues.push(`${roleKey}.${docKey}.sections[${index}] heading duplicado (${section.heading})`);
+      } else {
+        sectionHeadings.add(sectionHeading);
+      }
+    }
+  });
+
+  return issues;
+};
+
+const getUnknownHeadingsFromGlobalOrder = () => {
+  const unknownHeadings = new Set();
+  ROLE_KEYS.forEach((roleKey) => {
+    const roleConfig = legalContent[roleKey];
+    ['terms', 'privacy'].forEach((docKey) => {
+      const sections = roleConfig?.[docKey]?.sections;
+      if (!Array.isArray(sections)) return;
+      sections.forEach((section) => {
+        const normalizedHeading = normalizeIdentityValue(section?.heading);
+        if (!normalizedHeading) return;
+        if (!globalSectionOrderLookup.has(normalizedHeading)) {
+          unknownHeadings.add(section.heading);
+        }
+      });
+    });
+  });
+  return [...unknownHeadings];
+};
+
+const validateLegalContentIntegrity = () => {
+  const issues = [];
+  ROLE_KEYS.forEach((roleKey) => {
+    const roleConfig = legalContent[roleKey];
+    if (!roleConfig) {
+      issues.push(`Rol faltante: ${roleKey}`);
+      return;
+    }
+    issues.push(...validateSectionCollection(roleConfig.terms?.sections, roleKey, 'terms'));
+    issues.push(...validateSectionCollection(roleConfig.privacy?.sections, roleKey, 'privacy'));
+  });
+  const unknownHeadings = getUnknownHeadingsFromGlobalOrder();
+  unknownHeadings.forEach((heading) => {
+    issues.push(`Heading fuera de globalSectionOrder: ${heading}`);
+  });
+  return issues;
+};
+
+const legalContentValidationIssues = validateLegalContentIntegrity();
+const isDevelopmentEnv = typeof process !== 'undefined' && process?.env?.NODE_ENV !== 'production';
+if (isDevelopmentEnv && legalContentValidationIssues.length > 0) {
+  // eslint-disable-next-line no-console
+  console.warn('[legalContent] Inconsistencias detectadas:', legalContentValidationIssues);
+}
