@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FiTruck, FiDollarSign, FiClock, FiStar, FiActivity } from 'react-icons/fi';
+import { FiTruck, FiDollarSign, FiClock, FiStar, FiActivity, FiFlag } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getEstadisticas, getHistorial } from '../services/conductorService';
 import GlassStatCard from '../../shared/components/GlassStatCard';
@@ -7,9 +7,12 @@ import PageHeader from '../../shared/components/PageHeader';
 import EmptyState from '../../shared/components/EmptyState';
 import { ShimmerDashboard } from '../../shared/components/ShimmerLoader';
 import { ViaxAreaChart, ViaxDonutChart } from '../../shared/components/ViaxCharts';
+import { reportUser } from '../../shared/services/userModerationService';
+import { useSnackbar } from '../../shared/components/AppSnackbar';
 
 const ConductorDashboard = () => {
     const { user } = useAuth();
+    const { showSnackbar } = useSnackbar();
     const [stats, setStats] = useState(null);
     const [recentTrips, setRecentTrips] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -28,6 +31,49 @@ const ConductorDashboard = () => {
         };
         load();
     }, [user]);
+
+    const extractClienteId = (trip = {}) => {
+        const candidates = [
+            trip.cliente_id,
+            trip.user_id,
+            trip.id_cliente,
+            trip.cliente?.id,
+            trip.user?.id,
+        ];
+        const found = candidates.find((value) => Number(value) > 0);
+        return Number(found || 0);
+    };
+
+    const reportTripUser = async (trip) => {
+        const reportedUserId = extractClienteId(trip);
+        if (!user?.id || !reportedUserId) {
+            showSnackbar('No se pudo identificar al usuario a reportar.', { type: 'warning' });
+            return;
+        }
+
+        const reason = window.prompt(
+            'Motivo del reporte (comportamiento_inapropiado, acoso_o_amenaza, fraude_o_estafa, incumplimiento_servicio, contenido_inapropiado_chat, otro):',
+            'comportamiento_inapropiado'
+        );
+        if (!reason) return;
+
+        const details = window.prompt('Detalles del reporte (opcional):', '') || '';
+
+        const res = await reportUser({
+            reporterUserId: Number(user.id),
+            reportedUserId,
+            solicitudId: Number(trip.id || 0) || undefined,
+            motivo: reason,
+            descripcion: details,
+            prioridad: 'media',
+        });
+
+        if (res?.success) {
+            showSnackbar('Reporte enviado correctamente.', { type: 'success' });
+        } else {
+            showSnackbar(res?.message || 'No se pudo enviar el reporte.', { type: 'error' });
+        }
+    };
 
     const fmt = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
     const earningsTrend = recentTrips.slice(0, 6).map((trip, index) => ({
@@ -120,6 +166,16 @@ const ConductorDashboard = () => {
                                 </div>
                                 <div className="v-activity-item__badge">
                                     <span style={{ fontWeight: 700, color: '#4caf50' }}>{fmt(t.precio_final || t.precio_estimado)}</span>
+                                    {extractClienteId(t) > 0 && (
+                                        <button
+                                            type="button"
+                                            className="v-btn-lite"
+                                            style={{ marginTop: '8px' }}
+                                            onClick={() => reportTripUser(t)}
+                                        >
+                                            <FiFlag /> Reportar
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}

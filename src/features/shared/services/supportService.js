@@ -116,3 +116,39 @@ export const getSupportTicketLogs = async ({ ticketId, agentId }) => {
         'No se pudo cargar el historial del ticket'
     );
 };
+
+export const getUserReports = async ({ actorId, status, priority, search, limit = 50 }) => {
+    const query = toQuery({
+        actor_id: actorId,
+        estado: status,
+        prioridad: priority,
+        search,
+        limit,
+    });
+
+    return await requestJson(
+        `${API_BASE_URL}/admin/user_reports.php?${query}`,
+        { method: 'GET', headers: { Accept: 'application/json' } },
+        'No se pudieron cargar los reportes de usuarios'
+    );
+};
+
+export const updateUserReport = async ({ actorId, reportId, action, resolutionNote }) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/user_reports.php`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                actor_id: actorId,
+                report_id: reportId,
+                action,
+                resolution_note: resolutionNote,
+            }),
+        },
+        'No se pudo actualizar el reporte'
+    );
+};

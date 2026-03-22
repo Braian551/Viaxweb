@@ -7,10 +7,12 @@ import { useSnackbar } from '../components/AppSnackbar';
 import {
     createSupportTicket,
     getSupportCategories,
+    getUserReports,
     getSupportTicketLogs,
     getSupportTicketMessages,
     getSupportTickets,
     sendSupportMessage,
+    updateUserReport,
     updateSupportTicket,
 } from '../services/supportService';
 import './DashboardSupportPage.css';
@@ -87,12 +89,15 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
     const [tickets, setTickets] = useState([]);
     const [agents, setAgents] = useState([]);
     const [ticketLogs, setTicketLogs] = useState([]);
+    const [userReports, setUserReports] = useState([]);
+    const [reportSummary, setReportSummary] = useState({});
     const [selectedTicketId, setSelectedTicketId] = useState(null);
     const [messages, setMessages] = useState([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingMessages, setIsLoadingMessages] = useState(false);
     const [isUpdatingTicket, setIsUpdatingTicket] = useState(false);
+    const [isLoadingReports, setIsLoadingReports] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [isSending, setIsSending] = useState(false);
 
@@ -121,7 +126,11 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
             setIsLoading(true);
         }
 
-        const [categoriesRes, ticketsRes] = await Promise.all([
+        if (isAgentMode) {
+            setIsLoadingReports(true);
+        }
+
+        const [categoriesRes, ticketsRes, reportsRes] = await Promise.all([
             isAgentMode ? Promise.resolve({ success: true, categorias: [] }) : getSupportCategories(),
             getSupportTickets({
                 userId: isAgentMode ? undefined : userId,
@@ -131,6 +140,13 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
                 assignedTo: isAgentMode ? assignedFilter : undefined,
                 search: isAgentMode ? searchText : undefined,
             }),
+            isAgentMode
+                ? getUserReports({
+                    actorId: userId,
+                    search: searchText,
+                    limit: 30,
+                })
+                : Promise.resolve({ success: true, data: { reportes: [], resumen: {} } }),
         ]);
 
         if (categoriesRes?.success) {
@@ -151,6 +167,18 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
             if (!incomingTickets.length) {
                 setSelectedTicketId(null);
             }
+        }
+
+        if (isAgentMode) {
+            if (reportsRes?.success) {
+                const data = reportsRes.data || {};
+                setUserReports(Array.isArray(data.reportes) ? data.reportes : []);
+                setReportSummary(data.resumen || {});
+            } else {
+                setUserReports([]);
+                setReportSummary({});
+            }
+            setIsLoadingReports(false);
         }
 
         if ((!categoriesRes?.success || !ticketsRes?.success) && !silent) {
@@ -333,6 +361,22 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
         setTicketLogs(logsRes?.success ? (logsRes.logs || []) : []);
     };
 
+    const handleUserReportAction = async (reportId, action) => {
+        const response = await updateUserReport({
+            actorId: userId,
+            reportId,
+            action,
+        });
+
+        if (!response?.success) {
+            showSnackbar(response?.error || response?.message || 'No se pudo actualizar el reporte.', { type: 'error' });
+            return;
+        }
+
+        showSnackbar('Reporte actualizado correctamente.', { type: 'success' });
+        await loadInitial({ silent: true });
+    };
+
     return (
         <div className="v-dashboard">
             <PageHeader
@@ -461,6 +505,57 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
                                 ))
                             )}
                         </div>
+
+                        {isAgentMode && (
+                            <div className="support-ticket-list" style={{ marginTop: 16 }}>
+                                <h3 className="support-title"><FiAlertCircle /> Reportes de usuarios</h3>
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: 10 }}>
+                                    Pendientes: {Number(reportSummary?.pendientes || 0)} • En revisión: {Number(reportSummary?.en_revision || 0)}
+                                </div>
+                                {isLoadingReports ? (
+                                    <div className="support-chat-loading">Cargando reportes...</div>
+                                ) : userReports.length === 0 ? (
+                                    <EmptyState
+                                        icon={<FiAlertCircle size={34} />}
+                                        title="Sin reportes"
+                                        description="No hay reportes de usuarios en este momento."
+                                    />
+                                ) : (
+                                    userReports.map((report) => (
+                                        <div key={report.id} className="support-ticket-item" style={{ cursor: 'default' }}>
+                                            <div className="support-ticket-item__top">
+                                                <span className="support-ticket-number">Reporte #{report.id}</span>
+                                                <span className={`support-ticket-state state-${report.estado || 'pendiente'}`}>
+                                                    {statusLabel(report.estado)}
+                                                </span>
+                                            </div>
+                                            <div className="support-ticket-subject" style={{ marginBottom: 4 }}>
+                                                Motivo: {String(report.motivo || 'otro').replaceAll('_', ' ')}
+                                            </div>
+                                            <div className="support-ticket-subject">
+                                                Reporta: {report.reporter_nombre} {report.reporter_apellido} • Reportado: {report.reported_nombre} {report.reported_apellido}
+                                            </div>
+                                            {report.descripcion && (
+                                                <div className="support-ticket-subject" style={{ marginTop: 6 }}>
+                                                    {report.descripcion}
+                                                </div>
+                                            )}
+                                            <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+                                                <button type="button" className="btn btn--outline" onClick={() => handleUserReportAction(report.id, 'start_review')}>
+                                                    En revisión
+                                                </button>
+                                                <button type="button" className="btn btn--outline" onClick={() => handleUserReportAction(report.id, 'resolve')}>
+                                                    Resolver
+                                                </button>
+                                                <button type="button" className="btn btn--outline" onClick={() => handleUserReportAction(report.id, 'dismiss')}>
+                                                    Descartar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        )}
                     </section>
 
                     <section className="glass-card support-panel">

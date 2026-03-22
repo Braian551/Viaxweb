@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FiMapPin, FiClock, FiStar, FiDollarSign, FiTruck } from 'react-icons/fi';
+import { FiMapPin, FiClock, FiStar, FiDollarSign, FiTruck, FiFlag } from 'react-icons/fi';
 import { useAuth } from '../../auth/context/AuthContext';
 import { getTripHistory, getPaymentSummary, getFavoriteDrivers } from '../services/clienteService';
 import GlassStatCard from '../../shared/components/GlassStatCard';
@@ -9,9 +9,12 @@ import ProfileAvatar from '../../shared/components/ProfileAvatar';
 import EmptyState from '../../shared/components/EmptyState';
 import { ShimmerDashboard } from '../../shared/components/ShimmerLoader';
 import { ViaxAreaChart, ViaxDonutChart } from '../../shared/components/ViaxCharts';
+import { reportUser } from '../../shared/services/userModerationService';
+import { useSnackbar } from '../../shared/components/AppSnackbar';
 
 const ClienteDashboard = () => {
     const { user } = useAuth();
+    const { showSnackbar } = useSnackbar();
     const [trips, setTrips] = useState([]);
     const [payments, setPayments] = useState(null);
     const [favorites, setFavorites] = useState([]);
@@ -33,6 +36,48 @@ const ClienteDashboard = () => {
         };
         load();
     }, [user]);
+
+    const extractConductorId = (trip = {}) => {
+        const candidates = [
+            trip.conductor_id,
+            trip.driver_id,
+            trip.id_conductor,
+            trip.conductor?.id,
+            trip.driver?.id,
+        ];
+        const found = candidates.find((value) => Number(value) > 0);
+        return Number(found || 0);
+    };
+
+    const askReasonAndReport = async ({ reportedUserId, solicitudId }) => {
+        if (!user?.id || !reportedUserId) {
+            showSnackbar('No se pudo identificar al usuario a reportar.', { type: 'warning' });
+            return;
+        }
+
+        const reason = window.prompt(
+            'Motivo del reporte (comportamiento_inapropiado, acoso_o_amenaza, fraude_o_estafa, incumplimiento_servicio, contenido_inapropiado_chat, otro):',
+            'comportamiento_inapropiado'
+        );
+        if (!reason) return;
+
+        const details = window.prompt('Detalles del reporte (opcional):', '') || '';
+
+        const res = await reportUser({
+            reporterUserId: Number(user.id),
+            reportedUserId,
+            solicitudId,
+            motivo: reason,
+            descripcion: details,
+            prioridad: 'media',
+        });
+
+        if (res?.success) {
+            showSnackbar('Reporte enviado correctamente.', { type: 'success' });
+        } else {
+            showSnackbar(res?.message || 'No se pudo enviar el reporte.', { type: 'error' });
+        }
+    };
 
     const fmt = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
     const tripCostTrend = trips.slice(0, 6).map((trip, index) => ({
@@ -128,6 +173,19 @@ const ClienteDashboard = () => {
                                 <div className="v-activity-item__badge" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     {trip.estado && <StatusBadge status={trip.estado} />}
                                     <span style={{ fontWeight: 700, color: 'var(--text)' }}>{fmt(trip.precio_final || trip.precio_estimado)}</span>
+                                    {extractConductorId(trip) > 0 && (
+                                        <button
+                                            type="button"
+                                            className="v-btn-lite"
+                                            onClick={() => askReasonAndReport({
+                                                reportedUserId: extractConductorId(trip),
+                                                solicitudId: Number(trip.id || 0) || undefined,
+                                            })}
+                                            title="Reportar usuario"
+                                        >
+                                            <FiFlag /> Reportar
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -157,6 +215,16 @@ const ClienteDashboard = () => {
                                 <div>
                                     <div style={{ fontWeight: 600, color: 'var(--text)' }}>{d.nombre} {d.apellido}</div>
                                     <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>&#11088; {d.calificacion_promedio || '—'} &bull; {d.total_viajes || 0} viajes</div>
+                                    {Number(d.id || 0) > 0 && (
+                                        <button
+                                            type="button"
+                                            className="v-btn-lite"
+                                            style={{ marginTop: '6px' }}
+                                            onClick={() => askReasonAndReport({ reportedUserId: Number(d.id) })}
+                                        >
+                                            <FiFlag /> Reportar
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}
