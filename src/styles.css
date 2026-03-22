@@ -1894,6 +1894,17 @@ button {
   margin-top: 8px;
 }
 
+.account-deletion__compliance-note {
+  margin-top: 18px;
+  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  padding: 12px 14px;
+}
+
 /* ===================================================
    FOOTER
    =================================================== */

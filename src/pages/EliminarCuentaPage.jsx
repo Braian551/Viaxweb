@@ -17,7 +17,8 @@ export default function EliminarCuentaPage() {
           <h1 className="section__title">Eliminacion de Cuenta - Viax</h1>
           <p className="section__subtitle">
             Esta pagina publica explica el proceso de eliminacion de cuenta para la app Viax,
-            propiedad de VIAX TECHNOLOGY S.A.S.
+            propiedad de VIAX TECHNOLOGY S.A.S., segun los requisitos de Google Play sobre
+            eliminacion de cuentas.
           </p>
         </div>
 
@@ -59,9 +60,17 @@ export default function EliminarCuentaPage() {
           <article className="account-deletion__card">
             <h2>3. Proceso de eliminacion</h2>
             <ul>
-              <li>La cuenta sera desactivada despues de la solicitud y su confirmacion.</li>
+              <li>
+                La cuenta sera desactivada una vez el usuario confirme la solicitud de
+                eliminacion desde la aplicacion o por correo.
+              </li>
               <li>Se puede solicitar validacion de identidad para proteger la cuenta.</li>
               <li>El proceso completo puede tardar hasta 15 dias habiles.</li>
+              <li>
+                Los usuarios tambien pueden solicitar la eliminacion total o parcial de sus datos
+                personales sin necesidad de eliminar su cuenta, enviando una solicitud al correo
+                de contacto.
+              </li>
             </ul>
           </article>
 
@@ -103,6 +112,11 @@ export default function EliminarCuentaPage() {
             </a>
           </article>
         </div>
+
+        <p className="account-deletion__compliance-note">
+          Esta pagina cumple con las politicas de eliminacion de cuentas de Google Play para
+          aplicaciones que permiten la creacion de cuentas de usuario.
+        </p>
       </section>
     </div>
   );
