@@ -7,11 +7,29 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ['react', 'react-dom', 'react-router-dom', 'react-helmet-async'],
-          firebase: ['firebase'],
-          mapbox: ['mapbox-gl'],
-          charts: ['recharts'],
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return;
+
+          if (
+            id.includes('react-router-dom') ||
+            id.includes('react-helmet-async') ||
+            id.includes('/react/') ||
+            id.includes('/react-dom/')
+          ) {
+            return 'react';
+          }
+
+          if (id.includes('/firebase/')) {
+            return 'firebase';
+          }
+
+          if (id.includes('/mapbox-gl/')) {
+            return 'mapbox';
+          }
+
+          if (id.includes('/recharts/')) {
+            return 'charts';
+          }
         },
       },
     },
