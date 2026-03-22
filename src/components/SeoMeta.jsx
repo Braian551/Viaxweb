@@ -5,6 +5,11 @@ const SITE_NAME = 'Viax Colombia';
 const SITE_URL = 'https://viaxcol.online';
 const DEFAULT_IMAGE = `${SITE_URL}/logo.png`;
 
+function normalizePath(path) {
+  if (!path || path === '/') return '/';
+  return path.replace(/\/+$/, '');
+}
+
 export default function SeoMeta({
   title,
   description,
@@ -15,7 +20,8 @@ export default function SeoMeta({
   noindex = false,
   jsonLd,
 }) {
-  const canonical = `${SITE_URL}${path}`;
+  const canonicalPath = normalizePath(path);
+  const canonical = `${SITE_URL}${canonicalPath}`;
   const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} | Viaja fácil, llega rápido`;
 
   return (
