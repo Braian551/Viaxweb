@@ -33,7 +33,7 @@ const companyIdentificationSection = {
     'Razón social: VIAX TECHNOLOGY S.A.S.',
     'NIT: 902040253-1.',
     'País de constitución: República de Colombia.',
-    'Domicilio: Bogotá D.C., Colombia.',
+    'Domicilio: Medellín, Antioquia, Colombia.',
     'Contacto y canal oficial: viaxoficialcol@gmail.com. Este correo es el canal oficial para notificaciones, solicitudes legales, PQR y comunicaciones formales relacionadas con la plataforma.',
     'Publicación en tienda: La aplicación puede ser publicada en plataformas digitales a través de cuentas de desarrollador administradas por representantes autorizados, sin que ello afecte la titularidad de la plataforma, la cual pertenece exclusivamente a VIAX TECHNOLOGY S.A.S.',
   ],
@@ -371,7 +371,7 @@ const jurisdictionSection = {
   heading: 'Ley Aplicable y Resolución de Conflictos',
   summary: 'Estos términos se rigen por la legislación colombiana. Ante cualquier conflicto, priorizamos la solución directa y el diálogo.',
   bullets: [
-    'Legislación: Estos términos se rigen por las leyes de la República de Colombia, con jurisdicción principal en Bogotá D.C., sin perjuicio del derecho del consumidor a acudir a su jurisdicción local conforme a la ley.',
+    'Legislación: Estos términos se rigen por las leyes de la República de Colombia, con jurisdicción principal en Medellín, Antioquia, sin perjuicio del derecho del consumidor a acudir a su jurisdicción local conforme a la ley.',
     'Quejas y reclamos (PQR): Para quejas, reclamos o peticiones, escríbenos a viaxoficialcol@gmail.com. Responderemos dentro de los 15 días hábiles establecidos por la normativa vigente.',
     'Mecanismos alternativos: Las partes podrán acudir a mecanismos alternativos de solución de conflictos como conciliación o mediación antes de iniciar acciones judiciales, cuando sea aplicable.',
     'Cooperación con autoridades: Viax colaborará de manera oportuna con las autoridades competentes que requieran información conforme a la ley.',
