@@ -6,8 +6,8 @@ export const roleLabels = {
   servidor: 'Servidor/API',
 };
 
-const updateDate = '21 de marzo de 2026';
-const TERMS_VERSION = 'v1.0.0-2026-03-21';
+const updateDate = '20 de abril de 2026';
+const TERMS_VERSION = 'v1.1.1-2026-04-20';
 const ROLE_KEYS = ['cliente', 'conductor', 'empresa', 'administrador', 'servidor'];
 
 // 1. Intermediación
@@ -67,11 +67,34 @@ const permissionsUsageSection = {
   heading: 'Uso de Permisos del Dispositivo',
   summary: 'Solicitamos ciertos permisos en tu dispositivo exclusivamente para que la aplicación funcione correctamente.',
   bullets: [
-    'Ubicación: Utilizada únicamente para la asignación de viajes, navegación de rutas y funciones de seguridad.',
+    'Ubicación: Utilizada para la asignación de viajes, navegación de rutas, funciones de seguridad y, cuando el usuario lo activa, compartición temporal de ubicación en tiempo real durante servicios activos.',
     'Cámara (si aplica): Para verificación de identidad del perfil o validación de documentos requeridos.',
     'Almacenamiento (si aplica): Para guardar temporalmente comprobantes o archivos necesarios del servicio.',
+    'Notificaciones (si aplica): Utilizadas para avisos de viajes, mensajes, alertas operativas y novedades relevantes de tu cuenta o de un servicio activo.',
     'Estos permisos no se utilizan para fines publicitarios ni se comparten con terceros para tales fines.',
     'Puedes revocar los permisos en cualquier momento desde la configuración de tu dispositivo, lo cual puede limitar algunas funcionalidades de la aplicación.',
+  ],
+};
+
+const backgroundLocationSection = {
+  id: 'background_location',
+  heading: 'Ubicación en Segundo Plano y Seguimiento Operativo',
+  summary: 'Para conductores, Viax puede solicitar ubicación en segundo plano cuando sea necesaria para viajes activos, seguimiento operativo y asignación de servicios cercanos.',
+  bullets: [
+    'Activación contextual: Esta función solo se utiliza cuando el conductor está en funciones operativas o durante servicios activos; no permanece habilitada de forma permanente fuera de ese contexto.',
+    'Datos tratados: La app puede tratar coordenadas, hora de actualización, velocidad, precisión y orientación del desplazamiento para seguimiento del viaje, seguridad y continuidad operativa.',
+    'Permiso del sistema: En los dispositivos compatibles, el conductor deberá autorizar la ubicación en segundo plano o la opción equivalente del sistema para habilitar correctamente estas funciones.',
+    'Impacto funcional: Si este permiso no es concedido, algunas funciones como el seguimiento continuo, la asignación por cercanía o ciertas vistas operativas pueden verse limitadas.',
+  ],
+};
+
+const pushNotificationsSection = {
+  id: 'push_notifications',
+  heading: 'Notificaciones Operativas y de Seguridad',
+  summary: 'Viax puede utilizar notificaciones push para mantener informado al usuario sobre eventos relevantes del servicio, la operación y la seguridad de la cuenta.',
+  bullets: [
+    'Notificaciones push (FCM): Utilizamos Firebase Cloud Messaging para enviar notificaciones de viajes activos, asignación de conductores y alertas de seguridad. No se utilizan para fines publicitarios de terceros.',
+    'Control del usuario: Puedes administrar estas notificaciones desde la configuración del dispositivo y, cuando la plataforma lo permita, desde las preferencias disponibles dentro de la app o del sitio web. Algunas alertas operativas pueden ser necesarias para el funcionamiento adecuado del servicio.',
   ],
 };
 
@@ -184,6 +207,7 @@ const securityAndFraudSection = {
   bullets: [
     'Cifrado: Todas las comunicaciones entre la aplicación y los servidores de Viax están protegidas mediante cifrado HTTPS/TLS. Los datos sensibles se almacenan de forma cifrada en los sistemas de la plataforma.',
     'Monitoreo: Viax realiza monitoreo técnico de actividad sospechosa, incluyendo análisis de direcciones IP y patrones de uso, para detectar y prevenir conductas fraudulentas.',
+    'Identificadores técnicos: Viax puede generar o tratar identificadores técnicos del dispositivo y de la instalación de la app, así como datos básicos del equipo y de la sesión, para autenticar accesos, prevenir fraude y detectar usos abusivos o automatizados.',
     'Responsabilidad de la cuenta: El usuario es responsable de mantener la confidencialidad de sus credenciales. Viax podrá considerar como válidas las acciones realizadas desde una cuenta autenticada, sin perjuicio del derecho del usuario a reportar accesos no autorizados.',
     'Gestión de sesiones: Viax puede invalidar sesiones activas y restringir accesos concurrentes sospechosos para proteger la cuenta del usuario, conforme a la normativa vigente.',
     'Medidas: Viax podrá suspender o cancelar cuentas cuando detecte actividades que infrinjan estos términos, sin perjuicio de las acciones legales correspondientes.',
@@ -231,6 +255,7 @@ const biometryConsentSection = {
     'Datos sensibles: Los datos biométricos son considerados datos sensibles conforme a la Ley 1581 de 2012 y su tratamiento está sujeto a las garantías especiales previstas para este tipo de información.',
     'Consentimiento: El uso de verificación biométrica (como reconocimiento facial) requiere tu autorización previa, expresa e informada, otorgada de forma independiente a la aceptación de estos términos.',
     'Finalidad: Los datos biométricos se utilizan exclusivamente para fines de verificación de identidad, seguridad y prevención de fraude.',
+    'Verificación complementaria: Para perfiles que requieran validación reforzada, Viax puede solicitar selfie, documentos de identidad o documentos de habilitación y compararlos con la información del perfil exclusivamente para autenticación, onboarding, prevención de fraude y cumplimiento operativo.',
     'Almacenamiento: Los datos biométricos pueden ser procesados mediante servicios seguros de terceros o almacenados de forma cifrada. En ningún caso se utilizan para fines distintos a la verificación de identidad.',
     'Carácter opcional: La verificación biométrica NO es obligatoria para utilizar la plataforma. Viax ofrece siempre métodos alternativos de verificación que no requieren datos biométricos.',
     'No comercialización: Viax no comercializa, vende ni comparte datos biométricos con terceros bajo ninguna circunstancia.',
@@ -245,11 +270,23 @@ const internationalTransferSection = {
   summary: 'Viax utiliza proveedores de servicios en la nube que pueden almacenar datos fuera de Colombia, siempre con medidas de protección adecuadas conforme a la Ley 1581 de 2012.',
   bullets: [
     'Base legal: La transferencia internacional de datos se realiza conforme al artículo 26 de la Ley 1581 de 2012 y sus decretos reglamentarios, garantizando niveles adecuados de protección.',
-    'Proveedores: Viax utiliza servicios de Firebase (Google LLC) y Cloudflare, Inc., cuyos servidores pueden estar ubicados fuera de Colombia, en países que pueden incluir Estados Unidos y otras jurisdicciones donde estos proveedores operan.',
+    'Proveedores: Viax utiliza servicios de Firebase (Google LLC), Google Identity Services o Google Sign-In, Mapbox y Cloudflare, Inc., cuyos servidores o servicios pueden operar fuera de Colombia, en países que pueden incluir Estados Unidos y otras jurisdicciones donde dichos proveedores prestan su infraestructura.',
     'Estándares de seguridad: Estos proveedores cumplen con estándares internacionales de seguridad de la información, incluyendo certificaciones ISO 27001, SOC 2 y el cumplimiento del GDPR.',
     'Medidas de protección: Se implementan medidas técnicas y contractuales adecuadas para garantizar la protección de tus datos personales durante y después de la transferencia.',
+    'Servicios específicos: Cuando utilizas mapas, geocodificación, cálculo de rutas, autenticación con Google o mensajería push, ciertos datos técnicos y de uso se transmiten al proveedor que procesa esa función exclusivamente para atender la solicitud del usuario y operar la plataforma.',
     'Finalidad: La transferencia se realiza únicamente para garantizar la prestación del servicio, la seguridad de la plataforma y el almacenamiento seguro de la información.',
     'Consentimiento: Al aceptar esta política de privacidad, el usuario autoriza expresamente la transferencia internacional de sus datos personales a los proveedores indicados, conforme a lo dispuesto en la Ley 1581 de 2012.',
+  ],
+};
+
+const locationSharingSection = {
+  id: 'location_sharing',
+  heading: 'Compartición de Ubicación en Tiempo Real',
+  summary: 'Viax permite generar enlaces o accesos temporales para compartir la ubicación en tiempo real durante un servicio, únicamente cuando el usuario decide activarlo.',
+  bullets: [
+    'Activación voluntaria: La compartición de ubicación solo se inicia por acción del usuario desde la aplicación y puede detenerse manualmente en cualquier momento o al finalizar el servicio.',
+    'Datos compartidos: El enlace temporal puede mostrar ubicación, hora de última actualización, orientación, velocidad y, cuando aplique al servicio, nombre del titular, fotografía de perfil, placa o destino asociado.',
+    'Acceso temporal: El acceso compartido se protege mediante tokens o enlaces temporales con vencimiento automático y deja de estar disponible cuando expira o cuando el usuario detiene la compartición.',
   ],
 };
 
@@ -262,6 +299,7 @@ const googlePlayRequiredBullets = [
   'Cifrado: Toda la información transmitida entre tu dispositivo y nuestros servidores está protegida mediante cifrado HTTPS/TLS.',
   'Finalidad: Todos los datos recolectados se utilizan exclusivamente para la prestación del servicio de intermediación tecnológica, la seguridad de los usuarios y el cumplimiento de obligaciones legales.',
   'Eliminación: Puedes solicitar la eliminación de tus datos personales en cualquier momento desde la aplicación o enviando un correo a viaxoficialcol@gmail.com. Los datos serán eliminados conforme a lo establecido en la sección de Eliminación de Cuenta.',
+  'Notificaciones push (FCM): Utilizamos Firebase Cloud Messaging para enviar notificaciones de viajes activos, asignación de conductores y alertas de seguridad. No se utilizan para fines publicitarios de terceros.',
   googlePlayAdvancedSecurityBullet,
   googlePlayLegalBasisBullet,
   googlePlayUserSecurityBullet,
@@ -396,8 +434,8 @@ const cookiesAndStorageSection = {
   heading: 'Cookies y Almacenamiento Local',
   summary: 'Información sobre el uso de cookies en el sitio web y el almacenamiento local en la aplicación móvil.',
   bullets: [
-    'Sitio web (Cookies): Utilizamos cookies estrictamente necesarias para el funcionamiento del sitio web, como la gestión de sesiones y preferencias de usuario.',
-    'Aplicación (almacenamiento local): La app almacena tokens de autenticación de forma segura en el dispositivo para mantener tu sesión activa. Al desinstalar la aplicación, estos datos se eliminan automáticamente.',
+    'Sitio web (cookies y almacenamiento local): Utilizamos mecanismos de sesión estrictamente necesarios y almacenamiento local del navegador para autenticación, continuidad de sesión y preferencias operativas del sitio web.',
+    'Aplicación (almacenamiento local): La app almacena tokens de autenticación, identificadores de sesión y preferencias operativas de forma segura en el dispositivo para mantener tu sesión activa. Al desinstalar la aplicación, estos datos se eliminan automáticamente salvo los respaldos propios del sistema operativo o exigencias legales aplicables.',
     'No rastreo: No utilizamos cookies ni almacenamiento local para rastrear tu actividad fuera de la plataforma Viax.',
   ],
 };
@@ -562,6 +600,7 @@ ROLE_KEYS.forEach((roleKey) => {
     if (roleKey !== 'servidor' && roleKey !== 'administrador') {
       addSectionOnce(ts, chatAndUGCSection);
       addSectionOnce(ts, serviceAvailabilitySection);
+      addSectionOnce(ts, pushNotificationsSection);
     }
 
     addSectionOnce(ts, termsModificationSection);
@@ -586,6 +625,7 @@ ROLE_KEYS.forEach((roleKey) => {
       addSectionOnce(ps, dataControllerSection);
       if (roleKey === 'conductor') {
         addSectionOnce(ps, conductorPermissionsUsageSection);
+        addSectionOnce(ps, backgroundLocationSection);
         addSectionOnce(ps, conductorSecurityAndFraudSection);
       } else {
         addSectionOnce(ps, permissionsUsageSection);
@@ -593,9 +633,13 @@ ROLE_KEYS.forEach((roleKey) => {
       }
       addSectionOnce(ps, biometryConsentSection);
       addSectionOnce(ps, internationalTransferSection);
+      addSectionOnce(ps, pushNotificationsSection);
       
       if (roleKey === 'cliente' || roleKey === 'conductor' || roleKey === 'empresa') {
         addSectionOnce(ps, googlePlayDataSafetySection);
+        if (roleKey === 'cliente') {
+          addSectionOnce(ps, locationSharingSection);
+        }
         addSectionOnce(ps, rightsPrivacySection);
         addSectionOnce(ps, accountDeletionSectionsByRole[roleKey]);
         addSectionOnce(ps, chatAndUGCSection);
@@ -627,9 +671,12 @@ const globalSectionOrder = [
   // 3. Datos personales
   'Responsable del Tratamiento y Uso de Datos',
   'Uso de Permisos del Dispositivo',
+  'Notificaciones Operativas y de Seguridad',
+  'Ubicación en Segundo Plano y Seguimiento Operativo',
   'Datos Biométricos',
   'Transferencia Internacional de Datos',
   'Seguridad de Datos (Google Play)',
+  'Compartición de Ubicación en Tiempo Real',
   'Cookies y Almacenamiento Local',
   // 4. Funcionamiento
   'Chat y Contenido Generado por Usuarios',
