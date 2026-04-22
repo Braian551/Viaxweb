@@ -15,10 +15,15 @@ export default function Download() {
             Descarga Viax y solicita tu primer viaje. Disponible para Android e iOS.
           </p>
           <div className="download__buttons">
-            <a href="#" className="download__store-btn">
+            <a
+              href="https://play.google.com/store/apps/details?id=com.viax.app&pcampaignid=web_share"
+              className="download__store-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <IoLogoGooglePlaystore size={24} />
               <div>
-                <small>Próximamente en</small>
+                <small>Disponible en</small>
                 <strong>Google Play</strong>
               </div>
             </a>
