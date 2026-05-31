@@ -19,7 +19,7 @@ const footerLinks = {
     { label: 'Politica de privacidad', to: '/legal' },
     { label: 'Eliminacion de cuenta', to: '/eliminar-cuenta' },
   ],
-  Compania: [
+  Compañia: [
     { label: 'Sobre nosotros', to: '/' },
     { label: 'Para conductores', to: '/conductores' },
     { label: 'Para empresas', to: '/empresas' },

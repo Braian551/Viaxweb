@@ -378,3 +378,112 @@ export const registrarPagoComisionAdmin = async (data) => {
         'Error registrando pago manual'
     );
 };
+
+/** Obtener configuración operativa de la app */
+export const getAppConfig = async (adminId) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/app_config.php?admin_id=${adminId}`,
+        {
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+        },
+        'Error cargando configuración de la app'
+    );
+};
+
+/** Actualizar configuración operativa de la app */
+export const updateAppConfig = async (adminId, payload) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/app_config.php`,
+        {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                admin_id: adminId,
+                ...payload,
+            }),
+        },
+        'Error actualizando configuración de la app'
+    );
+};
+
+/** Obtener campañas push programadas */
+export const getPushCampaigns = async (adminId, campaignId = null) => {
+    const params = new URLSearchParams({
+        admin_id: adminId,
+    });
+
+    if (campaignId) {
+        params.append('id', campaignId);
+    }
+
+    return await requestJson(
+        `${API_BASE_URL}/admin/push_campaigns.php?${params.toString()}`,
+        {
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+        },
+        'Error cargando campañas push'
+    );
+};
+
+/** Crear campaña push */
+export const createPushCampaign = async (adminId, payload) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/push_campaigns.php`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                admin_id: adminId,
+                ...payload,
+            }),
+        },
+        'Error creando campaña push'
+    );
+};
+
+/** Actualizar campaña push */
+export const updatePushCampaign = async (adminId, campaignId, payload) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/push_campaigns.php`,
+        {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                admin_id: adminId,
+                id: campaignId,
+                ...payload,
+            }),
+        },
+        'Error actualizando campaña push'
+    );
+};
+
+/** Eliminar campaña push */
+export const deletePushCampaign = async (adminId, campaignId) => {
+    return await requestJson(
+        `${API_BASE_URL}/admin/push_campaigns.php`,
+        {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                admin_id: adminId,
+                id: campaignId,
+            }),
+        },
+        'Error eliminando campaña push'
+    );
+};
