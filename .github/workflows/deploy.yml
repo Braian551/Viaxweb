@@ -25,7 +25,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Prepare target directory
+      # 🧹 LIMPIAR SOLO SITIOWEB (NO BACKEND)
+      - name: Clean remote sitioweb directory
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -33,10 +34,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            rm -rf /var/www/viax/sitioweb/*
             mkdir -p /var/www/viax/sitioweb
-            mkdir -p /var/www/viax/sitioweb/assets
-            rm -rf /var/www/viax/sitioweb/assets/*
 
+      # 📦 SUBIR BUILD
       - name: Upload build files
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -48,7 +49,8 @@ jobs:
           target: "/var/www/viax/sitioweb"
           strip_components: 1
 
-      - name: Fix ownership
+      # 🔐 PERMISOS
+      - name: Fix permissions
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
