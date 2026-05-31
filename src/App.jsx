@@ -30,6 +30,7 @@ const AdminCompanies = lazy(() => import('./features/admin/pages/AdminCompanies'
 const AdminFinances = lazy(() => import('./features/admin/pages/AdminFinances'));
 const AdminCompanyPayments = lazy(() => import('./features/admin/pages/AdminCompanyPayments'));
 const AdminAudit = lazy(() => import('./features/admin/pages/AdminAudit'));
+const AdminBroadcasts = lazy(() => import('./features/admin/pages/AdminBroadcasts'));
 
 const ClienteLayout = lazy(() => import('./features/cliente/layout/ClienteLayout'));
 const ClienteDashboard = lazy(() => import('./features/cliente/pages/ClienteDashboard'));
@@ -128,6 +129,7 @@ export default function App() {
                 <Route path="finances" element={withSuspense(<AdminFinances />)} />
                 <Route path="company-payments" element={withSuspense(<AdminCompanyPayments />)} />
                 <Route path="audit" element={withSuspense(<AdminAudit />)} />
+                <Route path="broadcasts" element={withSuspense(<AdminBroadcasts />)} />
                 <Route path="notifications" element={withSuspense(<DashboardNotificationsPage roleType="admin" />)} />
                 <Route path="support" element={withSuspense(<DashboardSupportPage roleType="admin" />)} />
               </Route>
