@@ -306,6 +306,10 @@ const AdminBroadcasts = () => {
     const { showSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(true);
     const [announcements, setAnnouncements] = useState([]);
+    const [announcementsError, setAnnouncementsError] = useState('');
+    const [campaignsError, setCampaignsError] = useState('');
+    const [canManageAnnouncements, setCanManageAnnouncements] = useState(false);
+    const [canManageCampaigns, setCanManageCampaigns] = useState(false);
     const [campaigns, setCampaigns] = useState([]);
     const [companies, setCompanies] = useState([]);
     const [announcementForm, setAnnouncementForm] = useState(createAnnouncementForm());
@@ -320,7 +324,7 @@ const AdminBroadcasts = () => {
             return;
         }
 
-        const response = await getPushCampaigns(user.id);
+        const response = await getPushCampaigns();
         if (response.success && response.data) {
             setCampaigns(response.data.campaigns || []);
             return;
@@ -338,11 +342,15 @@ const AdminBroadcasts = () => {
         setLoading(true);
 
         const [configResponse, campaignsResponse, companiesResponse] = await Promise.all([
-            getAppConfig(user.id),
-            getPushCampaigns(user.id),
-            getCompanies(user.id, { page: 1, limit: 200 }),
+            getAppConfig(),
+            getPushCampaigns(),
+            getCompanies({ page: 1, limit: 200 }),
         ]);
 
+        setCanManageAnnouncements(configResponse.data?.can_manage === true);
+        setCanManageCampaigns(campaignsResponse.data?.can_manage === true);
+        setAnnouncementsError(configResponse.success ? '' : configResponse.message);
+        setCampaignsError(campaignsResponse.success ? '' : campaignsResponse.message);
         if (configResponse.success && configResponse.data) {
             const normalizedAnnouncements = normalizeAnnouncementsConfig(
                 configResponse.data.config?.app_remote_announcements
@@ -416,6 +424,7 @@ const AdminBroadcasts = () => {
 
     const handleSaveAnnouncement = async (event) => {
         event.preventDefault();
+        if (!canManageAnnouncements) return;
         setSavingAnnouncement(true);
 
         try {
@@ -432,6 +441,7 @@ const AdminBroadcasts = () => {
     };
 
     const handleDeleteAnnouncement = async (announcementId) => {
+        if (!canManageAnnouncements) return;
         const target = announcements.find((item) => item.id === announcementId);
         if (!target) {
             return;
@@ -457,6 +467,7 @@ const AdminBroadcasts = () => {
 
     const handleSaveCampaign = async (event) => {
         event.preventDefault();
+        if (!canManageCampaigns) return;
         setSavingCampaign(true);
 
         try {
@@ -483,6 +494,7 @@ const AdminBroadcasts = () => {
     };
 
     const handleDeleteCampaign = async (campaignId) => {
+        if (!canManageCampaigns) return;
         const target = campaigns.find((item) => item.id === campaignId);
         if (!target) {
             return;
@@ -534,7 +546,7 @@ const AdminBroadcasts = () => {
                 <div>
                     <h2>Centro de comunicación operativa</h2>
                     <p>
-                        Los anuncios remotos se publican vía base de datos y configuración pública. Si el backend no responde,
+                        Los anuncios y las campañas están disponibles en modo consulta. Si el backend no responde,
                         la app conserva su fallback local para mantenimientos críticos activados en código.
                     </p>
                 </div>
@@ -551,6 +563,7 @@ const AdminBroadcasts = () => {
                             type="button"
                             className="broadcast-btn broadcast-btn--ghost"
                             onClick={() => setAnnouncementForm(createAnnouncementForm())}
+                            disabled={!canManageAnnouncements}
                         >
                             <FiPlus size={16} /> Nuevo anuncio
                         </button>
@@ -562,7 +575,7 @@ const AdminBroadcasts = () => {
                         <span className="broadcast-pill">Bloqueantes: {announcements.filter((item) => item.presentation === 'blockingSplash').length}</span>
                     </div>
 
-                    {announcements.length === 0 ? (
+                    {announcementsError ? <p role="alert">{announcementsError}</p> : announcements.length === 0 ? (
                         <EmptyState
                             icon={<FiBell size={42} />}
                             title="Sin anuncios remotos"
@@ -604,7 +617,7 @@ const AdminBroadcasts = () => {
                                             type="button"
                                             className="broadcast-btn broadcast-btn--danger"
                                             onClick={() => handleDeleteAnnouncement(announcement.id)}
-                                            disabled={savingAnnouncement}
+                                            disabled={!canManageAnnouncements || savingAnnouncement}
                                         >
                                             <FiTrash2 size={16} /> Eliminar
                                         </button>
@@ -618,7 +631,7 @@ const AdminBroadcasts = () => {
                 <section className="glass-card v-section">
                     <div className="broadcast-toolbar">
                         <div>
-                            <h3 className="broadcast-section-title">Editor de anuncio</h3>
+                            <h3 className="broadcast-section-title">{canManageAnnouncements ? "Editor de anuncio" : "Vista de anuncio"}</h3>
                             <p className="broadcast-section-subtitle">Configura el contenido que verá la app sin lanzar una nueva build.</p>
                         </div>
                     </div>
@@ -808,14 +821,14 @@ const AdminBroadcasts = () => {
                         </div>
 
                         <div className="broadcast-actions-row">
-                            <button type="submit" className="broadcast-btn broadcast-btn--primary" disabled={savingAnnouncement}>
+                            <button type="submit" className="broadcast-btn broadcast-btn--primary" disabled={!canManageAnnouncements || savingAnnouncement}>
                                 <FiSave size={16} /> {announcementForm.id ? 'Actualizar anuncio' : 'Guardar anuncio'}
                             </button>
                             <button
                                 type="button"
                                 className="broadcast-btn broadcast-btn--ghost"
                                 onClick={() => setAnnouncementForm(createAnnouncementForm())}
-                                disabled={savingAnnouncement}
+                                disabled={!canManageAnnouncements || savingAnnouncement}
                             >
                                 <FiRefreshCw size={16} /> Limpiar
                             </button>
@@ -835,6 +848,7 @@ const AdminBroadcasts = () => {
                             type="button"
                             className="broadcast-btn broadcast-btn--ghost"
                             onClick={() => setCampaignForm(createCampaignForm())}
+                            disabled={!canManageCampaigns}
                         >
                             <FiPlus size={16} /> Nueva campaña
                         </button>
@@ -846,7 +860,7 @@ const AdminBroadcasts = () => {
                         <span className="broadcast-pill">Entregadas: {campaigns.reduce((total, item) => total + Number(item.enviadas || 0), 0)}</span>
                     </div>
 
-                    {campaigns.length === 0 ? (
+                    {campaignsError ? <p role="alert">{campaignsError}</p> : campaigns.length === 0 ? (
                         <EmptyState
                             icon={<FiSend size={42} />}
                             title="Sin campañas push"
@@ -890,7 +904,7 @@ const AdminBroadcasts = () => {
                                             type="button"
                                             className="broadcast-btn broadcast-btn--danger"
                                             onClick={() => handleDeleteCampaign(campaign.id)}
-                                            disabled={savingCampaign}
+                                            disabled={!canManageCampaigns || savingCampaign}
                                         >
                                             <FiTrash2 size={16} /> Eliminar
                                         </button>
@@ -904,7 +918,7 @@ const AdminBroadcasts = () => {
                 <section className="glass-card v-section">
                     <div className="broadcast-toolbar">
                         <div>
-                            <h3 className="broadcast-section-title">Editor de campaña push</h3>
+                            <h3 className="broadcast-section-title">{canManageCampaigns ? "Editor de campaña push" : "Vista de campaña push"}</h3>
                             <p className="broadcast-section-subtitle">Configura hora, audiencia y ventana activa para cada notificación.</p>
                         </div>
                     </div>
@@ -1017,14 +1031,14 @@ const AdminBroadcasts = () => {
                         </div>
 
                         <div className="broadcast-actions-row">
-                            <button type="submit" className="broadcast-btn broadcast-btn--primary" disabled={savingCampaign}>
+                            <button type="submit" className="broadcast-btn broadcast-btn--primary" disabled={!canManageCampaigns || savingCampaign}>
                                 <FiSave size={16} /> {campaignForm.id ? 'Actualizar campaña' : 'Guardar campaña'}
                             </button>
                             <button
                                 type="button"
                                 className="broadcast-btn broadcast-btn--ghost"
                                 onClick={() => setCampaignForm(createCampaignForm())}
-                                disabled={savingCampaign}
+                                disabled={!canManageCampaigns || savingCampaign}
                             >
                                 <FiRefreshCw size={16} /> Limpiar
                             </button>

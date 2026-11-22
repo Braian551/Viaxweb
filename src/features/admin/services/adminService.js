@@ -63,10 +63,9 @@ export const toggleUserStatus = async (adminId, userId, isActive) => {
 /**
  * Obtiene la lista de empresas con paginación y filtros.
  */
-export const getCompanies = async (adminId, { page = 1, limit = 20, search = '', estado = '' } = {}) => {
+export const getCompanies = async ({ page = 1, limit = 20, search = '', estado = '' } = {}) => {
     const params = new URLSearchParams({
         action: 'list',
-        admin_id: adminId,
         page,
         limit
     });
@@ -77,6 +76,7 @@ export const getCompanies = async (adminId, { page = 1, limit = 20, search = '',
     return await requestJson(
         `${API_BASE_URL}/admin/empresas.php?${params.toString()}`,
         {
+            sessionRequired: true,
             method: 'GET',
             headers: { Accept: 'application/json' },
         },
@@ -352,10 +352,11 @@ export const registrarPagoComisionAdmin = async (data) => {
 };
 
 /** Obtener configuración operativa de la app */
-export const getAppConfig = async (adminId) => {
+export const getAppConfig = async () => {
     return await requestJson(
-        `${API_BASE_URL}/admin/app_config.php?admin_id=${adminId}`,
+        `${API_BASE_URL}/admin/app_config.php`,
         {
+            sessionRequired: true,
             method: 'GET',
             headers: { Accept: 'application/json' },
         },
@@ -383,10 +384,8 @@ export const updateAppConfig = async (adminId, payload) => {
 };
 
 /** Obtener campañas push programadas */
-export const getPushCampaigns = async (adminId, campaignId = null) => {
-    const params = new URLSearchParams({
-        admin_id: adminId,
-    });
+export const getPushCampaigns = async (campaignId = null) => {
+    const params = new URLSearchParams();
 
     if (campaignId) {
         params.append('id', campaignId);
@@ -395,6 +394,7 @@ export const getPushCampaigns = async (adminId, campaignId = null) => {
     return await requestJson(
         `${API_BASE_URL}/admin/push_campaigns.php?${params.toString()}`,
         {
+            sessionRequired: true,
             method: 'GET',
             headers: { Accept: 'application/json' },
         },

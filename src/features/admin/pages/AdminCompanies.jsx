@@ -20,6 +20,8 @@ const STATUS_FILTERS = [
 const AdminCompanies = () => {
     const { user } = useAuth();
     const [companies, setCompanies] = useState([]);
+    const [error, setError] = useState('');
+    const [canManage, setCanManage] = useState(false);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -47,7 +49,9 @@ const AdminCompanies = () => {
     const fetchCompaniesData = async () => {
         if (!user || !['admin', 'administrador'].includes(user.tipo_usuario)) return;
         setLoading(true);
-        const res = await getCompanies(user.id, { page, limit: 10, search: debouncedSearch, estado: statusFilter });
+        const res = await getCompanies({ page, limit: 10, search: debouncedSearch, estado: statusFilter });
+        setError(res.success ? '' : (res.message || 'No se pudo cargar la lista de empresas.'));
+        setCanManage(res.can_manage === true);
         if (res.success && res.empresas) {
             setCompanies(res.empresas);
             setTotalPages(res.pagination?.total_pages || 1);
@@ -126,7 +130,7 @@ const AdminCompanies = () => {
         <div className="v-dashboard">
             <PageHeader
                 title="Empresas de Transporte"
-                subtitle={`Administra las compañías asociadas. Total: ${totalCompanies}`}
+                subtitle={error ? "Consulta de compañías asociadas" : `Consulta de compañías asociadas. Total: ${totalCompanies}`}
             />
 
             {/* Controls */}
@@ -146,6 +150,8 @@ const AdminCompanies = () => {
             {/* Companies Grid */}
             {loading ? (
                 <ShimmerCardGrid cards={6} />
+            ) : error ? (
+                <EmptyState title="No se pudieron cargar las empresas" description={error} />
             ) : companies.length === 0 ? (
                 <EmptyState
                     icon={<FiBriefcase size={48} />}
@@ -192,7 +198,7 @@ const AdminCompanies = () => {
                                         type="button"
                                         className="btn btn--ghost"
                                         onClick={() => openEdit(c)}
-                                        disabled={processingCompanyId === c.id}
+                                        disabled={!canManage || processingCompanyId === c.id}
                                     >
                                         Editar
                                     </button>
@@ -202,7 +208,7 @@ const AdminCompanies = () => {
                                                 type="button"
                                                 className="btn btn--ghost"
                                                 onClick={() => handleReject(c)}
-                                                disabled={processingCompanyId === c.id}
+                                                disabled={!canManage || processingCompanyId === c.id}
                                             >
                                                 Rechazar
                                             </button>
@@ -210,7 +216,7 @@ const AdminCompanies = () => {
                                                 type="button"
                                                 className="btn btn--primary"
                                                 onClick={() => handleApprove(c)}
-                                                disabled={processingCompanyId === c.id}
+                                                disabled={!canManage || processingCompanyId === c.id}
                                             >
                                                 Aprobar
                                             </button>
