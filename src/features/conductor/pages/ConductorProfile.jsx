@@ -17,7 +17,7 @@ const ConductorProfile = () => {
         const load = async () => {
             setLoading(true);
             const res = await getConductorProfile(user.id);
-            if (res.success) setProfile(res.data || res.conductor || res);
+            if (res.success) setProfile(res.profile || res.data || res.conductor || res);
             setLoading(false);
         };
         load();
@@ -26,6 +26,7 @@ const ConductorProfile = () => {
     if (loading) return <ShimmerDashboard />;
 
     const p = profile || user;
+    const fullName = p?.nombre_completo || [p?.nombre, p?.apellido].filter(Boolean).join(' ') || user?.nombre;
     const vehiculo = p?.vehiculo || p?.vehicle;
     const documentos = p?.documentos || p?.documents || [];
 
@@ -35,8 +36,8 @@ const ConductorProfile = () => {
 
             {/* Profile Card */}
             <div className="glass-card v-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-                <ProfileAvatar src={p.foto_perfil} name={`${p.nombre || user?.nombre || ''} ${p.apellido || ''}`} size={100} borderRadius={24} bgColor="#ff9800" fontSize="2.2rem" />
-                <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 700, color: 'var(--text)' }}>{p.nombre} {p.apellido}</h2>
+                <ProfileAvatar src={p.foto_perfil} name={fullName} size={100} borderRadius={24} bgColor="#ff9800" fontSize="2.2rem" />
+                <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 700, color: 'var(--text)' }}>{fullName}</h2>
                 <StatusBadge status="activo" label="Conductor" />
 
                 <div style={{ display: 'flex', gap: '24px', marginTop: '8px' }}>
@@ -85,19 +86,19 @@ const ConductorProfile = () => {
                     <div className="v-info-rows">
                         <div className="v-info-row">
                             <span className="v-info-row__label">Tipo</span>
-                            <span className="v-info-row__value">{vehiculo.tipo_vehiculo || vehiculo.tipo || '—'}</span>
+                            <span className="v-info-row__value">{vehiculo.vehiculo_tipo || vehiculo.tipo_vehiculo || vehiculo.tipo || '—'}</span>
                         </div>
                         <div className="v-info-row">
                             <span className="v-info-row__label">Marca / Modelo</span>
-                            <span className="v-info-row__value">{`${vehiculo.marca || ''} ${vehiculo.modelo || ''} ${vehiculo.anio || ''}`.trim() || '—'}</span>
+                            <span className="v-info-row__value">{`${vehiculo.vehiculo_marca ?? vehiculo.marca ?? ''} ${vehiculo.vehiculo_modelo ?? vehiculo.modelo ?? ''} ${vehiculo.vehiculo_anio ?? vehiculo.anio ?? ''}`.trim() || '—'}</span>
                         </div>
                         <div className="v-info-row">
                             <span className="v-info-row__label">Placa</span>
-                            <span className="v-info-row__value">{vehiculo.placa || '—'}</span>
+                            <span className="v-info-row__value">{vehiculo.vehiculo_placa ?? vehiculo.placa ?? '—'}</span>
                         </div>
                         <div className="v-info-row">
                             <span className="v-info-row__label">Color</span>
-                            <span className="v-info-row__value">{vehiculo.color || '—'}</span>
+                            <span className="v-info-row__value">{vehiculo.vehiculo_color ?? vehiculo.color ?? '—'}</span>
                         </div>
                     </div>
                 </div>
