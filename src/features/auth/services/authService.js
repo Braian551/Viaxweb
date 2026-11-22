@@ -51,78 +51,20 @@ export async function loginUser(email, password) {
     return data;
 }
 
-function normalizeBackendMessage(message, fallback) {
-    if (!message) return fallback;
-    if (typeof message !== 'string') return fallback;
+const googleRequest = (script, body, options = {}) => requestJson(
+    `${AUTH_API_URL}/google/${script}.php`,
+    {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(body),
+        ...options,
+    },
+    'No pudimos conectar con el servicio de acceso con Google.'
+);
 
-    const trimmed = message.trim();
-    if (!(trimmed.startsWith('{') && trimmed.endsWith('}'))) {
-        return trimmed;
-    }
-
-    try {
-        const parsed = JSON.parse(trimmed);
-        return parsed?.message || fallback;
-    } catch {
-        return trimmed;
-    }
-}
-
-export async function loginWithGoogleToken({ idToken = null, accessToken = null } = {}) {
-    const data = await requestJson(
-        `${AUTH_API_URL}/google/callback.php`,
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({ id_token: idToken, access_token: accessToken }),
-        },
-        'No se pudo completar el inicio con Google. Verifica tu conexión e inténtalo de nuevo.'
-    );
-
-    if (!data?.success) {
-        return {
-            success: false,
-            message: normalizeBackendMessage(data?.message, 'No se pudo completar el inicio con Google.'),
-        };
-    }
-
-    return data;
-}
-
-export async function updateGoogleUserPhone({ userId, phone }) {
-    const data = await requestJson(
-        `${AUTH_API_URL}/update_phone.php`,
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                user_id: userId,
-                phone,
-            }),
-        },
-        'No pudimos actualizar tu teléfono. Intenta nuevamente.'
-    );
-
-    if (!data?.success) {
-        return {
-            success: false,
-            message: normalizeBackendMessage(data?.message, 'No pudimos actualizar tu teléfono. Intenta nuevamente.'),
-        };
-    }
-
-    const userData = data?.data?.user || data?.user || null;
-    return {
-        success: true,
-        message: data?.message || 'Teléfono actualizado correctamente.',
-        user: userData,
-    };
-}
+export const prepareGoogleLogin = () => googleRequest('web_challenge', {});
+export const loginWithGoogleToken = (credential) => googleRequest('web_callback', { credential });
+export const updateGoogleUserPhone = (phone) => googleRequest('web_phone', { phone }, { sessionRequired: true });
 
 /**
  * Sends a request to reset password, which sends an email with a 4-digit code.

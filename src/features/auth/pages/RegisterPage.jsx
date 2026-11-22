@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
+import { Link, useSearchParams } from "react-router-dom";
+import GoogleSignInButton from "../components/GoogleSignInButton";
 import { useAuth } from "../context/AuthContext";
 import { checkUserExists, sendVerificationCode } from "../services/authService";
 import AuthInput from "../components/AuthInput";
@@ -9,8 +9,8 @@ import { V, F } from "../../shared/utils/validators";
 import "./AuthPage.css";
 
 const RegisterPage = () => {
-  const { register, loginWithGoogle, completeGooglePhone } = useAuth();
-  const navigate = useNavigate();
+  const { register, loginWithGoogle, completeGooglePhone, user, loading: loadingSession } = useAuth();
+  const [searchParams] = useSearchParams();
 
   // Multistep State
   // step 1: Basic Info (Name, LastName, Email, Phone)
@@ -35,7 +35,9 @@ const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
 
   // Google required phone state
-  const [googlePendingUser, setGooglePendingUser] = useState(null);
+  const [pendingUser, setGooglePendingUser] = useState(null);
+  const completingPhone = searchParams.get("completar") === "telefono";
+  const googlePendingUser = pendingUser ?? (completingPhone && user && !user.telefono ? user : null);
   const [countryCode, setCountryCode] = useState("+57");
   const [requiredPhone, setRequiredPhone] = useState("");
 
@@ -54,11 +56,12 @@ const RegisterPage = () => {
   const navigateByRole = (responseData) => {
     const role =
       responseData?.user?.tipo_usuario || responseData?.admin?.tipo_usuario;
-    if (role === "admin" || role === "administrador") navigate("/admin");
-    else if (role === "cliente") navigate("/cliente");
-    else if (role === "conductor") navigate("/conductor");
-    else if (role === "empresa") navigate("/empresa");
-    else navigate("/");
+    if (role === "admin" || role === "administrador") window.location.assign("/admin");
+    else if (role === "soporte_tecnico") window.location.assign("/soporte");
+    else if (role === "cliente") window.location.assign("/cliente");
+    else if (role === "conductor") window.location.assign("/conductor");
+    else if (role === "empresa") window.location.assign("/empresa");
+    else window.location.assign("/");
   };
 
   const handleChange = (e) => {
@@ -181,7 +184,7 @@ const RegisterPage = () => {
     });
 
     if (res.success) {
-      navigate("/"); // Redirect to home on success
+      window.location.assign("/"); // Redirect to home on success
     } else {
       setError(res.message || "Error al registrar la cuenta.");
     }
@@ -190,16 +193,16 @@ const RegisterPage = () => {
   };
 
   // --- GOOGLE SIGN IN ---
-  const handleGoogleRegister = async () => {
+  const handleGoogleRegister = async (credential) => {
     setLoading(true);
     setError("");
 
-    const res = await loginWithGoogle();
+    const res = await loginWithGoogle(credential);
 
     if (!res.success) {
       setError(res.message || "No se pudo crear la cuenta con Google.");
       setLoading(false);
-      return;
+      return false;
     }
 
     const requiresPhone =
@@ -209,11 +212,12 @@ const RegisterPage = () => {
     if (requiresPhone && currentUser?.id) {
       setGooglePendingUser(currentUser);
       setLoading(false);
-      return;
+      return true;
     }
 
     navigateByRole(res.data);
     setLoading(false);
+    return true;
   };
 
   const handleRequiredPhoneSubmit = async (e) => {
@@ -239,10 +243,7 @@ const RegisterPage = () => {
     const fullPhone = `${countryCode}${requiredPhone.trim()}`;
 
     setLoading(true);
-    const res = await completeGooglePhone({
-      userId: googlePendingUser.id,
-      phone: fullPhone,
-    });
+    const res = await completeGooglePhone(fullPhone);
 
     if (!res.success) {
       setError(res.message || "No se pudo guardar el teléfono.");
@@ -255,6 +256,7 @@ const RegisterPage = () => {
   };
 
   // --- UI RENDER: Google Phone Pending ---
+  if (completingPhone && loadingSession) return null;
   if (googlePendingUser) {
     return (
       <div className="auth-page-container">
@@ -372,15 +374,7 @@ const RegisterPage = () => {
               <span>o</span>
             </div>
 
-            <button
-              type="button"
-              className="auth-button auth-button--secondary"
-              onClick={handleGoogleRegister}
-              disabled={loading}
-            >
-              <FcGoogle size={20} style={{ marginRight: "0.55rem" }} />
-              Crear cuenta con Google
-            </button>
+            <GoogleSignInButton onCredential={handleGoogleRegister} text="signup_with" disabled={loading} />
           </form>
         )}
 
