@@ -13,14 +13,12 @@ const toQueryString = (params) => {
 };
 
 export async function getNotifications({
-    userId,
     page = 1,
     limit = 20,
     soloNoLeidas = false,
     tipo,
 }) {
     const query = toQueryString({
-        usuario_id: userId,
         page,
         limit,
         solo_no_leidas: soloNoLeidas ? 'true' : undefined,
@@ -30,6 +28,7 @@ export async function getNotifications({
     const data = await requestJson(
         `${NOTIFICATIONS_API_URL}/get_notifications.php?${query}`,
         {
+            sessionRequired: true,
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -48,11 +47,11 @@ export async function getNotifications({
     };
 }
 
-export async function getUnreadCount({ userId }) {
-    const query = toQueryString({ usuario_id: userId });
+export async function getUnreadCount() {
     const data = await requestJson(
-        `${NOTIFICATIONS_API_URL}/get_unread_count.php?${query}`,
+        `${NOTIFICATIONS_API_URL}/get_unread_count.php`,
         {
+            sessionRequired: true,
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -65,13 +64,11 @@ export async function getUnreadCount({ userId }) {
 }
 
 export async function markAsRead({
-    userId,
     notificationId,
     notificationIds,
     markAll = false,
 }) {
     const body = {
-        usuario_id: userId,
         ...(notificationId ? { notification_id: notificationId } : {}),
         ...(Array.isArray(notificationIds) && notificationIds.length
             ? { notification_ids: notificationIds }
@@ -82,6 +79,7 @@ export async function markAsRead({
     const data = await requestJson(
         `${NOTIFICATIONS_API_URL}/mark_as_read.php`,
         {
+            sessionRequired: true,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -101,13 +99,11 @@ export async function markAsRead({
 }
 
 export async function deleteNotification({
-    userId,
     notificationId,
     notificationIds,
     deleteAll = false,
 }) {
     const body = {
-        usuario_id: userId,
         ...(notificationId ? { notification_id: notificationId } : {}),
         ...(Array.isArray(notificationIds) && notificationIds.length
             ? { notification_ids: notificationIds }
@@ -118,6 +114,7 @@ export async function deleteNotification({
     const data = await requestJson(
         `${NOTIFICATIONS_API_URL}/delete_notification.php`,
         {
+            sessionRequired: true,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

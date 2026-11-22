@@ -16,7 +16,7 @@ const EmpresaLayout = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [companyBrand, setCompanyBrand] = useState({ name: 'Empresa', logo: '/logo.png' });
 
-    const handleLogout = () => { logout(); navigate('/login'); };
+    const handleLogout = async () => { if (await logout()) navigate('/login'); };
 
     useEffect(() => {
         let mounted = true;

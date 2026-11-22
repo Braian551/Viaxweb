@@ -10,7 +10,7 @@ const ClienteLayout = () => {
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    const handleLogout = () => { logout(); navigate('/login'); };
+    const handleLogout = async () => { if (await logout()) navigate('/login'); };
 
     const navItems = [
         { path: '/cliente', label: 'Mi Panel', icon: <FiHome />, end: true },

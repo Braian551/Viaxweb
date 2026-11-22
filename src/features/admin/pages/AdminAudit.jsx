@@ -30,7 +30,7 @@ const AdminAudit = () => {
     const fetchLogs = async () => {
         if (!user || !['admin', 'administrador'].includes(user.tipo_usuario)) return;
         setLoading(true);
-        const res = await getAuditLogs(user.id, { page, perPage: 15, accion: accionFilter, fechaDesde, fechaHasta });
+        const res = await getAuditLogs({ page, perPage: 15, accion: accionFilter, fechaDesde, fechaHasta });
         if (res.success && res.data) {
             setLogs(res.data.logs || []);
             setStats(res.data.estadisticas || []);

@@ -53,7 +53,7 @@ export default function Header() {
           {user ? (
             <div className="header__user-menu">
               <span className="header__user-name">{user.nombre || user.name}</span>
-              <button onClick={() => { logout(); navigate('/'); }} className="header__logout-btn">
+              <button onClick={async () => { if (await logout()) navigate('/'); }} className="header__logout-btn">
                 Salir
               </button>
             </div>

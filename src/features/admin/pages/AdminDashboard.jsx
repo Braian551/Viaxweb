@@ -23,7 +23,7 @@ const AdminDashboard = () => {
                 return;
             }
 
-            const response = await getDashboardStats(user.id);
+            const response = await getDashboardStats();
             if (response.success && response.data) {
                 setStats(response.data);
             } else {

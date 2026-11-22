@@ -29,7 +29,7 @@ export async function registerUser(userData) {
  */
 export async function loginUser(email, password) {
     const data = await requestJson(
-        `${AUTH_API_URL}/login.php`,
+        `${AUTH_API_URL}/web_login.php`,
         {
             method: 'POST',
             headers: {
@@ -226,4 +226,12 @@ export async function getProfileByEmail(email) {
     }
 
     return { success: false, message: data?.message || 'Perfil no encontrado' };
+}
+
+export async function requestWebSession(method = 'GET') {
+    return requestJson(
+        `${AUTH_API_URL}/web_session.php`,
+        { method, cache: 'no-store', headers: { Accept: 'application/json' } },
+        'No pudimos verificar la sesión. Comprueba tu conexión e inténtalo de nuevo.'
+    );
 }

@@ -55,7 +55,7 @@ const AdminUsers = () => {
     const fetchUsersData = async () => {
         if (!user || !['admin', 'administrador'].includes(user.tipo_usuario)) return;
         setLoading(true);
-        const res = await getUsers(user.id, { page, perPage: 10, search: debouncedSearch, tipoUsuario: roleFilter });
+        const res = await getUsers({ page, perPage: 10, search: debouncedSearch, tipoUsuario: roleFilter });
         if (res.success && res.data) {
             setUsers(res.data.usuarios || []);
             setTotalPages(res.data.pagination?.total_pages || 1);

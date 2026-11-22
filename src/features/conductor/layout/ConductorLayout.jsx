@@ -10,7 +10,7 @@ const ConductorLayout = () => {
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    const handleLogout = () => { logout(); navigate('/login'); };
+    const handleLogout = async () => { if (await logout()) navigate('/login'); };
 
     const navItems = [
         { path: '/conductor', label: 'Dashboard', icon: <FiHome />, end: true },

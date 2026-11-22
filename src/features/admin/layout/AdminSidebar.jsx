@@ -9,10 +9,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
     const navigate = useNavigate();
     const isSupportUser = user?.tipo_usuario === 'soporte_tecnico';
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
+    const handleLogout = async () => { if (await logout()) navigate('/login'); };
 
     const adminNavItems = [
         { path: '/admin', label: 'Dashboard', icon: <FiHome />, end: true },

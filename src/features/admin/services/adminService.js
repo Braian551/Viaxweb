@@ -1,31 +1,18 @@
 import { API_BASE_URL } from '../../../config/env';
 import { requestJson } from '../../../config/httpClient';
 
-/**
- * Obtiene las estadísticas generales del dashboard para el administrador.
- * @param {number|string} adminId - ID del administrador realizando la petición.
- */
-export const getDashboardStats = async (adminId) => {
-    return await requestJson(
-        `${API_BASE_URL}/admin/dashboard_stats.php`,
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            },
-            body: JSON.stringify({ admin_id: adminId }),
-        },
-        'Fallo al conectar con el servidor'
-    );
-};
+/** Obtiene las estadísticas de la sesión administrativa activa. */
+export const getDashboardStats = () => requestJson(
+    `${API_BASE_URL}/admin/dashboard_stats.php`,
+    { sessionRequired: true },
+    'No se pudieron cargar las estadísticas.'
+);
 
 /**
  * Obtiene la lista de usuarios con paginación y filtros.
  */
-export const getUsers = async (adminId, { page = 1, perPage = 20, search = '', tipoUsuario = '' } = {}) => {
+export const getUsers = async ({ page = 1, perPage = 20, search = '', tipoUsuario = '' } = {}) => {
     const params = new URLSearchParams({
-        admin_id: adminId,
         page,
         per_page: perPage
     });
@@ -36,6 +23,7 @@ export const getUsers = async (adminId, { page = 1, perPage = 20, search = '', t
     return await requestJson(
         `${API_BASE_URL}/admin/user_management.php?${params.toString()}`,
         {
+            sessionRequired: true,
             method: 'GET',
             headers: { Accept: 'application/json' },
         },
@@ -183,9 +171,8 @@ export const getPlatformEarnings = async (adminId, periodo = 'mes') => {
 /**
  * Obtiene los logs de auditoría del sistema con paginación y filtros.
  */
-export const getAuditLogs = async (adminId, { page = 1, perPage = 20, accion = '', fechaDesde = '', fechaHasta = '' } = {}) => {
+export const getAuditLogs = async ({ page = 1, perPage = 20, accion = '', fechaDesde = '', fechaHasta = '' } = {}) => {
     const params = new URLSearchParams({
-        admin_id: adminId,
         page,
         per_page: perPage
     });
@@ -197,6 +184,7 @@ export const getAuditLogs = async (adminId, { page = 1, perPage = 20, accion = '
     return await requestJson(
         `${API_BASE_URL}/admin/audit_logs.php?${params.toString()}`,
         {
+            sessionRequired: true,
             method: 'GET',
             headers: { Accept: 'application/json' },
         },

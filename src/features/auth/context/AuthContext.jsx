@@ -1,8 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider, hasFirebaseConfig } from '../../../config/firebase';
 import { AUTH_API_URL } from '../../../config/env';
-import { loginUser, loginWithGoogleToken, registerUser, updateGoogleUserPhone } from '../services/authService';
+import { loginUser, loginWithGoogleToken, registerUser, requestWebSession, updateGoogleUserPhone } from '../services/authService';
+
+import { SESSION_EXPIRED_EVENT } from '../../../config/httpClient';
 
 const AuthContext = createContext(null);
 
@@ -131,19 +133,62 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Initialize session from local storage
+    const sessionVersion = useRef(0);
+
     useEffect(() => {
-        try {
-            const storedUser = localStorage.getItem('viax_user');
-            if (storedUser) {
-                setUser(JSON.parse(storedUser));
-            }
-        } catch (error) {
-            console.error('Failed to parse user from local storage:', error);
-        } finally {
+        let mounted = true;
+        const version = sessionVersion.current;
+        const expire = () => {
+            sessionVersion.current += 1;
+            setUser(null);
+        };
+        window.addEventListener(SESSION_EXPIRED_EVENT, expire);
+        // Remove the profile cached by previous builds without trusting its contents.
+        try { localStorage.removeItem('viax_user'); } catch { /* Storage may be blocked. */ }
+        requestWebSession().then((response) => {
+            if (!mounted) return;
+            if (sessionVersion.current === version) setUser(response.data?.user ?? null);
             setLoading(false);
-        }
+        });
+        return () => {
+            mounted = false;
+            window.removeEventListener(SESSION_EXPIRED_EVENT, expire);
+        };
     }, []);
+
+    const userId = user?.id;
+    useEffect(() => {
+        if (!userId) return;
+        let lastRenewal = Date.now();
+        let pending = false;
+        let mounted = true;
+        const renew = async () => {
+            if (pending || Date.now() - lastRenewal < 5 * 60 * 1000) return;
+            pending = true;
+            const version = sessionVersion.current;
+            const response = await requestWebSession('POST');
+            pending = false;
+            if (!mounted || sessionVersion.current !== version) return;
+            if (response.success) {
+                lastRenewal = Date.now();
+                setUser(response.data.user);
+            } else if (response.status === 401) {
+                setUser(null);
+            } else {
+                // Retry during activity without sending a request on every event.
+                lastRenewal = Date.now() - 4 * 60 * 1000;
+            }
+        };
+        window.addEventListener('pointerdown', renew);
+        window.addEventListener('keydown', renew);
+        window.addEventListener('focus', renew);
+        return () => {
+            mounted = false;
+            window.removeEventListener('pointerdown', renew);
+            window.removeEventListener('keydown', renew);
+            window.removeEventListener('focus', renew);
+        };
+    }, [userId]);
 
     // Precarga GIS y client_id para mantener el click gesture en el login de Google.
     useEffect(() => {
@@ -153,29 +198,13 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
+        const version = ++sessionVersion.current;
         const response = await loginUser(email, password);
-        if (response.success && response.data) {
-            // Using the same logic as the Flutter app
-            const userData = response.data.user || response.data.admin;
-            if (userData) {
-                setUser(userData);
-                localStorage.setItem('viax_user', JSON.stringify(userData));
-            }
-        }
+        if (version === sessionVersion.current && response.success) setUser(response.data.user);
         return response;
     };
 
-    const register = async (userData) => {
-        const response = await registerUser(userData);
-        if (response.success && response.data) {
-            const uData = response.data.user;
-            if (uData) {
-                setUser(uData);
-                localStorage.setItem('viax_user', JSON.stringify(uData));
-            }
-        }
-        return response;
-    };
+    const register = registerUser;
 
     const loginWithGoogle = async () => {
         try {
@@ -204,8 +233,10 @@ export const AuthProvider = ({ children }) => {
             }
 
             if (response.success && response.data?.user) {
-                setUser(response.data.user);
-                localStorage.setItem('viax_user', JSON.stringify(response.data.user));
+                const session = await requestWebSession();
+                if (!session.success) return session;
+                setUser(session.data.user);
+                return session;
             }
 
             return response;
@@ -229,19 +260,17 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('viax_user');
+    const logout = async () => {
+        sessionVersion.current += 1;
+        const response = await requestWebSession('DELETE');
+        if (response.success || response.status === 401) {
+            setUser(null);
+            return true;
+        }
+        return false;
     };
 
-    const completeGooglePhone = async ({ userId, phone }) => {
-        const response = await updateGoogleUserPhone({ userId, phone });
-        if (response.success && response.user) {
-            setUser(response.user);
-            localStorage.setItem('viax_user', JSON.stringify(response.user));
-        }
-        return response;
-    };
+    const completeGooglePhone = updateGoogleUserPhone;
 
     return (
         <AuthContext.Provider value={{ user, loading, login, register, loginWithGoogle, completeGooglePhone, logout }}>
