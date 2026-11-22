@@ -1,63 +1,24 @@
-name: Deploy Viaxweb
+name: Build Viaxweb
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      # 🧹 LIMPIAR SOLO SITIOWEB (NO BACKEND)
-      - name: Clean remote sitioweb directory
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            rm -rf /var/www/viax/sitioweb/*
-            mkdir -p /var/www/viax/sitioweb
-
-      # 📦 SUBIR BUILD
-      - name: Upload build files
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          source: "dist/*"
-          target: "/var/www/viax/sitioweb"
-          strip_components: 1
-
-      # 🔐 PERMISOS
-      - name: Fix permissions
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            chown -R www-data:www-data /var/www/viax/sitioweb
-            find /var/www/viax/sitioweb -type d -exec chmod 755 {} \;
-            find /var/www/viax/sitioweb -type f -exec chmod 644 {} \;
+      - run: npm ci
+      - run: npm run build
+        env:
+          VITE_API_URL: /api
