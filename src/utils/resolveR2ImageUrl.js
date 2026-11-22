@@ -37,5 +37,6 @@ export function resolveR2ImageUrl(value, apiBase) {
     }
 
     const cleanKey = key.replace(/^\/+/, '');
+    if (cleanKey === 'logo.png') return '/logo.png';
     return cleanKey ? `${apiBase}/r2_proxy.php?key=${encodeURIComponent(cleanKey)}` : '';
 }

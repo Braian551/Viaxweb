@@ -28,6 +28,12 @@ import ProfileAvatar from '../../shared/components/ProfileAvatar';
 import { ShimmerStatGrid } from '../../shared/components/ShimmerLoader';
 import { useSnackbar } from '../../shared/components/AppSnackbar';
 
+const asNumber = (value, fallback = 0) => {
+    const number = typeof value === 'number' || (typeof value === 'string' && value.trim())
+        ? Number(value)
+        : NaN;
+    return Number.isFinite(number) ? number : fallback;
+};
 const fmt = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v || 0);
 const fmtDate = (d) => { try { return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch { return d; } };
 const safeText = (value, fallback = '-') => (value === null || value === undefined || value === '' ? fallback : String(value));

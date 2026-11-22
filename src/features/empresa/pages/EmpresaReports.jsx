@@ -21,7 +21,7 @@ import { ShimmerStatGrid } from '../../shared/components/ShimmerLoader';
 import EmptyState from '../../shared/components/EmptyState';
 import StatusBadge from '../../shared/components/StatusBadge';
 import Pagination from '../../shared/components/Pagination';
-import { getR2ImageUrl } from '../../../utils/r2Images';
+import ProfileAvatar from '../../shared/components/ProfileAvatar';
 
 const EmpresaReports = () => {
     const { user } = useAuth();
@@ -142,7 +142,7 @@ const EmpresaReports = () => {
                         <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             {top_drivers.map(d => (
                                 <div key={d.id} className="v-list-item-lite">
-                                    <img src={getR2ImageUrl(d.foto_perfil) || '/avatar-default.png'} alt="" style={{ width: '32px', height: '32px', borderRadius: '8px' }} />
+                                    <ProfileAvatar src={d.foto_perfil} name={d.nombre} size={32} borderRadius={8} />
                                     <div style={{ flex: 1, fontWeight: 600, fontSize: '0.85rem' }}>{d.nombre}</div>
                                     <div style={{ fontWeight: 800, color: 'var(--primary)' }}>{fmt(d.ingresos)}</div>
                                 </div>
@@ -180,7 +180,7 @@ const EmpresaReports = () => {
                                 <tr key={d.id}>
                                     <td>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                            <img src={getR2ImageUrl(d.foto_perfil) || '/avatar-default.png'} alt="" style={{ width: '36px', height: '36px', borderRadius: '10px' }} />
+                                            <ProfileAvatar src={d.foto_perfil} name={d.nombre} size={36} borderRadius={10} />
                                             <div>
                                                 <div style={{ fontWeight: 700 }}>{d.nombre}</div>
                                                 <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{d.telefono}</div>

@@ -47,7 +47,7 @@ const EmpresaLayout = () => {
 
             setCompanyBrand({
                 name: resolvedName,
-                logo: rawLogo ? getR2ImageUrl(rawLogo) : '/logo.png',
+                logo: getR2ImageUrl(rawLogo) || '/logo.png',
             });
         };
 
@@ -80,7 +80,11 @@ const EmpresaLayout = () => {
                         src={companyBrand.logo}
                         alt={companyBrand.name}
                         className="dash-sidebar-logo"
-                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/logo.png'; }}
+                        onError={() => {
+                            if (companyBrand.logo !== '/logo.png') {
+                                setCompanyBrand(previous => ({ ...previous, logo: '/logo.png' }));
+                            }
+                        }}
                     />
                     <h2 className="dash-sidebar-title" title={companyBrand.name}>{companyBrand.name}</h2>
                     <button className="dash-menu-btn" onClick={() => setSidebarOpen(false)} style={{ marginLeft: 'auto' }}><FiX /></button>
