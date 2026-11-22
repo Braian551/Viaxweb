@@ -37,7 +37,7 @@ const AdminFinances = () => {
     const fetchFinances = async () => {
         if (!user || !['admin', 'administrador'].includes(user.tipo_usuario)) return;
         setLoading(true);
-        const res = await getPlatformEarnings(user.id, periodo);
+        const res = await getPlatformEarnings(periodo);
         if (res.success && res.data) {
             setFinances(res.data);
             setError(null);

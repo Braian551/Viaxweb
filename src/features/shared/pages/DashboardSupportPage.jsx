@@ -87,6 +87,7 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
 
     const [categories, setCategories] = useState([]);
     const [tickets, setTickets] = useState([]);
+    const [ticketsError, setTicketsError] = useState('');
     const [agents, setAgents] = useState([]);
     const [ticketLogs, setTicketLogs] = useState([]);
     const [userReports, setUserReports] = useState([]);
@@ -133,8 +134,8 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
         const [categoriesRes, ticketsRes, reportsRes] = await Promise.all([
             isAgentMode ? Promise.resolve({ success: true, categorias: [] }) : getSupportCategories(),
             getSupportTickets({
-                userId: isAgentMode ? undefined : userId,
-                agentId: isAgentMode ? userId : undefined,
+
+
                 status: statusFilter,
                 priority: priorityFilter,
                 assignedTo: isAgentMode ? assignedFilter : undefined,
@@ -142,7 +143,7 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
             }),
             isAgentMode
                 ? getUserReports({
-                    actorId: userId,
+
                     search: searchText,
                     limit: 30,
                 })
@@ -157,6 +158,7 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
             }
         }
 
+        setTicketsError(ticketsRes?.success ? '' : (ticketsRes?.message || 'No se pudo cargar la bandeja de tickets.'));
         if (ticketsRes?.success) {
             const incomingTickets = ticketsRes.tickets || [];
             setTickets(incomingTickets);
@@ -196,8 +198,8 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
         }
         const res = await getSupportTicketMessages({
             ticketId,
-            userId: isAgentMode ? undefined : userId,
-            agentId: isAgentMode ? userId : undefined,
+
+
         });
         if (res?.success) {
             setMessages(res.mensajes || []);
@@ -320,8 +322,8 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
         setIsSending(true);
         const res = await sendSupportMessage({
             ticketId: selectedTicket.id,
-            userId: isAgentMode ? undefined : userId,
-            agentId: isAgentMode ? userId : undefined,
+
+
             message: replyMessage.trim(),
         });
         setIsSending(false);
@@ -363,7 +365,7 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
 
     const handleUserReportAction = async (reportId, action) => {
         const response = await updateUserReport({
-            actorId: userId,
+
             reportId,
             action,
         });
@@ -476,7 +478,9 @@ const DashboardSupportPage = ({ roleType = 'cliente' }) => {
 
                         <div className="support-ticket-list">
                             <h3 className="support-title"><FiLifeBuoy /> {isAgentMode ? 'Bandeja de tickets' : 'Mis tickets'}</h3>
-                            {tickets.length === 0 ? (
+                            {ticketsError ? (
+                                <p role="alert">{ticketsError}</p>
+                            ) : tickets.length === 0 ? (
                                 <EmptyState
                                     icon={<FiAlertCircle size={34} />}
                                     title="Aun sin tickets"

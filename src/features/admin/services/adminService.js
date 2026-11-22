@@ -146,27 +146,11 @@ export const rejectCompany = async (adminId, companyId, motivo) => {
 /**
  * Obtiene las ganancias y finanzas de la plataforma.
  */
-export const getPlatformEarnings = async (adminId, periodo = 'mes') => {
-    try {
-        const primary = await requestJson(
-            `${API_BASE_URL}/admin/platform_earnings.php?periodo=${periodo}`,
-            { method: 'GET', headers: { Accept: 'application/json' } },
-            'Fallo al conectar con el servidor'
-        );
-
-        if (primary?.success !== false) return primary;
-
-        // Fallback para despliegues con rewrite sin extensión .php
-        return await requestJson(
-            `${API_BASE_URL}/admin/platform_earnings?periodo=${periodo}`,
-            { method: 'GET', headers: { Accept: 'application/json' } },
-            'Fallo al conectar con el servidor'
-        );
-    } catch (error) {
-        console.error('Error fetching platform earnings:', error);
-        return { success: false, message: 'Fallo al conectar con el servidor', data: null };
-    }
-};
+export const getPlatformEarnings = (periodo = 'mes') => requestJson(
+    `${API_BASE_URL}/admin/platform_earnings.php?periodo=${encodeURIComponent(periodo)}`,
+    { sessionRequired: true },
+    'No se pudieron cargar las finanzas.'
+);
 
 /**
  * Obtiene los logs de auditoría del sistema con paginación y filtros.

@@ -19,7 +19,6 @@ import {
     registrarPagoComisionAdmin
 } from '../services/adminService';
 import { API_BASE_URL } from '../../../config/env';
-import { getR2ImageUrl } from '../../../utils/r2Images';
 import PageHeader from '../../shared/components/PageHeader';
 import GlassStatCard from '../../shared/components/GlassStatCard';
 import StatusBadge from '../../shared/components/StatusBadge';
@@ -33,30 +32,6 @@ const fmt = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency:
 const fmtDate = (d) => { try { return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch { return d; } };
 const safeText = (value, fallback = '-') => (value === null || value === undefined || value === '' ? fallback : String(value));
 const isPdfFile = (path = '') => /\.pdf(\?|$)/i.test(String(path || '').trim());
-const resolveVoucherUrl = (path = '') => {
-    const raw = safeText(path, '').trim();
-    return raw ? getR2ImageUrl(raw) : '';
-};
-const asNumber = (value, fallback = 0) => {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : fallback;
-};
-const DEBT_EPSILON_COP = 1;
-const normalizeSaldoCop = (value) => {
-    const saldo = asNumber(value, 0);
-    return Math.abs(saldo) < DEBT_EPSILON_COP ? 0 : saldo;
-};
-const hasActiveDebt = (empresa) => {
-    if (empresa?.deuda_activa === true || empresa?.deuda_activa === false) {
-        return empresa.deuda_activa;
-    }
-    const deudaActivaNumeric = Number(empresa?.deuda_activa);
-    if (Number.isFinite(deudaActivaNumeric)) {
-        return deudaActivaNumeric === 1;
-    }
-    return normalizeSaldoCop(empresa?.saldo_pendiente) >= DEBT_EPSILON_COP;
-};
-
 const ESTADO_MAP = {
     pendiente_revision: { label: 'Pendiente', color: 'warning', icon: <FiClock /> },
     comprobante_aprobado: { label: 'Aprobado', color: 'info', icon: <FiCheckCircle /> },
@@ -769,9 +744,9 @@ const AdminCompanyPayments = () => {
                                                     <td style={{ fontSize: '0.85rem' }}>{fmtDate(f.fecha_emision)}</td>
                                                     <td>
                                                         <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
-                                                            {(f.pdf_ruta || f.pdf_url) && (
+                                                            {f.pdf_url && (
                                                                 <button
-                                                                    onClick={() => downloadR2File(getR2ImageUrl(f.pdf_ruta || f.pdf_url), `${f.numero_factura || 'factura'}`)}
+                                                                    onClick={() => downloadR2File(f.pdf_url, `${f.numero_factura || 'factura'}`)}
                                                                     className="v-btn-icon"
                                                                     title="Descargar PDF"
                                                                     style={{ border: 'none', cursor: 'pointer', background: 'transparent' }}
@@ -917,9 +892,9 @@ const AdminCompanyPayments = () => {
                                         {/* Image Column */}
                                         <div style={{ background: '#0a0a0a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
                                             {selectedReport.comprobante_url ? (() => {
-                                                const proofUrl = resolveVoucherUrl(selectedReport.comprobante_url);
+                                                const proofUrl = selectedReport.comprobante_url;
                                                 const rawOriginal = safeText(selectedReport.comprobante_url, '').trim();
-                                                const isPdf = isPdfFile(rawOriginal);
+                                                const isPdf = selectedReport.comprobante_es_pdf || isPdfFile(rawOriginal);
                                                 return (
                                                 <>
                                                     {isPdf ? (

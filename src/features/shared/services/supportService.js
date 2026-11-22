@@ -20,10 +20,10 @@ export const getSupportCategories = async () => {
     );
 };
 
-export const getSupportTickets = async ({ userId, agentId, status, priority, assignedTo, search, page = 1, limit = 20 }) => {
+export const getSupportTickets = async ({ userId, status, priority, assignedTo, search, page = 1, limit = 20 }) => {
     const query = toQuery({
-        usuario_id: userId,
-        agente_id: agentId,
+
+
         estado: status,
         prioridad: priority,
         asignado_a: assignedTo,
@@ -33,7 +33,7 @@ export const getSupportTickets = async ({ userId, agentId, status, priority, ass
     });
     return await requestJson(
         `${SUPPORT_API_URL}/get_tickets.php?${query}`,
-        { method: 'GET', headers: { Accept: 'application/json' } },
+        { sessionRequired: true, method: 'GET', headers: { Accept: 'application/json' } },
         'No se pudieron cargar los tickets'
     );
 };
@@ -42,13 +42,13 @@ export const createSupportTicket = async ({ userId, categoryId, subject, descrip
     return await requestJson(
         `${SUPPORT_API_URL}/create_ticket.php`,
         {
-            method: 'POST',
+            sessionRequired: true, method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
             body: JSON.stringify({
-                usuario_id: userId,
+
                 categoria_id: categoryId,
                 asunto: subject,
                 descripcion: description,
@@ -58,28 +58,28 @@ export const createSupportTicket = async ({ userId, categoryId, subject, descrip
     );
 };
 
-export const getSupportTicketMessages = async ({ ticketId, userId, agentId }) => {
-    const query = toQuery({ ticket_id: ticketId, usuario_id: userId, agente_id: agentId });
+export const getSupportTicketMessages = async ({ ticketId }) => {
+    const query = toQuery({ ticket_id: ticketId });
     return await requestJson(
         `${SUPPORT_API_URL}/get_ticket_messages.php?${query}`,
-        { method: 'GET', headers: { Accept: 'application/json' } },
+        { sessionRequired: true, method: 'POST', headers: { Accept: 'application/json' } },
         'No se pudieron cargar los mensajes del ticket'
     );
 };
 
-export const sendSupportMessage = async ({ ticketId, userId, agentId, message }) => {
+export const sendSupportMessage = async ({ ticketId, message }) => {
     return await requestJson(
         `${SUPPORT_API_URL}/send_message.php`,
         {
-            method: 'POST',
+            sessionRequired: true, method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
             body: JSON.stringify({
                 ticket_id: ticketId,
-                usuario_id: userId,
-                agente_id: agentId,
+
+
                 mensaje: message,
             }),
         },
@@ -87,18 +87,18 @@ export const sendSupportMessage = async ({ ticketId, userId, agentId, message })
     );
 };
 
-export const updateSupportTicket = async ({ ticketId, agentId, status, priority, assignedTo }) => {
+export const updateSupportTicket = async ({ ticketId, status, priority, assignedTo }) => {
     return await requestJson(
         `${SUPPORT_API_URL}/update_ticket.php`,
         {
-            method: 'POST',
+            sessionRequired: true, method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
             body: JSON.stringify({
                 ticket_id: ticketId,
-                agente_id: agentId,
+
                 estado: status,
                 prioridad: priority,
                 asignado_a: assignedTo,
@@ -108,18 +108,18 @@ export const updateSupportTicket = async ({ ticketId, agentId, status, priority,
     );
 };
 
-export const getSupportTicketLogs = async ({ ticketId, agentId }) => {
-    const query = toQuery({ ticket_id: ticketId, agente_id: agentId });
+export const getSupportTicketLogs = async ({ ticketId }) => {
+    const query = toQuery({ ticket_id: ticketId });
     return await requestJson(
         `${SUPPORT_API_URL}/get_ticket_logs.php?${query}`,
-        { method: 'GET', headers: { Accept: 'application/json' } },
+        { sessionRequired: true, method: 'GET', headers: { Accept: 'application/json' } },
         'No se pudo cargar el historial del ticket'
     );
 };
 
-export const getUserReports = async ({ actorId, status, priority, search, limit = 50 }) => {
+export const getUserReports = async ({ status, priority, search, limit = 50 }) => {
     const query = toQuery({
-        actor_id: actorId,
+
         estado: status,
         prioridad: priority,
         search,
@@ -128,22 +128,22 @@ export const getUserReports = async ({ actorId, status, priority, search, limit 
 
     return await requestJson(
         `${API_BASE_URL}/admin/user_reports.php?${query}`,
-        { method: 'GET', headers: { Accept: 'application/json' } },
+        { sessionRequired: true, method: 'GET', headers: { Accept: 'application/json' } },
         'No se pudieron cargar los reportes de usuarios'
     );
 };
 
-export const updateUserReport = async ({ actorId, reportId, action, resolutionNote }) => {
+export const updateUserReport = async ({ reportId, action, resolutionNote }) => {
     return await requestJson(
         `${API_BASE_URL}/admin/user_reports.php`,
         {
-            method: 'POST',
+            sessionRequired: true, method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
             body: JSON.stringify({
-                actor_id: actorId,
+
                 report_id: reportId,
                 action,
                 resolution_note: resolutionNote,
