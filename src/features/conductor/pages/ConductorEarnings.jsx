@@ -54,9 +54,9 @@ const ConductorEarnings = () => {
         <div className="v-dashboard">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
                 <PageHeader title="Mis Ganancias" subtitle="Desglose de ingresos y comisiones" />
-                <div className="v-period-selector">
+                <div className="v-period-selector" role="group" aria-label="Periodo de ganancias">
                     {PERIODS.map(p => (
-                        <button key={p} className={`v-period-selector__btn ${periodo === p ? 'active' : ''}`} onClick={() => setPeriodo(p)}>
+                        <button key={p} type="button" aria-pressed={periodo === p} className={`v-period-btn ${periodo === p ? 'active' : ''}`} onClick={() => setPeriodo(p)}>
                             {p === 'anio' ? 'Año' : p.charAt(0).toUpperCase() + p.slice(1)}
                         </button>
                     ))}
